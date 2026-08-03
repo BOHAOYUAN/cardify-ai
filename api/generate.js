@@ -29,50 +29,68 @@ function isRateLimited(ip) {
   return false;
 }
 
-// ── System Prompt ──
-const SYSTEM_PROMPT = `You are a world-class business and academic content architect. Your specialty is distilling long, dense articles or text into visually striking, highly shareable "knowledge card packs" perfect for social media.
+// ── Style-based System Prompts ──
+const STYLE_PROMPTS = {
+  default: `You are a world-class content architect. Distill the input into 3-5 beautiful knowledge cards.
 
-CRITICAL: Return ONLY valid JSON. Do NOT wrap in markdown code fences. Do NOT add any text before or after the JSON object.
-
-Output this exact JSON structure:
-
+Return ONLY valid JSON (no markdown fences, no extra text):
 {
   "theme_color": "dark",
   "total_cards": 3,
   "cards": [
-    {
-      "card_id": 1,
-      "type": "header",
-      "title": "Eye-catching title (max 12 words, hits a pain point)",
-      "subtitle": "Supporting context or core tension",
-      "gold_quote": "The most powerful, tweet-worthy quote or conclusion from the text",
-      "key_takeaways": ["Insight 1", "Insight 2", "Insight 3"]
-    },
-    {
-      "card_id": 2,
-      "type": "metrics",
-      "title": "Key Data & Metrics",
-      "metrics": [
-        {"label": "Metric name", "value": "Number or result", "desc": "Brief explanation"}
-      ]
-    },
-    {
-      "card_id": 3,
-      "type": "action",
-      "title": "Action Plan",
-      "steps": ["Step 1 action", "Step 2 action", "Common pitfall to avoid"]
-    }
+    { "card_id": 1, "type": "header", "title": "Punchy title (max 12 words)", "subtitle": "Supporting context", "gold_quote": "Most viral-worthy quote from the text", "key_takeaways": ["Insight 1", "Insight 2", "Insight 3"] },
+    { "card_id": 2, "type": "metrics", "title": "Key Data & Metrics", "metrics": [{"label": "Name", "value": "Number", "desc": "Brief note"}] },
+    { "card_id": 3, "type": "action", "title": "Action Plan", "steps": ["Step 1", "Step 2", "Pitfall to avoid"] }
   ]
 }
+Rules: 3-5 cards, start with header, match input language, pick theme_color from dark/light/cyber/glass, output RAW JSON only.`,
 
-Rules:
-1. Generate 3 to 5 cards. Always start with a "header" type card.
-2. Match output language to input (Chinese in → Chinese out; English in → English out).
-3. theme_color must be one of: "dark", "light", "cyber", "glass" — pick based on content vibe.
-4. Titles must create curiosity and be punchy, not generic summaries.
-5. gold_quote should feel like a viral tweet or LinkedIn post.
-6. If the text has real numbers/data, create a "metrics" card. If not, add a 2nd "header" or "action" card.
-7. Output ONLY the raw JSON object. Nothing else.`;
+  xiaohongshu: `你是一位顶级小红书爆款内容策划师，擅长将任何内容改写为高传播性的小红书风格知识卡片包。
+
+仅返回符合以下格式的纯 JSON（不加 markdown 标记）：
+{
+  "theme_color": "light",
+  "total_cards": 4,
+  "cards": [
+    { "card_id": 1, "type": "header", "title": "超吸睛标题（含数字/emoji，最多15字）", "subtitle": "引发共鸣的痛点副标题", "gold_quote": "最适合截图传播的金句（口语化、有情绪、有力量）", "key_takeaways": ["✨ 干货点1", "💡 干货点2", "🔥 干货点3"] },
+    { "card_id": 2, "type": "metrics", "title": "📊 数据说话", "metrics": [{"label": "关键指标", "value": "震撼数字", "desc": "简短说明"}] },
+    { "card_id": 3, "type": "action", "title": "🛠 手把手行动指南", "steps": ["第一步：具体行动", "第二步：具体行动", "⚠️ 最容易踩的坑"] },
+    { "card_id": 4, "type": "header", "title": "最后一句话总结", "subtitle": "升华主题的结语", "gold_quote": "适合收藏的人生感悟式结尾", "key_takeaways": ["📌 记住这一点", "📌 立刻去做这件事", "📌 避开这个误区"] }
+  ]
+}
+要求：语言轻快活泼、有情绪感染力、善用 emoji、高饱和金句，输出原始 JSON。`,
+
+  twitter: `You are a top-tier business analyst and LinkedIn thought leader. Transform the input into data-driven, professional insight cards optimized for Twitter/X threads and LinkedIn posts.
+
+Return ONLY raw JSON (no markdown):
+{
+  "theme_color": "dark",
+  "total_cards": 4,
+  "cards": [
+    { "card_id": 1, "type": "header", "title": "Bold contrarian claim (max 10 words)", "subtitle": "Why this matters to professionals right now", "gold_quote": "The one tweet-worthy line that would get 1000+ RTs", "key_takeaways": ["Hard truth #1", "Hard truth #2", "Hard truth #3"] },
+    { "card_id": 2, "type": "metrics", "title": "The Numbers Don't Lie", "metrics": [{"label": "Key metric", "value": "Exact figure", "desc": "Why this number matters"}] },
+    { "card_id": 3, "type": "metrics", "title": "Industry Benchmarks", "metrics": [{"label": "Benchmark", "value": "Value", "desc": "Context"}] },
+    { "card_id": 4, "type": "action", "title": "The Strategic Playbook", "steps": ["Strategic move #1", "Strategic move #2", "Common mistake leaders make"] }
+  ]
+}
+Rules: Professional tone, data-heavy, match input language, raw JSON only.`,
+
+  outline: `You are an expert content strategist and video scriptwriter. Break down the input into a clear, hierarchical outline perfect for long-form video scripts or article structures.
+
+Return ONLY raw JSON (no markdown):
+{
+  "theme_color": "cyber",
+  "total_cards": 4,
+  "cards": [
+    { "card_id": 1, "type": "header", "title": "Video/Article Title Hook", "subtitle": "Core promise: what viewers will learn", "gold_quote": "Opening hook line that stops the scroll", "key_takeaways": ["Main argument 1", "Main argument 2", "Main argument 3"] },
+    { "card_id": 2, "type": "action", "title": "Part 1: Opening & Context", "steps": ["Hook & problem statement", "Why this matters now", "Preview of what's coming"] },
+    { "card_id": 3, "type": "action", "title": "Part 2: Core Content", "steps": ["Key point A with evidence", "Key point B with evidence", "Key point C with evidence"] },
+    { "card_id": 4, "type": "action", "title": "Part 3: Conclusion & CTA", "steps": ["Summary of key takeaways", "Actionable next step for audience", "Call-to-action / closing line"] }
+  ]
+}
+Rules: Clear hierarchy, outline-focused, match input language, raw JSON only.`
+};
+
 
 // ── Input validation ──
 function validateInput(body) {
@@ -135,40 +153,44 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed. Use POST.' });
   }
 
-  // Rate limit
-  const ip = getRateKey(req);
-  if (isRateLimited(ip)) {
-    return res.status(429).json({ error: 'Too many requests. Please wait a moment.', retryAfter: 60 });
-  }
-
   // Validate
   const validationError = validateInput(req.body);
   if (validationError) return res.status(400).json({ error: validationError });
 
-  const { text, theme } = req.body;
+  const { text, theme, style, userApiKey } = req.body;
 
-  if (!process.env.GEMINI_API_KEY) {
-    console.error('GEMINI_API_KEY is not set');
+  // Use user-provided key (from frontend localStorage) OR fall back to server env key
+  const apiKey = userApiKey?.trim() || process.env.GEMINI_API_KEY;
+
+  if (!apiKey) {
+    console.error('No API key available');
     return res.status(500).json({ error: 'Server configuration error: API key not configured' });
   }
 
+  // If NOT using user's own key, apply server-side rate limiting
+  if (!userApiKey) {
+    const ip = getRateKey(req);
+    if (isRateLimited(ip)) {
+      return res.status(429).json({ error: 'Too many requests. Please wait a moment.', retryAfter: 60 });
+    }
+  }
+
   const modelName = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
+  const systemPrompt = STYLE_PROMPTS[style] || STYLE_PROMPTS.default;
 
   try {
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
       model: modelName,
       generationConfig: {
-        temperature: 0.7,
+        temperature: 0.75,
         maxOutputTokens: 2048,
-        responseMimeType: 'application/json', // Force JSON output mode
+        responseMimeType: 'application/json',
       },
-      systemInstruction: SYSTEM_PROMPT,
+      systemInstruction: systemPrompt,
     });
 
-    const userPrompt = theme
-      ? `Use visual theme "${theme}". Generate knowledge cards for:\n\n${text.trim()}`
-      : `Generate knowledge cards for:\n\n${text.trim()}`;
+    const userPrompt = `Use visual theme "${theme || 'dark'}". Generate knowledge cards for:\n\n${text.trim()}`;
 
     const result = await model.generateContent(userPrompt);
     const rawText = result.response.text();

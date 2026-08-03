@@ -309,6 +309,131 @@
     #toast.toast-success { border-color: rgba(34,197,94,0.4); background: #052e16; }
     #toast.toast-error { border-color: rgba(239,68,68,0.4); background: #2d0a0a; }
 
+    /* ── Quota badge ── */
+    .quota-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 600;
+      padding: 5px 12px; border-radius: 100px;
+      background: rgba(252,92,156,0.12);
+      border: 1px solid rgba(252,92,156,0.3);
+      color: #fc5c9c; cursor: default;
+    }
+    .quota-badge.unlimited {
+      background: rgba(34,197,94,0.12);
+      border-color: rgba(34,197,94,0.3);
+      color: #4ade80;
+    }
+
+    /* ── Style dropdown ── */
+    .style-row {
+      display: flex; align-items: center; gap: 10px;
+      margin-top: 12px; flex-wrap: wrap;
+    }
+    .style-label { font-size: 12px; font-weight: 600; color: var(--text-muted); white-space: nowrap; }
+    .style-select {
+      flex: 1; min-width: 220px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 9px 14px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px; font-weight: 500;
+      cursor: pointer; outline: none;
+      transition: border-color 0.2s;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a7a9a' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+    }
+    .style-select:focus { border-color: rgba(124,92,252,0.5); box-shadow: 0 0 0 3px rgba(124,92,252,0.12); }
+    .style-select option { background: #1c1c28; }
+
+    /* ── Modal overlay ── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 10000;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .modal-overlay.show { opacity: 1; pointer-events: all; }
+    .modal-card {
+      background: linear-gradient(145deg, #1a1a2e, #16213e);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 28px;
+      padding: 40px 36px;
+      max-width: 480px; width: 100%;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.7);
+      transform: translateY(20px) scale(0.96);
+      transition: transform 0.3s;
+      position: relative;
+    }
+    .modal-overlay.show .modal-card { transform: translateY(0) scale(1); }
+    .modal-close {
+      position: absolute; top: 18px; right: 18px;
+      background: rgba(255,255,255,0.07); border: none;
+      color: var(--text-muted); font-size: 18px;
+      width: 32px; height: 32px; border-radius: 50%;
+      cursor: pointer; display: grid; place-items: center;
+      transition: all 0.2s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.14); color: var(--text); }
+    .modal-icon { font-size: 48px; text-align: center; margin-bottom: 16px; }
+    .modal-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 22px; font-weight: 800;
+      text-align: center; margin-bottom: 10px;
+      background: linear-gradient(135deg, #fff, #fc5c9c);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .modal-desc { font-size: 14px; color: var(--text-muted); text-align: center; line-height: 1.7; margin-bottom: 28px; }
+    .modal-divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 22px 0; color: var(--text-muted); font-size: 12px;
+    }
+    .modal-divider::before, .modal-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+    .modal-key-input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px; outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 10px;
+    }
+    .modal-key-input:focus { border-color: rgba(124,92,252,0.5); box-shadow: 0 0 0 3px rgba(124,92,252,0.12); }
+    .modal-key-hint { font-size: 11px; color: var(--text-muted); margin-bottom: 16px; }
+    .modal-key-hint a { color: var(--accent); text-decoration: none; }
+    .modal-btn {
+      width: 100%; padding: 14px;
+      border-radius: 100px; border: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .modal-btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; margin-bottom: 10px;
+      box-shadow: 0 4px 20px rgba(124,92,252,0.4);
+    }
+    .modal-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(124,92,252,0.55); }
+    .modal-btn-secondary {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .modal-btn-secondary:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+
     /* ── Swiper ── */
     .swiper-outer {
       padding-bottom: 50px;
@@ -548,6 +673,17 @@ Example: Annual report excerpts, academic abstracts, blog posts, newsletter cont
       <span class="char-count" id="char-count">0 chars</span>
     </div>
 
+    <!-- Platform Style Selector -->
+    <div class="style-row">
+      <span class="style-label">✦ 风格</span>
+      <select class="style-select" id="style-select">
+        <option value="default">✨ 通用知识卡片（默认）</option>
+        <option value="xiaohongshu">📕 小红书爆款风格（高饱和金句 + 行动指南）</option>
+        <option value="twitter">🐦 Twitter / LinkedIn 商业洞察（数据 + 硬核指标）</option>
+        <option value="outline">📺 视频 / 长文极速大纲（核心论点 + 分步大纲）</option>
+      </select>
+    </div>
+
     <div class="input-controls">
       <div class="theme-selector">
         <button class="theme-btn active" data-theme="dark"><span class="dot dot-dark"></span>Dark</button>
@@ -555,10 +691,13 @@ Example: Annual report excerpts, academic abstracts, blog posts, newsletter cont
         <button class="theme-btn" data-theme="cyber"><span class="dot dot-cyber"></span>Cyber</button>
         <button class="theme-btn" data-theme="glass"><span class="dot dot-glass"></span>Glass</button>
       </div>
-      <button class="generate-btn" id="generate-btn">
-        <span class="btn-icon">✦</span>
-        Generate Cards
-      </button>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="quota-badge" id="quota-badge">✦ 今日剩余 3 次</span>
+        <button class="generate-btn" id="generate-btn">
+          <span class="btn-icon">✦</span>
+          Generate Cards
+        </button>
+      </div>
     </div>
   </div>
 
@@ -607,11 +746,30 @@ Example: Annual report excerpts, academic abstracts, blog posts, newsletter cont
     </div>
   </section>
 
+  <!-- Limit Modal -->
+  <div class="modal-overlay" id="limit-modal">
+    <div class="modal-card">
+      <button class="modal-close" id="modal-close-btn">✕</button>
+      <div class="modal-icon">🔒</div>
+      <div class="modal-title">今日免费额度已用完！</div>
+      <div class="modal-desc">您今日的 3 次免费生成已全部用完。<br/>输入您自己的 Gemini API Key，即可解锁<strong style="color:#c4a8ff">无限次生成</strong>！</div>
+
+      <input class="modal-key-input" id="modal-api-key-input"
+        type="password" placeholder="粘贴您的 Gemini API Key（AQ. 或 AIza 开头）" />
+      <div class="modal-key-hint">
+        免费获取 API Key：<a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio →</a>
+        &nbsp;·&nbsp; Key 仅保存在您本地浏览器，不上传服务器。
+      </div>
+      <button class="modal-btn modal-btn-primary" id="modal-save-key-btn">✦ 保存 Key 并立即生成</button>
+      <button class="modal-btn modal-btn-secondary" id="modal-cancel-btn">稍后再说</button>
+    </div>
+  </div>
+
   <!-- Toast -->
   <div id="toast"></div>
 
   <footer>
-    Made with ✦ by <a href="#">Cardify AI</a> — Powered by GPT-4o &nbsp;·&nbsp; <a href="#">Pricing</a> &nbsp;·&nbsp; <a href="#">Twitter</a>
+    Made with ✦ by <a href="#">Cardify AI</a> — Powered by Gemini &nbsp;·&nbsp; <a href="#">Pricing</a> &nbsp;·&nbsp; <a href="#">Twitter</a>
   </footer>
 </div>
 
@@ -719,6 +877,90 @@ const DEMO_RESPONSES = {
 let selectedTheme = 'dark';
 let swiper = null;
 
+// ══════════════════════════════════════════════════════════
+// DAILY QUOTA (localStorage)
+// ══════════════════════════════════════════════════════════
+const DAILY_LIMIT = 3;
+const QUOTA_KEY = 'cardify_quota';
+
+function getQuota() {
+  try {
+    const raw = localStorage.getItem(QUOTA_KEY);
+    if (!raw) return { date: todayStr(), count: 0 };
+    const data = JSON.parse(raw);
+    if (data.date !== todayStr()) return { date: todayStr(), count: 0 };
+    return data;
+  } catch { return { date: todayStr(), count: 0 }; }
+}
+
+function saveQuota(q) {
+  localStorage.setItem(QUOTA_KEY, JSON.stringify(q));
+}
+
+function todayStr() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function getUserApiKey() {
+  return localStorage.getItem('cardify_user_api_key') || '';
+}
+
+function saveUserApiKey(key) {
+  if (key) localStorage.setItem('cardify_user_api_key', key);
+  else localStorage.removeItem('cardify_user_api_key');
+}
+
+function hasUnlimitedAccess() {
+  return !!getUserApiKey();
+}
+
+function updateQuotaBadge() {
+  const badge = document.getElementById('quota-badge');
+  if (hasUnlimitedAccess()) {
+    badge.textContent = '🔓 无限生成（个人 Key）';
+    badge.className = 'quota-badge unlimited';
+  } else {
+    const q = getQuota();
+    const left = Math.max(0, DAILY_LIMIT - q.count);
+    badge.textContent = left > 0 ? `✦ 今日剩余 ${left} 次` : '🔒 今日额度已用完';
+    badge.className = left > 0 ? 'quota-badge' : 'quota-badge';
+    if (left === 0) badge.style.cursor = 'pointer';
+  }
+}
+
+// Init badge on load
+updateQuotaBadge();
+
+// ── Modal logic ──
+function showLimitModal() {
+  // Pre-fill saved key if any
+  const saved = getUserApiKey();
+  if (saved) document.getElementById('modal-api-key-input').value = saved;
+  document.getElementById('limit-modal').classList.add('show');
+}
+function hideLimitModal() {
+  document.getElementById('limit-modal').classList.remove('show');
+}
+document.getElementById('modal-close-btn').addEventListener('click', hideLimitModal);
+document.getElementById('modal-cancel-btn').addEventListener('click', hideLimitModal);
+document.getElementById('limit-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('limit-modal')) hideLimitModal();
+});
+
+document.getElementById('modal-save-key-btn').addEventListener('click', () => {
+  const key = document.getElementById('modal-api-key-input').value.trim();
+  if (!key || key.length < 10) {
+    showToast('⚠️ 请输入有效的 Gemini API Key', 'error');
+    return;
+  }
+  saveUserApiKey(key);
+  hideLimitModal();
+  updateQuotaBadge();
+  showToast('🔓 个人 Key 已保存，现在开始无限生成！', 'success');
+  // Auto-trigger generate
+  document.getElementById('generate-btn').click();
+});
+
 // ── Theme selector ──
 document.querySelectorAll('.theme-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -736,13 +978,29 @@ textarea.addEventListener('input', () => {
 });
 
 // ── Generate ──
-document.getElementById('generate-btn').addEventListener('click', async () => {
+async function doGenerate() {
   const text = textarea.value.trim();
+  const selectedStyle = document.getElementById('style-select').value;
+  const userApiKey = getUserApiKey();
+
   if (!text) {
     textarea.focus();
     textarea.style.borderColor = 'rgba(252,92,156,0.6)';
     setTimeout(() => textarea.style.borderColor = '', 1500);
     return;
+  }
+
+  // ── Quota check ──
+  if (!hasUnlimitedAccess()) {
+    const q = getQuota();
+    if (q.count >= DAILY_LIMIT) {
+      showLimitModal();
+      return;
+    }
+    // Increment count
+    q.count++;
+    saveQuota(q);
+    updateQuotaBadge();
   }
 
   // Show loading
@@ -753,15 +1011,17 @@ document.getElementById('generate-btn').addEventListener('click', async () => {
   let cardData = null;
 
   try {
-    // ── Real API call to /api/generate ──
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 28000); // 28s timeout
+    const timeout = setTimeout(() => controller.abort(), 30000);
+
+    const payload = { text, theme: selectedTheme, style: selectedStyle };
+    if (userApiKey) payload.userApiKey = userApiKey;
 
     const resp = await fetch('/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       signal: controller.signal,
-      body: JSON.stringify({ text, theme: selectedTheme })
+      body: JSON.stringify(payload)
     });
     clearTimeout(timeout);
 
@@ -774,32 +1034,25 @@ document.getElementById('generate-btn').addEventListener('click', async () => {
 
   } catch (err) {
     console.warn('API call failed, falling back to demo data:', err.message);
-
-    // ── Fallback: demo data (for local file:// or missing API key) ──
     const isChinese = /[\u4e00-\u9fa5]/.test(text);
     cardData = isChinese
       ? JSON.parse(JSON.stringify(DEMO_RESPONSES.zh))
       : JSON.parse(JSON.stringify(DEMO_RESPONSES.en));
-
-    // Show non-blocking warning toast
     showToast(
-      err.name === 'AbortError'
-        ? '⏱ Request timed out — showing demo cards'
-        : `⚠️ API unavailable — showing demo cards`,
+      err.name === 'AbortError' ? '⏱ 请求超时 — 展示演示卡片' : `⚠️ API 暂不可用 — 展示演示卡片`,
       'error', 5000
     );
   }
 
-  // Override theme with user selection
   cardData.theme_color = selectedTheme;
-
-  // Render
   renderCards(cardData);
 
   document.getElementById('loading-state').classList.remove('visible');
   document.getElementById('cards-section').classList.add('visible');
   document.getElementById('generate-btn').disabled = false;
-});
+}
+
+document.getElementById('generate-btn').addEventListener('click', doGenerate);
 
 // ── Reset ──
 document.getElementById('reset-btn').addEventListener('click', () => {
