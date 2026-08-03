@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cardify AI — Turn Any Content Into Beautiful Knowledge Cards</title>
+  <meta name="description" content="Paste any PDF, article or long text. Get stunning shareable knowledge cards in 10 seconds. Powered by AI." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --surface2: #1c1c28;
+      --border: rgba(255,255,255,0.07);
+      --text: #f0f0f8;
+      --text-muted: #7a7a9a;
+      --accent: #7c5cfc;
+      --accent2: #fc5c9c;
+      --accent3: #5cf8fc;
+      --radius: 20px;
+      --card-w: 380px;
+      --card-h: 560px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Noise overlay ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── Gradient orbs ── */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.18;
+      pointer-events: none;
+      z-index: 0;
+      animation: orbFloat 8s ease-in-out infinite alternate;
+    }
+    .orb1 { width: 600px; height: 600px; background: var(--accent); top: -200px; right: -200px; }
+    .orb2 { width: 500px; height: 500px; background: var(--accent2); bottom: -200px; left: -200px; animation-delay: -4s; }
+    .orb3 { width: 300px; height: 300px; background: var(--accent3); top: 50%; left: 50%; animation-delay: -2s; }
+    @keyframes orbFloat { from { transform: translate(0,0) scale(1); } to { transform: translate(30px, -30px) scale(1.05); } }
+
+    /* ── Layout ── */
+    .container { max-width: 900px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+    /* ── Header ── */
+    header { padding: 28px 0 0; }
+    .logo {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 22px; font-weight: 700; letter-spacing: -0.5px;
+    }
+    .logo-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: grid; place-items: center; font-size: 18px;
+    }
+    .badge {
+      font-size: 11px; font-weight: 600; padding: 3px 8px;
+      background: linear-gradient(135deg, rgba(124,92,252,0.3), rgba(252,92,156,0.3));
+      border: 1px solid rgba(124,92,252,0.4);
+      border-radius: 100px; color: #c4a8ff; letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    /* ── Hero ── */
+    .hero { text-align: center; padding: 60px 0 48px; }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 12px; font-weight: 600; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--accent3);
+      margin-bottom: 20px;
+    }
+    .hero-eyebrow::before, .hero-eyebrow::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(to right, transparent, var(--accent3));
+      width: 40px;
+    }
+    .hero-eyebrow::after { background: linear-gradient(to left, transparent, var(--accent3)); }
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(36px, 6vw, 58px);
+      font-weight: 800; line-height: 1.1;
+      letter-spacing: -2px;
+      background: linear-gradient(135deg, #fff 0%, #b8a8ff 50%, #fc5c9c 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 18px;
+    }
+    .hero p {
+      font-size: 17px; color: var(--text-muted); max-width: 520px;
+      margin: 0 auto 36px; line-height: 1.7;
+    }
+
+    /* ── Stats row ── */
+    .stats { display: flex; justify-content: center; gap: 40px; margin-bottom: 48px; }
+    .stat { text-align: center; }
+    .stat-num { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 700; color: #fff; }
+    .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── Input Card ── */
+    .input-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 28px;
+      margin-bottom: 40px;
+      backdrop-filter: blur(20px);
+    }
+    .input-label {
+      font-size: 13px; font-weight: 600; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px;
+      display: block;
+    }
+    .textarea-wrap { position: relative; }
+    textarea {
+      width: 100%; min-height: 160px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 20px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 14.5px; line-height: 1.7;
+      resize: vertical;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    textarea::placeholder { color: var(--text-muted); }
+    textarea:focus {
+      border-color: rgba(124,92,252,0.5);
+      box-shadow: 0 0 0 3px rgba(124,92,252,0.12);
+    }
+    .char-count {
+      position: absolute; bottom: 12px; right: 14px;
+      font-size: 11px; color: var(--text-muted);
+    }
+
+    .input-controls {
+      display: flex; align-items: center;
+      justify-content: space-between; margin-top: 16px; gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .theme-selector { display: flex; gap: 8px; }
+    .theme-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 14px; border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      font-size: 12px; font-weight: 600;
+      color: var(--text-muted); cursor: pointer;
+      transition: all 0.2s;
+    }
+    .theme-btn:hover, .theme-btn.active {
+      border-color: var(--accent);
+      color: var(--text);
+      background: rgba(124,92,252,0.15);
+    }
+    .theme-btn .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot-dark { background: #555; }
+    .dot-light { background: #e0e0e0; }
+    .dot-cyber { background: var(--accent3); }
+    .dot-glass { background: linear-gradient(135deg, rgba(255,255,255,0.5), rgba(124,92,252,0.5)); }
+
+    .generate-btn {
+      display: flex; align-items: center; gap-8px; gap: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; font-size: 15px; font-weight: 700;
+      padding: 13px 28px; border-radius: 100px; border: none;
+      cursor: pointer; position: relative; overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 24px rgba(124,92,252,0.4);
+    }
+    .generate-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(124,92,252,0.55); }
+    .generate-btn:active { transform: translateY(0); }
+    .generate-btn::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+      pointer-events: none;
+    }
+    .btn-icon { font-size: 18px; }
+
+    /* ── Loading ── */
+    .loading-state { display: none; text-align: center; padding: 60px 0; }
+    .loading-state.visible { display: block; }
+    .spinner {
+      width: 48px; height: 48px; border-radius: 50%;
+      border: 3px solid var(--surface2);
+      border-top-color: var(--accent);
+      margin: 0 auto 20px;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { color: var(--text-muted); font-size: 14px; }
+    .loading-steps { margin-top: 16px; }
+    .loading-step {
+      font-size: 12px; color: var(--text-muted);
+      padding: 4px 0;
+      opacity: 0;
+      animation: fadeUp 0.5s forwards;
+    }
+    .loading-step:nth-child(1) { animation-delay: 0.2s; }
+    .loading-step:nth-child(2) { animation-delay: 1.2s; }
+    .loading-step:nth-child(3) { animation-delay: 2.2s; }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } from { opacity: 0; transform: translateY(6px); } }
+
+    /* ── Cards Section ── */
+    #cards-section { display: none; }
+    #cards-section.visible { display: block; }
+
+    .cards-header {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-bottom: 28px;
+    }
+    .cards-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px; font-weight: 700;
+    }
+    .cards-meta { font-size: 13px; color: var(--text-muted); }
+    .action-btns { display: flex; gap: 10px; }
+    .action-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 9px 16px; border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      font-size: 13px; font-weight: 600;
+      color: var(--text-muted); cursor: pointer;
+      transition: all 0.2s;
+    }
+    .action-btn:hover { border-color: var(--accent); color: var(--text); background: rgba(124,92,252,0.1); }
+    .action-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .action-btn.primary:hover { background: #8f72ff; box-shadow: 0 4px 16px rgba(124,92,252,0.4); }
+    .action-btn.success { background: #16a34a; border-color: #16a34a; color: #fff; }
+
+    /* ── Export bar ── */
+    .export-bar {
+      display: flex; gap: 12px; justify-content: center;
+      margin-top: 24px; flex-wrap: wrap;
+    }
+    .export-btn-large {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 28px; border-radius: 100px; border: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      transition: all 0.22s; position: relative; overflow: hidden;
+    }
+    .export-btn-large::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.14), transparent);
+      pointer-events: none;
+    }
+    .export-current {
+      background: linear-gradient(135deg, #1e293b, #334155);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #f8fafc;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    .export-current:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.5); }
+    .export-all {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      box-shadow: 0 4px 24px rgba(124,92,252,0.45);
+    }
+    .export-all:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(124,92,252,0.6); }
+    .export-btn-large:disabled { opacity: 0.55; cursor: not-allowed; transform: none !important; }
+    .export-btn-large .btn-spinner {
+      width: 16px; height: 16px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+    .export-btn-large.loading .btn-spinner { display: block; }
+    .export-btn-large.loading .btn-label { opacity: 0.7; }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: #1e293b; border: 1px solid rgba(255,255,255,0.1);
+      color: #f8fafc; font-size: 13px; font-weight: 600;
+      padding: 12px 22px; border-radius: 100px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.28s, transform 0.28s;
+      z-index: 9999; white-space: nowrap;
+      display: flex; align-items: center; gap: 8px;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    #toast.toast-success { border-color: rgba(34,197,94,0.4); background: #052e16; }
+    #toast.toast-error { border-color: rgba(239,68,68,0.4); background: #2d0a0a; }
+
+    /* ── Swiper ── */
+    .swiper-outer {
+      padding-bottom: 50px;
+    }
+    .swiper {
+      overflow: visible;
+      padding: 20px 0 10px;
+    }
+    .swiper-slide {
+      width: var(--card-w) !important;
+      height: var(--card-h) !important;
+      transition: transform 0.4s, opacity 0.4s;
+    }
+    .swiper-slide:not(.swiper-slide-active) { opacity: 0.55; transform: scale(0.93); }
+
+    /* ── Swiper nav ── */
+    .swiper-pagination-bullet { background: var(--text-muted); opacity: 0.5; }
+    .swiper-pagination-bullet-active { background: var(--accent); opacity: 1; }
+    .swiper-button-prev, .swiper-button-next {
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 50%; width: 44px; height: 44px;
+      --swiper-navigation-size: 18px;
+      transition: all 0.2s;
+    }
+    .swiper-button-prev:hover, .swiper-button-next:hover {
+      background: var(--accent); border-color: var(--accent);
+    }
+
+    /* ══════════════════════════════
+       CARD STYLES
+    ══════════════════════════════ */
+    .kcard {
+      width: 100%; height: 100%;
+      border-radius: 28px;
+      padding: 32px 28px;
+      display: flex; flex-direction: column;
+      position: relative; overflow: hidden;
+      cursor: grab;
+      user-select: none;
+    }
+    .kcard::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .kcard-num {
+      position: absolute; top: 28px; right: 28px;
+      font-size: 12px; font-weight: 700; letter-spacing: 1px;
+      opacity: 0.4;
+    }
+    .kcard-type-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 4px 10px; border-radius: 100px;
+      margin-bottom: 20px; width: fit-content;
+    }
+    .kcard h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 26px; font-weight: 800;
+      line-height: 1.2; letter-spacing: -0.5px;
+      margin-bottom: 10px;
+    }
+    .kcard .subtitle {
+      font-size: 13.5px; opacity: 0.65; line-height: 1.6; margin-bottom: 18px;
+    }
+    .gold-quote-wrap {
+      margin-top: auto;
+      border-left: 3px solid currentColor;
+      padding: 12px 16px;
+      border-radius: 0 12px 12px 0;
+      background: rgba(255,255,255,0.05);
+    }
+    .gold-quote {
+      font-size: 15px; font-weight: 600;
+      font-style: italic; line-height: 1.5;
+      opacity: 0.9;
+    }
+    .key-takeaways { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
+    .takeaway {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 13.5px; line-height: 1.5;
+    }
+    .takeaway-dot { width: 6px; height: 6px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+
+    /* Metrics card */
+    .metrics-grid { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; flex: 1; }
+    .metric-item {
+      padding: 14px 16px; border-radius: 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+    .metric-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+    .metric-label { font-size: 11px; font-weight: 600; opacity: 0.55; text-transform: uppercase; letter-spacing: 0.8px; }
+    .metric-value { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 800; }
+    .metric-desc { font-size: 12px; opacity: 0.5; line-height: 1.4; }
+
+    /* Action card */
+    .steps-list { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; flex: 1; }
+    .step-item { display: flex; gap: 14px; align-items: flex-start; }
+    .step-num {
+      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+      display: grid; place-items: center;
+      font-size: 12px; font-weight: 800;
+    }
+    .step-text { font-size: 13.5px; line-height: 1.55; padding-top: 4px; }
+
+    /* Watermark */
+    .kcard-watermark {
+      position: absolute; bottom: 16px; right: 20px;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.5px; opacity: 0.25;
+    }
+
+    /* ══ THEMES ══ */
+
+    /* dark */
+    .theme-dark {
+      background: linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #e8e8f8;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+    .theme-dark .kcard-type-badge { background: rgba(124,92,252,0.2); color: #c4a8ff; border: 1px solid rgba(124,92,252,0.3); }
+    .theme-dark .takeaway-dot { background: #7c5cfc; }
+    .theme-dark .step-num { background: rgba(124,92,252,0.25); color: #c4a8ff; }
+    .theme-dark .metric-value { color: #c4a8ff; }
+    .theme-dark .gold-quote-wrap { border-color: #7c5cfc; }
+
+    /* light */
+    .theme-light {
+      background: linear-gradient(145deg, #ffffff 0%, #f5f3ff 100%);
+      border: 1px solid rgba(0,0,0,0.06);
+      color: #1a1a2e;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.12);
+    }
+    .theme-light .kcard-num { opacity: 0.25; }
+    .theme-light .subtitle { opacity: 0.55; }
+    .theme-light .kcard-type-badge { background: rgba(124,92,252,0.1); color: #5b37c7; border: 1px solid rgba(124,92,252,0.2); }
+    .theme-light .takeaway-dot { background: var(--accent); }
+    .theme-light .metric-item { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.07); }
+    .theme-light .step-num { background: rgba(124,92,252,0.12); color: #5b37c7; }
+    .theme-light .metric-value { color: var(--accent); }
+    .theme-light .gold-quote-wrap { background: rgba(124,92,252,0.06); border-color: var(--accent); }
+    .theme-light .kcard-watermark { color: #1a1a2e; }
+
+    /* cyber */
+    .theme-cyber {
+      background: linear-gradient(145deg, #001a20 0%, #002a35 50%, #001620 100%);
+      border: 1px solid rgba(92,248,252,0.2);
+      color: #e0feff;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(92,248,252,0.1), 0 0 60px rgba(92,248,252,0.06) inset;
+    }
+    .theme-cyber .kcard-type-badge { background: rgba(92,248,252,0.1); color: var(--accent3); border: 1px solid rgba(92,248,252,0.3); }
+    .theme-cyber h2 { color: var(--accent3); }
+    .theme-cyber .takeaway-dot { background: var(--accent3); box-shadow: 0 0 8px var(--accent3); }
+    .theme-cyber .metric-value { color: var(--accent3); text-shadow: 0 0 20px rgba(92,248,252,0.5); }
+    .theme-cyber .step-num { background: rgba(92,248,252,0.1); color: var(--accent3); border: 1px solid rgba(92,248,252,0.3); }
+    .theme-cyber .gold-quote-wrap { border-color: var(--accent3); background: rgba(92,248,252,0.05); }
+
+    /* glass */
+    .theme-glass {
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(40px) saturate(180%);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #fff;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+    }
+    .theme-glass .kcard-type-badge { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.2); }
+    .theme-glass .metric-item { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
+    .theme-glass .takeaway-dot { background: rgba(255,255,255,0.7); }
+    .theme-glass .step-num { background: rgba(255,255,255,0.12); color: #fff; }
+    .theme-glass .metric-value { color: #fff; }
+    .theme-glass .gold-quote-wrap { border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.05); }
+
+    /* ── Footer ── */
+    footer { text-align: center; padding: 48px 0 36px; color: var(--text-muted); font-size: 13px; }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      :root { --card-w: 320px !important; --card-h: 520px !important; }
+      h1 { letter-spacing: -1.5px; }
+      .stats { gap: 24px; }
+      .input-controls { flex-direction: column; align-items: stretch; }
+      .generate-btn { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<div class="container">
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon">✦</div>
+      Cardify AI
+      <span class="badge">Beta</span>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-eyebrow">✦ AI-powered knowledge cards</div>
+    <h1>Turn Any Content Into<br/>Beautiful Cards</h1>
+    <p>Paste a PDF, article, or long text. Get stunning, shareable knowledge cards in 10 seconds — ready to post anywhere.</p>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num">10s</div>
+        <div class="stat-label">Generation time</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">4</div>
+        <div class="stat-label">Visual themes</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">1-click</div>
+        <div class="stat-label">Export & share</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Input -->
+  <div class="input-card">
+    <label class="input-label" for="content-input">✦ Paste your content</label>
+    <div class="textarea-wrap">
+      <textarea id="content-input" placeholder="Paste any article, research paper, report, or long-form text here...
+
+Example: Annual report excerpts, academic abstracts, blog posts, newsletter content, meeting notes..."></textarea>
+      <span class="char-count" id="char-count">0 chars</span>
+    </div>
+
+    <div class="input-controls">
+      <div class="theme-selector">
+        <button class="theme-btn active" data-theme="dark"><span class="dot dot-dark"></span>Dark</button>
+        <button class="theme-btn" data-theme="light"><span class="dot dot-light"></span>Light</button>
+        <button class="theme-btn" data-theme="cyber"><span class="dot dot-cyber"></span>Cyber</button>
+        <button class="theme-btn" data-theme="glass"><span class="dot dot-glass"></span>Glass</button>
+      </div>
+      <button class="generate-btn" id="generate-btn">
+        <span class="btn-icon">✦</span>
+        Generate Cards
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-state" id="loading-state">
+    <div class="spinner"></div>
+    <div class="loading-text">Crafting your knowledge cards...</div>
+    <div class="loading-steps">
+      <div class="loading-step">📖 Reading and parsing content...</div>
+      <div class="loading-step">🧠 Extracting key insights with AI...</div>
+      <div class="loading-step">✨ Generating beautiful card layouts...</div>
+    </div>
+  </div>
+
+  <!-- Cards Section -->
+  <section id="cards-section">
+    <div class="cards-header">
+      <div>
+        <div class="cards-title">Your Knowledge Cards</div>
+        <div class="cards-meta" id="cards-meta"></div>
+      </div>
+      <div class="action-btns">
+        <button class="action-btn" id="reset-btn">↩ New</button>
+      </div>
+    </div>
+
+    <div class="swiper-outer">
+      <div class="swiper" id="card-swiper">
+        <div class="swiper-wrapper" id="swiper-wrapper"></div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+      </div>
+    </div>
+
+    <!-- Export Bar -->
+    <div class="export-bar" id="export-bar">
+      <button class="export-btn-large export-current" id="export-current-btn">
+        <div class="btn-spinner"></div>
+        <span class="btn-label">📷 导出当前卡片</span>
+      </button>
+      <button class="export-btn-large export-all" id="export-all-btn">
+        <div class="btn-spinner"></div>
+        <span class="btn-label">✦ 导出全部卡片包 (PNG)</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <footer>
+    Made with ✦ by <a href="#">Cardify AI</a> — Powered by GPT-4o &nbsp;·&nbsp; <a href="#">Pricing</a> &nbsp;·&nbsp; <a href="#">Twitter</a>
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+// ══════════════════════════════════════════════════════════
+// DEMO DATA — replace AI API call with real fetch() later
+// ══════════════════════════════════════════════════════════
+const DEMO_RESPONSES = {
+  en: {
+    theme_color: "dark",
+    total_cards: 4,
+    cards: [
+      {
+        card_id: 1,
+        type: "header",
+        title: "The Attention Economy Is Broken",
+        subtitle: "Why deep focus is now the scarcest competitive advantage",
+        gold_quote: "Whoever controls your attention controls your future.",
+        key_takeaways: [
+          "The average professional checks email 77 times per day",
+          "Deep work capacity is declining while its economic value is skyrocketing",
+          "Top performers are ruthlessly protecting 4+ hours of uninterrupted focus daily"
+        ]
+      },
+      {
+        card_id: 2,
+        type: "metrics",
+        title: "The Focus Crisis in Numbers",
+        metrics: [
+          { label: "Avg. focus block lost per day", value: "2.1 hrs", desc: "Due to notifications & meetings" },
+          { label: "Productivity loss from task-switching", value: "40%", desc: "Per study by APA, 2023" },
+          { label: "Deep workers salary premium", value: "+67%", desc: "vs distracted counterparts" },
+          { label: "Time to regain full focus", value: "23 min", desc: "After a single interruption" }
+        ]
+      },
+      {
+        card_id: 3,
+        type: "action",
+        title: "Reclaim Your Focus: 3 Power Moves",
+        steps: [
+          "Block 9–12AM as 'no-meeting deep work' every single day — treat it like a surgery",
+          "Delete Slack & email from your phone immediately. Check 3x daily on desktop only",
+          "⚠️ Avoid the trap: 'productivity tools' are the #1 destroyer of deep work habits"
+        ]
+      },
+      {
+        card_id: 4,
+        type: "header",
+        title: "The Rarest Skill of the 21st Century",
+        subtitle: "Deep work is not a lifestyle choice — it's a survival strategy",
+        gold_quote: "Distraction is not the enemy of focus. Comfort is.",
+        key_takeaways: [
+          "AI will automate shallow work — only deep thinkers thrive",
+          "The 1% who protect their attention will produce 10× the output",
+          "Build your deep work muscle now or get left behind in 3 years"
+        ]
+      }
+    ]
+  },
+  zh: {
+    theme_color: "cyber",
+    total_cards: 3,
+    cards: [
+      {
+        card_id: 1,
+        type: "header",
+        title: "注意力经济已经崩塌",
+        subtitle: "深度专注正在成为 21 世纪最稀缺的竞争力",
+        gold_quote: "谁掌控你的注意力，谁就掌控你的未来。",
+        key_takeaways: [
+          "普通职场人每天查看邮件超过 77 次，深度工作时间不足 1.5 小时",
+          "深度工作能力正在下滑，而其经济价值正以每年 30% 的速度飙升",
+          "顶尖人才每天保护至少 4 小时不被打扰的专注时间"
+        ]
+      },
+      {
+        card_id: 2,
+        type: "metrics",
+        title: "专注危机的核心数据",
+        metrics: [
+          { label: "每日平均损失专注时长", value: "2.1 小时", desc: "因通知与无效会议消耗" },
+          { label: "多任务切换导致的效率损失", value: "40%", desc: "来源：APA 2023 年研究" },
+          { label: "深度工作者的薪资溢价", value: "+67%", desc: "对比分心型同僚" },
+          { label: "单次打扰后恢复专注的时间", value: "23 分钟", desc: "平均所需时间" }
+        ]
+      },
+      {
+        card_id: 3,
+        type: "action",
+        title: "夺回专注力的 3 个核武器",
+        steps: [
+          "每天将 9:00–12:00 设为「深度工作」不可侵犯时段，像对待外科手术一样对待它",
+          "立即从手机卸载钉钉/微信工作消息，每日定点查看 3 次即可",
+          "⚠️ 最大陷阱：下载一堆「效率工具」本身就是深度工作的头号杀手"
+        ]
+      }
+    ]
+  }
+};
+
+// ══════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════
+let selectedTheme = 'dark';
+let swiper = null;
+
+// ── Theme selector ──
+document.querySelectorAll('.theme-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedTheme = btn.dataset.theme;
+  });
+});
+
+// ── Char count ──
+const textarea = document.getElementById('content-input');
+const charCount = document.getElementById('char-count');
+textarea.addEventListener('input', () => {
+  charCount.textContent = textarea.value.length.toLocaleString() + ' chars';
+});
+
+// ── Generate ──
+document.getElementById('generate-btn').addEventListener('click', async () => {
+  const text = textarea.value.trim();
+  if (!text) {
+    textarea.focus();
+    textarea.style.borderColor = 'rgba(252,92,156,0.6)';
+    setTimeout(() => textarea.style.borderColor = '', 1500);
+    return;
+  }
+
+  // Show loading
+  document.getElementById('cards-section').classList.remove('visible');
+  document.getElementById('loading-state').classList.add('visible');
+  document.getElementById('generate-btn').disabled = true;
+
+  let cardData = null;
+
+  try {
+    // ── Real API call to /api/generate ──
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 28000); // 28s timeout
+
+    const resp = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
+      body: JSON.stringify({ text, theme: selectedTheme })
+    });
+    clearTimeout(timeout);
+
+    if (!resp.ok) {
+      const errBody = await resp.json().catch(() => ({}));
+      throw new Error(errBody.error || `HTTP ${resp.status}`);
+    }
+
+    cardData = await resp.json();
+
+  } catch (err) {
+    console.warn('API call failed, falling back to demo data:', err.message);
+
+    // ── Fallback: demo data (for local file:// or missing API key) ──
+    const isChinese = /[\u4e00-\u9fa5]/.test(text);
+    cardData = isChinese
+      ? JSON.parse(JSON.stringify(DEMO_RESPONSES.zh))
+      : JSON.parse(JSON.stringify(DEMO_RESPONSES.en));
+
+    // Show non-blocking warning toast
+    showToast(
+      err.name === 'AbortError'
+        ? '⏱ Request timed out — showing demo cards'
+        : `⚠️ API unavailable — showing demo cards`,
+      'error', 5000
+    );
+  }
+
+  // Override theme with user selection
+  cardData.theme_color = selectedTheme;
+
+  // Render
+  renderCards(cardData);
+
+  document.getElementById('loading-state').classList.remove('visible');
+  document.getElementById('cards-section').classList.add('visible');
+  document.getElementById('generate-btn').disabled = false;
+});
+
+// ── Reset ──
+document.getElementById('reset-btn').addEventListener('click', () => {
+  document.getElementById('cards-section').classList.remove('visible');
+  textarea.value = '';
+  charCount.textContent = '0 chars';
+});
+
+// ══════════════════════════════════════════════════════════
+// EXPORT ENGINE (html2canvas DPR=2)
+// ══════════════════════════════════════════════════════════
+
+function showToast(msg, type = 'info', duration = 3000) {
+  const t = document.getElementById('toast');
+  t.textContent = '';
+  t.className = '';
+  t.textContent = msg;
+  if (type === 'success') t.classList.add('toast-success');
+  if (type === 'error') t.classList.add('toast-error');
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), duration);
+}
+
+async function captureCard(cardEl, filename) {
+  // Lock dimensions so html2canvas captures exactly the card size
+  const W = 380, H = 560;
+  const clone = cardEl.cloneNode(true);
+  clone.style.cssText = `
+    position: fixed; left: -9999px; top: -9999px;
+    width: ${W}px; height: ${H}px;
+    border-radius: 28px; overflow: hidden;
+    font-family: 'Inter', sans-serif;
+  `;
+  // For glass theme: give clone a solid background so backdrop-filter renders
+  const isGlass = clone.classList.contains('theme-glass');
+  if (isGlass) {
+    clone.style.background = 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)';
+    clone.style.backdropFilter = 'none';
+  }
+  document.body.appendChild(clone);
+
+  try {
+    const canvas = await html2canvas(clone, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: null,
+      logging: false,
+      width: W,
+      height: H,
+    });
+    const url = canvas.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    return true;
+  } finally {
+    document.body.removeChild(clone);
+  }
+}
+
+function setExportLoading(btn, loading) {
+  btn.disabled = loading;
+  btn.classList.toggle('loading', loading);
+}
+
+// ── Export current card ──
+document.getElementById('export-current-btn').addEventListener('click', async () => {
+  if (!swiper) return;
+  const btn = document.getElementById('export-current-btn');
+  const activeSlide = document.querySelector('.swiper-slide-active .kcard');
+  if (!activeSlide) { showToast('⚠️ No active card found', 'error'); return; }
+
+  setExportLoading(btn, true);
+  showToast('📷 Capturing card...');
+  try {
+    const idx = swiper.activeIndex + 1;
+    await captureCard(activeSlide, `cardify-card-${idx}.png`);
+    showToast('✅ Card exported successfully!', 'success');
+  } catch(e) {
+    showToast('❌ Export failed. Try again.', 'error');
+    console.error(e);
+  } finally {
+    setExportLoading(btn, false);
+  }
+});
+
+// ── Export all cards ──
+document.getElementById('export-all-btn').addEventListener('click', async () => {
+  if (!swiper) return;
+  const btn = document.getElementById('export-all-btn');
+  const cards = document.querySelectorAll('#swiper-wrapper .kcard');
+  if (!cards.length) return;
+
+  setExportLoading(btn, true);
+  let success = 0;
+  for (let i = 0; i < cards.length; i++) {
+    showToast(`✦ Exporting card ${i+1} of ${cards.length}...`);
+    try {
+      await captureCard(cards[i], `cardify-card-${i+1}-of-${cards.length}.png`);
+      success++;
+      await new Promise(r => setTimeout(r, 400)); // stagger downloads
+    } catch(e) {
+      console.error('Card export error:', e);
+    }
+  }
+  setExportLoading(btn, false);
+  if (success === cards.length) {
+    showToast(`🎉 All ${success} cards exported!`, 'success', 4000);
+  } else {
+    showToast(`⚠️ Exported ${success}/${cards.length} cards`, 'error', 4000);
+  }
+});
+
+// ══════════════════════════════════════════════════════════
+// RENDER CARDS
+// ══════════════════════════════════════════════════════════
+function renderCards(data) {
+  const wrapper = document.getElementById('swiper-wrapper');
+  wrapper.innerHTML = '';
+
+  document.getElementById('cards-meta').textContent =
+    `${data.total_cards} cards · ${data.theme_color} theme`;
+
+  data.cards.forEach((card, idx) => {
+    const slide = document.createElement('div');
+    slide.className = 'swiper-slide';
+    slide.innerHTML = buildCard(card, idx + 1, data.total_cards, data.theme_color);
+    wrapper.appendChild(slide);
+  });
+
+  // Init or reinit swiper
+  if (swiper) { swiper.destroy(true, true); }
+  swiper = new Swiper('#card-swiper', {
+    slidesPerView: 'auto',
+    centeredSlides: true,
+    spaceBetween: 24,
+    grabCursor: true,
+    pagination: { el: '.swiper-pagination', clickable: true },
+    navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+    keyboard: { enabled: true },
+  });
+}
+
+function buildCard(card, num, total, theme) {
+  const typeLabel = { header: '⭐ Key Insights', metrics: '📊 Data & Metrics', action: '⚡ Action Plan' };
+  const themeClass = `theme-${theme}`;
+
+  let body = '';
+
+  if (card.type === 'header') {
+    const takeaways = (card.key_takeaways || []).map(t => `
+      <div class="takeaway">
+        <div class="takeaway-dot"></div>
+        <span>${t}</span>
+      </div>`).join('');
+
+    body = `
+      <div class="key-takeaways">${takeaways}</div>
+      ${card.gold_quote ? `
+      <div class="gold-quote-wrap" style="margin-top: auto;">
+        <div class="gold-quote">"${card.gold_quote}"</div>
+      </div>` : ''}
+    `;
+  } else if (card.type === 'metrics') {
+    const metrics = (card.metrics || []).map(m => `
+      <div class="metric-item">
+        <div class="metric-row">
+          <span class="metric-label">${m.label}</span>
+          <span class="metric-value">${m.value}</span>
+        </div>
+        ${m.desc ? `<div class="metric-desc">${m.desc}</div>` : ''}
+      </div>`).join('');
+    body = `<div class="metrics-grid">${metrics}</div>`;
+  } else if (card.type === 'action') {
+    const steps = (card.steps || []).map((s, i) => `
+      <div class="step-item">
+        <div class="step-num">${i + 1}</div>
+        <div class="step-text">${s}</div>
+      </div>`).join('');
+    body = `<div class="steps-list">${steps}</div>`;
+  }
+
+  return `
+    <div class="kcard ${themeClass}">
+      <div class="kcard-num">${num} / ${total}</div>
+      <div class="kcard-type-badge">${typeLabel[card.type] || card.type}</div>
+      <h2>${card.title}</h2>
+      ${card.subtitle ? `<div class="subtitle">${card.subtitle}</div>` : ''}
+      ${body}
+      <div class="kcard-watermark">✦ Cardify AI</div>
+    </div>
+  `;
+}
+</script>
+</body>
+</html>

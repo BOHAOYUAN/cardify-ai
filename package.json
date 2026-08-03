@@ -1,0 +1,16 @@
+{
+  "name": "cardify-ai",
+  "version": "1.0.0",
+  "description": "Turn any content into beautiful AI knowledge cards",
+  "private": true,
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
