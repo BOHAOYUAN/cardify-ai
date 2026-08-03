@@ -890,64 +890,64 @@ Example: Annual report excerpts, academic abstracts, blog posts, newsletter cont
     <div class="modal-card vip-modal-card">
       <button class="modal-close" id="modal-close-btn">✕</button>
       <div class="modal-icon">⚡</div>
-      <div class="modal-title">解锁 Cardify AI VIP 无限生成</div>
-      <div class="modal-desc">突破每日 3 次限制，享受全套专业级知识卡片生成与高清海报导出特权！</div>
+      <div class="modal-title" data-i18n="modal_title">解锁 Cardify AI VIP 无限生成</div>
+      <div class="modal-desc" data-i18n="modal_desc">突破每日 3 次限制，享受全套专业级知识卡片生成与高清海报导出特权！</div>
 
       <!-- Pricing Grid (Dodo Payments) -->
       <div class="pricing-grid">
         <!-- Pro Monthly -->
         <div class="plan-card">
-          <span class="plan-badge pro">⚡ 个人创作者推荐</span>
-          <div class="plan-name">Pro 月度订阅</div>
+          <span class="plan-badge pro" data-i18n="plan_pro_badge">⚡ 个人创作者推荐</span>
+          <div class="plan-name" data-i18n="plan_pro_title">Pro 月度订阅</div>
           <div class="plan-price-wrap">
             <span class="plan-price">$9.90</span>
-            <span class="plan-period">/月</span>
+            <span class="plan-period" data-i18n="plan_pro_period">/月</span>
             <span class="plan-old-price">$19.90</span>
           </div>
           <ul class="plan-features">
-            <li>✦ 无限次生成知识卡片包</li>
-            <li>✦ 支持全部 4 套视觉主题</li>
-            <li>✦ 2 倍超清 PNG 无损导出</li>
-            <li>✦ 极速 Gemini 2.0 AI 解析</li>
+            <li data-i18n="plan_pro_f1">✦ 无限次生成知识卡片包</li>
+            <li data-i18n="plan_pro_f2">✦ 支持全部 4 套视觉主题</li>
+            <li data-i18n="plan_pro_f3">✦ 2 倍超清 PNG 无损导出</li>
+            <li data-i18n="plan_pro_f4">✦ 极速 Gemini 2.0 AI 解析</li>
           </ul>
           <a href="https://checkout.dodopayments.com/buy/pdt_0NkcXfJNzWNBKy0pBUaeU?quantity=1"
-             target="_blank" class="plan-buy-btn btn-pro-sub">⚡ 订阅 Pro ($9.90/月)</a>
+             target="_blank" class="plan-buy-btn btn-pro-sub" data-i18n="plan_pro_btn">⚡ 订阅 Pro ($9.90/月)</a>
         </div>
 
         <!-- Lifetime Pass -->
         <div class="plan-card featured">
-          <span class="plan-badge lifetime">🔥 限量 50 名早鸟买断</span>
-          <div class="plan-name">Lifetime 终身卡</div>
+          <span class="plan-badge lifetime" data-i18n="plan_lt_badge">🔥 限量 50 名早鸟买断</span>
+          <div class="plan-name" data-i18n="plan_lt_title">Lifetime 终身卡</div>
           <div class="plan-price-wrap">
             <span class="plan-price">$39.90</span>
-            <span class="plan-period">一次性买断</span>
+            <span class="plan-period" data-i18n="plan_lt_period">一次性买断</span>
             <span class="plan-old-price">$99.90</span>
           </div>
           <ul class="plan-features">
-            <li>✦ <strong>终身无限次</strong> 生成 (永久有效)</li>
-            <li>✦ 解锁未来所有新功能与模版</li>
-            <li>✦ 商业化使用授权 (Commercial)</li>
-            <li>✦ 专属 VIP 优先通道与支持</li>
+            <li data-i18n="plan_lt_f1">✦ <strong>终身无限次</strong> 生成 (永久有效)</li>
+            <li data-i18n="plan_lt_f2">✦ 解锁未来所有新功能与模版</li>
+            <li data-i18n="plan_lt_f3">✦ 商业化使用授权 (Commercial)</li>
+            <li data-i18n="plan_lt_f4">✦ 专属 VIP 优先通道与支持</li>
           </ul>
           <a href="https://checkout.dodopayments.com/buy/pdt_0NkcYFQhPCGPVD546zbjW?quantity=1"
-             target="_blank" class="plan-buy-btn btn-lifetime-buy">💎 抢购终身卡 ($39.90)</a>
+             target="_blank" class="plan-buy-btn btn-lifetime-buy" data-i18n="plan_lt_btn">💎 抢购终身卡 ($39.90)</a>
         </div>
       </div>
 
       <!-- License Activation Section -->
       <div class="activation-box">
-        <div class="activation-title">🔑 购买后已拿到 License Key？在此激活</div>
+        <div class="activation-title" data-i18n="activation_title">🔑 购买后已拿到 License Key？在此激活</div>
         <div class="activation-input-row">
-          <input class="modal-key-input" id="license-key-input" type="text" placeholder="粘贴您的 License Key (例如: CARDIFY-VIP-XXXX)" />
-          <button class="activation-btn" id="activate-license-btn">激活 Key</button>
+          <input class="modal-key-input" id="license-key-input" type="text" data-i18n-ph="activation_ph" placeholder="粘贴您的 License Key (例如: CARDIFY-VIP-XXXX)" />
+          <button class="activation-btn" id="activate-license-btn" data-i18n="activation_btn">激活 Key</button>
         </div>
 
         <!-- Personal API Key Toggle -->
         <details style="margin-top:10px;">
-          <summary style="font-size:12px;color:var(--text-muted);cursor:pointer;">或使用我自己的 Gemini API Key (免费通道)</summary>
+          <summary style="font-size:12px;color:var(--text-muted);cursor:pointer;" data-i18n="personal_key_summary">或使用我自己的 Gemini API Key (免费通道)</summary>
           <div style="margin-top:10px;display:flex;gap:10px;">
-            <input class="modal-key-input" id="modal-api-key-input" type="password" placeholder="粘贴您的 Gemini API Key" style="margin-bottom:0;" />
-            <button class="activation-btn" id="modal-save-key-btn">保存 Key</button>
+            <input class="modal-key-input" id="modal-api-key-input" type="password" data-i18n-ph="personal_key_ph" placeholder="粘贴您的 Gemini API Key" style="margin-bottom:0;" />
+            <button class="activation-btn" id="modal-save-key-btn" data-i18n="save_key_btn">保存 Key</button>
           </div>
         </details>
       </div>
@@ -1070,6 +1070,440 @@ let swiper = null;
 // ══════════════════════════════════════════════════════════
 // i18n DICTIONARY & LOGIC
 // ══════════════════════════════════════════════════════════
+const I18N = {
+  en: {
+    nav_pro: "⚡ Upgrade Pro ($9.9/mo)",
+    nav_lifetime: "💎 Lifetime Pass ($39.9)",
+    hero_eyebrow: "✦ AI-POWERED KNOWLEDGE CARDS",
+    hero_title: "Turn Any Content Into<br/>Beautiful Cards",
+    hero_desc: "Paste a PDF, article, or long text. Get stunning, shareable knowledge cards in 10 seconds — ready to post anywhere.",
+    stat_time: "Generation time",
+    stat_themes: "Visual themes",
+    stat_export: "Export & share",
+    input_label: "✦ Paste your content",
+    input_placeholder: "Paste any article, research paper, report, or long-form text here...\n\nExample: Annual report excerpts, academic abstracts, blog posts, newsletter content, meeting notes...",
+    style_label: "✦ Style",
+    opt_default: "✨ General Knowledge Cards (Default)",
+    opt_xiaohongshu: "📕 Viral Social Post (Quotes & Action Guide)",
+    opt_twitter: "🐦 Twitter / LinkedIn Insights (Data & Metrics)",
+    opt_outline: "📺 Video / Article Fast Outline (Key Points & Steps)",
+    btn_generate: "Generate Cards",
+    export_current: "📷 Export Current Card",
+    export_all: "✦ Export All Cards (PNG)",
+    modal_title: "Unlock Cardify AI VIP Unlimited",
+    modal_desc: "Bypass the 3 daily limits and enjoy full professional card generation & 2x HD export privileges!",
+    plan_pro_badge: "⚡ Most Popular",
+    plan_pro_title: "Pro Monthly",
+    plan_pro_period: "/month",
+    plan_pro_f1: "✦ Unlimited AI card pack generation",
+    plan_pro_f2: "✦ Access all 4 visual themes",
+    plan_pro_f3: "✦ 2x HD lossless PNG export",
+    plan_pro_f4: "✦ Ultra-fast Gemini 2.0 AI speed",
+    plan_pro_btn: "⚡ Subscribe Pro ($9.90/mo)",
+    plan_lt_badge: "🔥 Limited 50 Slots",
+    plan_lt_title: "Lifetime Pass",
+    plan_lt_period: "One-time payment",
+    plan_lt_f1: "✦ <strong>Lifetime Unlimited</strong> generation (Never expires)",
+    plan_lt_f2: "✦ Unlock all current & future features",
+    plan_lt_f3: "✦ Full commercial usage license",
+    plan_lt_f4: "✦ Priority VIP support channel",
+    plan_lt_btn: "💎 Grab Lifetime ($39.90)",
+    activation_title: "🔑 Received a License Key after purchase? Activate below",
+    activation_ph: "Paste your License Key (e.g. CARDIFY-VIP-XXXX)",
+    activation_btn: "Activate Key",
+    personal_key_summary: "Or use my own Gemini API Key (Free Channel)",
+    personal_key_ph: "Paste your Gemini API Key",
+    save_key_btn: "Save Key",
+    quota_left: "✦ {left} free generations left today",
+    quota_empty: "🔒 Daily limit reached",
+    quota_unlimited: "🔓 Unlimited (Personal Key)",
+    quota_vip: "🔓 VIP Active (Unlimited)"
+  },
+  zh: {
+    nav_pro: "⚡ 升级 Pro ($9.9/月)",
+    nav_lifetime: "💎 终身卡买断 ($39.9)",
+    hero_eyebrow: "✦ AI 驱动视觉知识卡片包",
+    hero_title: "将任意长文与 PDF<br/>秒变高颜值卡片",
+    hero_desc: "粘贴文章、论文或报告。10 秒提炼极具视觉冲击力的精美知识卡片包 — 一键直接发布社交媒体。",
+    stat_time: "生成速度",
+    stat_themes: "视觉主题",
+    stat_export: "一键无损导出",
+    input_label: "✦ 粘贴您的长文内容",
+    input_placeholder: "在此粘贴任何文章、学术论文、行业报告或长文...\n\n例如：年度报告摘要、博客文章、会议纪要、小红书干货草稿...",
+    style_label: "✦ 目标平台风格",
+    opt_default: "✨ 通用知识卡片（默认）",
+    opt_xiaohongshu: "📕 小红书爆款风格（高饱和金句 + 行动指南）",
+    opt_twitter: "🐦 Twitter / LinkedIn 商业洞察（数据 + 硬核指标）",
+    opt_outline: "📺 视频 / 长文极速大纲（核心论点 + 分步大纲）",
+    btn_generate: "生成知识卡片包",
+    export_current: "📷 导出当前卡片",
+    export_all: "✦ 导出全部卡片包 (PNG)",
+    modal_title: "解锁 Cardify AI VIP 无限生成",
+    modal_desc: "突破每日 3 次限制，享受全套专业级知识卡片生成与 2 倍超清海报导出特权！",
+    plan_pro_badge: "⚡ 个人创作者推荐",
+    plan_pro_title: "Pro 月度订阅",
+    plan_pro_period: "/月",
+    plan_pro_f1: "✦ 无限次生成知识卡片包",
+    plan_pro_f2: "✦ 支持全部 4 套视觉主题",
+    plan_pro_f3: "✦ 2 倍超清 PNG 无损导出",
+    plan_pro_f4: "✦ 极速 Gemini 2.0 AI 解析",
+    plan_pro_btn: "⚡ 订阅 Pro ($9.90/月)",
+    plan_lt_badge: "🔥 限量 50 名早鸟买断",
+    plan_lt_title: "Lifetime 终身卡",
+    plan_lt_period: "一次性买断",
+    plan_lt_f1: "✦ <strong>终身无限次</strong> 生成 (永久有效)",
+    plan_lt_f2: "✦ 解锁未来所有新功能与模版",
+    plan_lt_f3: "✦ 商业化使用授权 (Commercial)",
+    plan_lt_f4: "✦ 专属 VIP 优先通道与支持",
+    plan_lt_btn: "💎 抢购终身卡 ($39.90)",
+    activation_title: "🔑 购买后已拿到 License Key？在此激活",
+    activation_ph: "粘贴您的 License Key (例如: CARDIFY-VIP-XXXX)",
+    activation_btn: "激活 Key",
+    personal_key_summary: "或使用我自己的 Gemini API Key (免费通道)",
+    personal_key_ph: "粘贴您的 Gemini API Key",
+    save_key_btn: "保存 Key",
+    quota_left: "✦ 今日剩余 {left} 次",
+    quota_empty: "🔒 今日额度已用完",
+    quota_unlimited: "🔓 无限生成（个人 Key）",
+    quota_vip: "🔓 VIP 激活状态 (无限制)"
+  },
+  es: {
+    nav_pro: "⚡ Mejorar Pro ($9.9/mes)",
+    nav_lifetime: "💎 Pase de por vida ($39.9)",
+    hero_eyebrow: "✦ TARJETAS DE CONOCIMIENTO CON IA",
+    hero_title: "Convierte contenido en<br/>tarjetas hermosas",
+    hero_desc: "Pega cualquier PDF o artículo. Obtén tarjetas de conocimiento listas para compartir en 10 segundos.",
+    stat_time: "Tiempo de generación",
+    stat_themes: "Temas visuales",
+    stat_export: "Exportar y compartir",
+    input_label: "✦ Pega tu contenido",
+    input_placeholder: "Pega cualquier artículo, informe o texto aquí...",
+    style_label: "✦ Estilo",
+    opt_default: "✨ Tarjetas de conocimiento generales",
+    opt_xiaohongshu: "📕 Publicación viral (Frases y guía de acción)",
+    opt_twitter: "🐦 Twitter / LinkedIn Insights (Datos y métricas)",
+    opt_outline: "📺 Esquema rápido de video/artículo",
+    btn_generate: "Generar tarjetas",
+    export_current: "📷 Exportar tarjeta actual",
+    export_all: "✦ Exportar todas las tarjetas (PNG)",
+    modal_title: "Desbloquea Cardify AI VIP",
+    modal_desc: "Sin límites diarios y con exportación HD 2x ilimitada.",
+    plan_pro_badge: "⚡ Más popular",
+    plan_pro_title: "Pro Mensual",
+    plan_pro_period: "/mes",
+    plan_pro_f1: "✦ Generación ilimitada de tarjetas",
+    plan_pro_f2: "✦ Acceso a los 4 temas visuales",
+    plan_pro_f3: "✦ Exportación PNG 2x HD sin pérdidas",
+    plan_pro_f4: "✦ Procesamiento ultra rápido Gemini 2.0",
+    plan_pro_btn: "⚡ Suscribirse Pro ($9.90/mes)",
+    plan_lt_badge: "🔥 Limitado 50 plazas",
+    plan_lt_title: "Pase Vitalicio",
+    plan_lt_period: "Pago único",
+    plan_lt_f1: "✦ Generación <strong>Ilimitada de por vida</strong>",
+    plan_lt_f2: "✦ Desbloquea todas las funciones futuras",
+    plan_lt_f3: "✦ Licencia de uso comercial completa",
+    plan_lt_f4: "✦ Canal de soporte VIP prioritario",
+    plan_lt_btn: "💎 Obtener vitalicio ($39.90)",
+    activation_title: "🔑 ¿Tienes clave de licencia? Activa aquí",
+    activation_ph: "Pega tu clave de licencia (ej. CARDIFY-VIP-XXXX)",
+    activation_btn: "Activar clave",
+    personal_key_summary: "O usa tu propia clave API de Gemini (gratis)",
+    personal_key_ph: "Pega tu clave API de Gemini",
+    save_key_btn: "Guardar clave",
+    quota_left: "✦ {left} generaciones gratis hoy",
+    quota_empty: "🔒 Límite diario alcanzado",
+    quota_unlimited: "🔓 Ilimitado (Clave personal)",
+    quota_vip: "🔓 VIP Activo (Ilimitado)"
+  },
+  pt: {
+    nav_pro: "⚡ Atualizar Pro ($9.9/mês)",
+    nav_lifetime: "💎 Passaporte Vitalício ($39.9)",
+    hero_eyebrow: "✦ CARTÕES DE CONHECIMENTO COM IA",
+    hero_title: "Transforme texto em<br/>cartões incríveis",
+    hero_desc: "Cole qualquer PDF ou artigo. Obtenha cartões visuais para compartilhar em 10 segundos.",
+    stat_time: "Tempo de geração",
+    stat_themes: "Temas visuais",
+    stat_export: "Exportar e compartilhar",
+    input_label: "✦ Cole seu conteúdo",
+    input_placeholder: "Cole qualquer artigo ou texto longo aqui...",
+    style_label: "✦ Estilo",
+    opt_default: "✨ Cartões de conhecimento gerais",
+    opt_xiaohongshu: "📕 Post viral (Citações e guia prático)",
+    opt_twitter: "🐦 Twitter / LinkedIn Insights (Dados e métricas)",
+    opt_outline: "📺 Esboço rápido para vídeo/artigo",
+    btn_generate: "Gerar cartões",
+    export_current: "📷 Exportar cartão atual",
+    export_all: "✦ Exportar todos os cartões (PNG)",
+    modal_title: "Desbloqueie o Cardify AI VIP",
+    modal_desc: "Sem limites diários e exportação HD 2x ilimitada.",
+    plan_pro_badge: "⚡ Mais popular",
+    plan_pro_title: "Pro Mensal",
+    plan_pro_period: "/mês",
+    plan_pro_f1: "✦ Geração ilimitada de cartões",
+    plan_pro_f2: "✦ Acesso a todos os 4 temas visuais",
+    plan_pro_f3: "✦ Exportação PNG 2x HD sem perdas",
+    plan_pro_f4: "✦ Processamento super rápido Gemini 2.0",
+    plan_pro_btn: "⚡ Assinar Pro ($9.90/mês)",
+    plan_lt_badge: "🔥 Apenas 50 vagas",
+    plan_lt_title: "Vitalício",
+    plan_lt_period: "Pagamento único",
+    plan_lt_f1: "✦ Geração <strong>Vitalícia Ilimitada</strong>",
+    plan_lt_f2: "✦ Desbloqueie recursos atuais e futuros",
+    plan_lt_f3: "✦ Licença de uso comercial completa",
+    plan_lt_f4: "✦ Suporte VIP prioritário",
+    plan_lt_btn: "💎 Garantir Vitalício ($39.90)",
+    activation_title: "🔑 Tem uma chave de licença? Ative abaixo",
+    activation_ph: "Cole sua chave de licença (ex: CARDIFY-VIP-XXXX)",
+    activation_btn: "Ativar chave",
+    personal_key_summary: "Ou use sua própria API Key do Gemini (grátis)",
+    personal_key_ph: "Cole sua chave API do Gemini",
+    save_key_btn: "Salvar chave",
+    quota_left: "✦ {left} gerações gratuitas hoje",
+    quota_empty: "🔒 Limite diário atingido",
+    quota_unlimited: "🔓 Ilimitado (Chave pessoal)",
+    quota_vip: "🔓 VIP Ativo (Ilimitado)"
+  },
+  ru: {
+    nav_pro: "⚡ Про-подписка ($9.9/мес)",
+    nav_lifetime: "💎 Пожизненный доступ ($39.9)",
+    hero_eyebrow: "✦ ИИ-КАРТОЧКИ ЗНАНИЙ",
+    hero_title: "Превратите любой текст<br/>в красивые карточки",
+    hero_desc: "Вставьте статью или PDF. Получите стильные визуальные карточки для соцсетей за 10 секунд.",
+    stat_time: "Время генерации",
+    stat_themes: "Темы оформления",
+    stat_export: "Экспорт в 1 клик",
+    input_label: "✦ Вставьте ваш текст",
+    input_placeholder: "Вставьте текст статьи, отчета или заметки...",
+    style_label: "✦ Стиль",
+    opt_default: "✨ Базовые карточки знаний",
+    opt_xiaohongshu: "📕 Вирусный пост (Цитаты и руководство)",
+    opt_twitter: "🐦 Twitter / LinkedIn Инсайты (Данные и цифры)",
+    opt_outline: "📺 Быстрый план видео или статьи",
+    btn_generate: "Создать карточки",
+    export_current: "📷 Скачать текущую карточку",
+    export_all: "✦ Скачать все карточки (PNG)",
+    modal_title: "Разблокируйте VIP-доступ",
+    modal_desc: "Без суточных ограничений и с экспортом в 2K HD.",
+    plan_pro_badge: "⚡ Выбор авторов",
+    plan_pro_title: "Pro Месячный",
+    plan_pro_period: "/мес",
+    plan_pro_f1: "✦ Безлимитная генерация карточек",
+    plan_pro_f2: "✦ Доступ ко всем 4 темам оформления",
+    plan_pro_f3: "✦ Экспорт в 2K HD без потери качества",
+    plan_pro_f4: "✦ Высокая скорость Gemini 2.0 AI",
+    plan_pro_btn: "⚡ Подписаться Pro ($9.90/мес)",
+    plan_lt_badge: "🔥 Лимит 50 мест",
+    plan_lt_title: "Пожизненная карта",
+    plan_lt_period: "Разовый платеж",
+    plan_lt_f1: "✦ <strong>Пожизненный безлимит</strong> без подписок",
+    plan_lt_f2: "✦ Доступ ко всем будущим функциям",
+    plan_lt_f3: "✦ Полная коммерческая лицензия",
+    plan_lt_f4: "✦ Приоритетная VIP-поддержка",
+    plan_lt_btn: "💎 Купить навсегда ($39.90)",
+    activation_title: "🔑 Есть ключ лицензии? Активируйте здесь",
+    activation_ph: "Вставьте ваш ключ (например: CARDIFY-VIP-XXXX)",
+    activation_btn: "Активировать",
+    personal_key_summary: "Или используйте свой API ключ Gemini (бесплатно)",
+    personal_key_ph: "Вставьте ваш API ключ Gemini",
+    save_key_btn: "Сохранить ключ",
+    quota_left: "✦ Осталось {left} бесплатных генераций",
+    quota_empty: "🔒 Дневной лимит исчерпан",
+    quota_unlimited: "🔓 Безлимит (Свой ключ)",
+    quota_vip: "🔓 VIP Статус (Безлимит)"
+  },
+  ja: {
+    nav_pro: "⚡ Proプラン ($9.9/月)",
+    nav_lifetime: "💎 買い切り無制限 ($39.9)",
+    hero_eyebrow: "✦ AI視覚ナレッジカード生成",
+    hero_title: "あらゆる文章を<br/>美しいカードに変換",
+    hero_desc: "PDFや記事を貼り付けるだけ。10秒でSNSシェアに最適なナレッジカードパックを自動生成。",
+    stat_time: "生成速度",
+    stat_themes: "デザインテーマ",
+    stat_export: "ワンクリック高画質出力",
+    input_label: "✦ テキストを入力",
+    input_placeholder: "記事、論文、レポート、メモなどをここに貼り付けてください...",
+    style_label: "✦ 出力スタイル",
+    opt_default: "✨ 標準ナレッジカード（デフォルト）",
+    opt_xiaohongshu: "📕 バイラルSNS風（名言＋実践ガイド）",
+    opt_twitter: "🐦 Twitter / LinkedIn（データ＆数値指標）",
+    opt_outline: "📺 動画・記事要約アウトライン",
+    btn_generate: "カードパックを生成",
+    export_current: "📷 現在のカードを出力",
+    export_all: "✦ 全カードを出力 (PNG)",
+    modal_title: "Cardify AI VIPを解除",
+    modal_desc: "1日3回の制限を解除し、無制限生成と高画質PNG出力を解放。",
+    plan_pro_badge: "⚡ 一番人気",
+    plan_pro_title: "Pro 月額プラン",
+    plan_pro_period: "/月",
+    plan_pro_f1: "✦ ナレッジカードパック無制限生成",
+    plan_pro_f2: "✦ 全4種類のデザインテーマが使い放題",
+    plan_pro_f3: "✦ 2倍高画質PNG無損出力をサポート",
+    plan_pro_f4: "✦ 超高速 Gemini 2.0 AI 解析エンジン",
+    plan_pro_btn: "⚡ Proに登録 ($9.90/月)",
+    plan_lt_badge: "🔥 先着50名限定買い切り",
+    plan_lt_title: "ライフタイムパス",
+    plan_lt_period: "一括払い (買い切り)",
+    plan_lt_f1: "✦ <strong>永久無制限生成</strong> (追加料金なし)",
+    plan_lt_f2: "✦ 今後追加されるすべての新機能を解放",
+    plan_lt_f3: "✦ 商用利用ライセンス付き (Commercial)",
+    plan_lt_f4: "✦ VIP優先サポート＆優先サーバー",
+    plan_lt_btn: "💎 永久ライセンス購入 ($39.90)",
+    activation_title: "🔑 ライセンスキーをお持ちの方はこちらで有効化",
+    activation_ph: "ライセンスキーを入力 (例: CARDIFY-VIP-XXXX)",
+    activation_btn: "キーを有効化",
+    personal_key_summary: "自分の Gemini API Key を使用する (無料ルート)",
+    personal_key_ph: "Gemini API Key を入力",
+    save_key_btn: "キーを保存",
+    quota_left: "✦ 本日残り {left} 回無料",
+    quota_empty: "🔒 本日の上限に達しました",
+    quota_unlimited: "🔓 無制限 (My API Key)",
+    quota_vip: "🔓 VIP有効 (無制限)"
+  },
+  ko: {
+    nav_pro: "⚡ Pro 구독 ($9.9/월)",
+    nav_lifetime: "💎 평생 이용권 ($39.9)",
+    hero_eyebrow: "✦ AI 기반 지식 카드 생성기",
+    hero_title: "긴 텍스트를<br/>아름다운 카드로 변환",
+    hero_desc: "PDF나 기사를 붙여넣으세요. 10초 만에 SNS 공유용 지식 카드 팩이 완성됩니다.",
+    stat_time: "생성 시간",
+    stat_themes: "비주얼 테마",
+    stat_export: "원클릭 고화질 저장",
+    input_label: "✦ 텍스트 붙여넣기",
+    input_placeholder: "아티클, 논문, 보고서 등을 여기에 입력하세요...",
+    style_label: "✦ 스타일",
+    opt_default: "✨ 일반 지식 카드 (기본)",
+    opt_xiaohongshu: "📕 트렌디 SNS 스타일 (명언 & 가이드)",
+    opt_twitter: "🐦 Twitter / LinkedIn 비즈니스 인사이트",
+    opt_outline: "📺 비디오 / 글 핵심 요약 아웃라인",
+    btn_generate: "카드 팩 생성하기",
+    export_current: "📷 현재 카드 저장",
+    export_all: "✦ 전체 카드 저장 (PNG)",
+    modal_title: "Cardify AI VIP 잠금 해제",
+    modal_desc: "일일 제한 없이 무제한 생성 및 2K HD 출력을 이용하세요.",
+    plan_pro_badge: "⚡ 가장 인기 있는 플랜",
+    plan_pro_title: "Pro 월간 구독",
+    plan_pro_period: "/월",
+    plan_pro_f1: "✦ 지식 카드 팩 무제한 생성",
+    plan_pro_f2: "✦ 4가지 비주얼 테마 모두 이용 가능",
+    plan_pro_f3: "✦ 2배 고화질 PNG 무손실 저장",
+    plan_pro_f4: "✦ 초고속 Gemini 2.0 AI 파싱",
+    plan_pro_btn: "⚡ Pro 구독하기 ($9.90/월)",
+    plan_lt_badge: "🔥 선착순 50명 한정",
+    plan_lt_title: "평생 라이선스",
+    plan_lt_period: "일시불 (평생 소장)",
+    plan_lt_f1: "✦ <strong>평생 무제한</strong> 생성 (추가 비용 없음)",
+    plan_lt_f2: "✦ 모든 현재 및 향후 기능 업데이트 포함",
+    plan_lt_f3: "✦ 상업적 이용 라이선스 (Commercial)",
+    plan_lt_f4: "✦ VIP 전용 우선 지원 채널",
+    plan_lt_btn: "💎 평생 이용권 구매 ($39.90)",
+    activation_title: "🔑 라이선스 키가 있으신가요? 여기서 활성화하세요",
+    activation_ph: "라이선스 키를 입력하세요 (예: CARDIFY-VIP-XXXX)",
+    activation_btn: "키 활성화",
+    personal_key_summary: "또는 개인 Gemini API Key 사용 (무료 채널)",
+    personal_key_ph: "Gemini API Key 입력",
+    save_key_btn: "키 저장",
+    quota_left: "✦ 오늘 무료 {left}회 남음",
+    quota_empty: "🔒 오늘 무료 한도 소진",
+    quota_unlimited: "🔓 무제한 (개인 Key)",
+    quota_vip: "🔓 VIP 활성화됨 (무제한)"
+  },
+  fr: {
+    nav_pro: "⚡ Passer à Pro ($9.9/mois)",
+    nav_lifetime: "💎 Accès à vie ($39.9)",
+    hero_eyebrow: "✦ CARTES DE CONNAISSANCES PAR IA",
+    hero_title: "Transformez vos textes en<br/>sublimes cartes",
+    hero_desc: "Collez un PDF ou un article. Obtenez des cartes visuelles à partager en 10 secondes.",
+    stat_time: "Temps de génération",
+    stat_themes: "Thèmes visuels",
+    stat_export: "Export rapide",
+    input_label: "✦ Collez votre contenu",
+    input_placeholder: "Collez votre article, étude ou texte ici...",
+    style_label: "✦ Style",
+    opt_default: "✨ Cartes générales (Défaut)",
+    opt_xiaohongshu: "📕 Post viral (Citations et guide)",
+    opt_twitter: "🐦 Twitter / LinkedIn Insights (Chiffres-clés)",
+    opt_outline: "📺 Plan rapide de vidéo ou d'article",
+    btn_generate: "Générer les cartes",
+    export_current: "📷 Exporter la carte actuelle",
+    export_all: "✦ Exporter tout en PNG",
+    modal_title: "Débloquez Cardify AI VIP",
+    modal_desc: "Génération illimitée et export HD 2x sans limite quotidienne.",
+    plan_pro_badge: "⚡ Le plus populaire",
+    plan_pro_title: "Pro Mensuel",
+    plan_pro_period: "/mois",
+    plan_pro_f1: "✦ Génération illimitée de cartes",
+    plan_pro_f2: "✦ Accès aux 4 thèmes visuels",
+    plan_pro_f3: "✦ Export PNG 2x HD sans perte",
+    plan_pro_f4: "✦ Vitesse de traitement Gemini 2.0",
+    plan_pro_btn: "⚡ S'abonner Pro ($9.90/mois)",
+    plan_lt_badge: "🔥 Limité à 50 places",
+    plan_lt_title: "Licence à vie",
+    plan_lt_period: "Paiement unique",
+    plan_lt_f1: "✦ Génération <strong>Illimitée à vie</strong>",
+    plan_lt_f2: "✦ Accès à toutes les futures fonctionnalités",
+    plan_lt_f3: "✦ Licence d'utilisation commerciale",
+    plan_lt_f4: "✦ Canal de support VIP prioritaire",
+    plan_lt_btn: "💎 Obtenir la licence à vie ($39.90)",
+    activation_title: "🔑 Vous avez une clé de licence ? Activez-la ici",
+    activation_ph: "Collez votre clé de licence (ex: CARDIFY-VIP-XXXX)",
+    activation_btn: "Activer la clé",
+    personal_key_summary: "Ou utilisez votre propre clé API Gemini (Gratuit)",
+    personal_key_ph: "Collez votre clé API Gemini",
+    save_key_btn: "Sauvegarder",
+    quota_left: "✦ {left} générations gratuites aujourd'hui",
+    quota_empty: "🔒 Limite quotidienne atteinte",
+    quota_unlimited: "🔓 Illimité (Clé personnelle)",
+    quota_vip: "🔓 VIP Actif (Illimité)"
+  },
+  de: {
+    nav_pro: "⚡ Pro Upgrade ($9.9/Monat)",
+    nav_lifetime: "💎 Lifetime-Zugang ($39.9)",
+    hero_eyebrow: "✦ KI-WISSENSKARTEN-GENERATOR",
+    hero_title: "Verwandle Inhalte in<br/>ästhetische Karten",
+    hero_desc: "Füge einen Artikel oder PDF ein. Erhalte teilbare Wissenskarten in 10 Sekunden.",
+    stat_time: "Generierungszeit",
+    stat_themes: "Visuelle Themes",
+    stat_export: "1-Klick Export",
+    input_label: "✦ Inhalt einfügen",
+    input_placeholder: "Füge hier deinen Artikel oder Text ein...",
+    style_label: "✦ Stil",
+    opt_default: "✨ Allgemeine Wissenskarten (Standard)",
+    opt_xiaohongshu: "📕 Viraler Social Post (Zitate & Anleitung)",
+    opt_twitter: "🐦 Twitter / LinkedIn Insights (Daten & Zahlen)",
+    opt_outline: "📺 Schnelles Video/Artikel Outline",
+    btn_generate: "Karten generieren",
+    export_current: "📷 Aktuelle Karte exportieren",
+    export_all: "✦ Alle Karten exportieren (PNG)",
+    modal_title: "Cardify AI VIP freischalten",
+    modal_desc: "Keine Tageslimits und unbegrenzter 2K HD Export.",
+    plan_pro_badge: "⚡ Beliebteste Wahl",
+    plan_pro_title: "Pro Monatlich",
+    plan_pro_period: "/Monat",
+    plan_pro_f1: "✦ Unbegrenzte Wissenskarten-Generierung",
+    plan_pro_f2: "✦ Zugriff auf alle 4 visuellen Themes",
+    plan_pro_f3: "✦ 2x HD verlustfreier PNG-Export",
+    plan_pro_f4: "✦ Ultra-schnelle Gemini 2.0 KI-Geschwindigkeit",
+    plan_pro_btn: "⚡ Pro abonnieren ($9.90/Monat)",
+    plan_lt_badge: "🔥 Limitierte 50 Plätze",
+    plan_lt_title: "Lifetime-Pass",
+    plan_lt_period: "Einmalzahlung",
+    plan_lt_f1: "✦ <strong>Lebenslang unbegrenzt</strong> (Kein Abo)",
+    plan_lt_f2: "✦ Alle zukünftigen Updates enthalten",
+    plan_lt_f3: "✦ Volle kommerzielle Nutzungslizenz",
+    plan_lt_f4: "✦ Priorisierter VIP-Support-Kanal",
+    plan_lt_btn: "💎 Lifetime sichern ($39.90)",
+    activation_title: "🔑 Lizenzschlüssel vorhanden? Hier aktivieren",
+    activation_ph: "Lizenzschlüssel einfügen (z.B. CARDIFY-VIP-XXXX)",
+    activation_btn: "Schlüssel aktivieren",
+    personal_key_summary: "Oder eigenen Gemini API Key nutzen (Kostenlos)",
+    personal_key_ph: "Eigenen Gemini API Key einfügen",
+    save_key_btn: "Schlüssel speichern",
+    quota_left: "✦ {left} freie Generierungen heute",
+    quota_empty: "🔒 Tageslimit erreicht",
+    quota_unlimited: "🔓 Unbegrenzt (Eigener Key)",
+    quota_vip: "🔓 VIP Aktiviert (Unbegrenzt)"
+  }
+};
 const I18N = {
   en: {
     nav_pro: "⚡ Upgrade Pro ($9.9/mo)",
