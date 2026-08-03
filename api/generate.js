@@ -142,6 +142,18 @@ function normalizeResponse(data, themeOverride) {
   return data;
 }
 
+const LANG_MAP = {
+  en: 'English',
+  zh: 'Simplified Chinese (简体中文)',
+  es: 'Spanish (Español)',
+  pt: 'Portuguese (Português)',
+  ru: 'Russian (Русский)',
+  ja: 'Japanese (日本語)',
+  ko: 'Korean (한국어)',
+  fr: 'French (Français)',
+  de: 'German (Deutsch)',
+};
+
 // ── Main handler ──
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -157,7 +169,7 @@ export default async function handler(req, res) {
   const validationError = validateInput(req.body);
   if (validationError) return res.status(400).json({ error: validationError });
 
-  const { text, theme, style, userApiKey, licenseKey } = req.body;
+  const { text, theme, style, userApiKey, licenseKey, lang } = req.body;
 
   // Use user-provided key (from frontend localStorage) OR fall back to server env key
   const apiKey = userApiKey?.trim() || process.env.GEMINI_API_KEY;
@@ -178,6 +190,7 @@ export default async function handler(req, res) {
 
   const modelName = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
   const systemPrompt = STYLE_PROMPTS[style] || STYLE_PROMPTS.default;
+  const targetLang = LANG_MAP[lang] || 'English';
 
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
@@ -188,10 +201,10 @@ export default async function handler(req, res) {
         maxOutputTokens: 2048,
         responseMimeType: 'application/json',
       },
-      systemInstruction: systemPrompt,
+      systemInstruction: `${systemPrompt}\n\nCRITICAL LANGUAGE INSTRUCTION: You MUST output all text fields (title, subtitle, gold_quote, key_takeaways, metrics labels/desc, action steps) strictly in ${targetLang}.`,
     });
 
-    const userPrompt = `Use visual theme "${theme || 'dark'}". Generate knowledge cards for:\n\n${text.trim()}`;
+    const userPrompt = `Target Output Language: ${targetLang}\nVisual Theme: "${theme || 'dark'}"\n\nGenerate knowledge cards for the following input text:\n\n${text.trim()}`;
 
     const result = await model.generateContent(userPrompt);
     const rawText = result.response.text();
