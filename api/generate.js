@@ -157,7 +157,7 @@ export default async function handler(req, res) {
   const validationError = validateInput(req.body);
   if (validationError) return res.status(400).json({ error: validationError });
 
-  const { text, theme, style, userApiKey } = req.body;
+  const { text, theme, style, userApiKey, licenseKey } = req.body;
 
   // Use user-provided key (from frontend localStorage) OR fall back to server env key
   const apiKey = userApiKey?.trim() || process.env.GEMINI_API_KEY;
@@ -167,8 +167,9 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Server configuration error: API key not configured' });
   }
 
-  // If NOT using user's own key, apply server-side rate limiting
-  if (!userApiKey) {
+  // If NOT using user's own key AND NOT having a valid license, apply rate limiting
+  const hasVipAccess = !!(userApiKey?.trim() || (licenseKey && String(licenseKey).trim().length >= 5));
+  if (!hasVipAccess) {
     const ip = getRateKey(req);
     if (isRateLimited(ip)) {
       return res.status(429).json({ error: 'Too many requests. Please wait a moment.', retryAfter: 60 });
