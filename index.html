@@ -959,13 +959,14 @@ Example: Annual report excerpts, academic abstracts, blog posts, newsletter cont
         </div>
 
         <!-- Personal API Key Toggle -->
-        <details style="margin-top:10px;">
+        <details style="margin-top:10px;" id="personal-key-details">
           <summary style="font-size:12px;color:var(--text-muted);cursor:pointer;" data-i18n="personal_key_summary">或使用我自己的 Gemini API Key (免费通道)</summary>
           <div style="margin-top:10px;display:flex;gap:10px;">
             <input class="modal-key-input" id="modal-api-key-input" type="password" data-i18n-ph="personal_key_ph" placeholder="粘贴您的 Gemini API Key" style="margin-bottom:0;" />
             <button class="activation-btn" id="modal-save-key-btn" data-i18n="save_key_btn">保存 Key</button>
           </div>
-        </details>
+          <div id="key-priority-notice" style="font-size:11px;color:var(--accent);margin-top:6px;display:none;font-weight:600;">⚡ 已优先使用您的个人 API Key 调用 (Unrestricted Custom Key)</div>
+</details>
       </div>
 
     </div>
@@ -1735,9 +1736,18 @@ applyLanguage(currentLang);
 // ── Modal logic ──
 function showLimitModal() {
   const savedKey = getUserApiKey();
-  if (savedKey) document.getElementById('modal-api-key-input').value = savedKey;
+  if (savedKey) {
+    document.getElementById('modal-api-key-input').value = savedKey;
+    const detailsEl = document.getElementById('personal-key-details');
+    if (detailsEl) detailsEl.open = true;
+  }
   const savedLicense = getLicenseKey();
   if (savedLicense) document.getElementById('license-key-input').value = savedLicense;
+
+  const noticeEl = document.getElementById('key-priority-notice');
+  if (noticeEl) {
+    noticeEl.style.display = savedKey ? 'block' : 'none';
+  }
   document.getElementById('limit-modal').classList.add('show');
 }
 function hideLimitModal() {
@@ -1862,6 +1872,10 @@ async function doGenerate() {
 
     if (!resp.ok) {
       const errBody = await resp.json().catch(() => ({}));
+      if (resp.status === 429 || errBody.error === 'DAILY_LIMIT_EXCEEDED') {
+        showLimitModal();
+        throw new Error(errBody.detail || '今日 3 次免费生成额度已用完！请升级 VIP 或输入您的 Gemini API Key');
+      }
       throw new Error(errBody.error || `HTTP ${resp.status}`);
     }
 

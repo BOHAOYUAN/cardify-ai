@@ -1,13 +1,13 @@
 // /api/generate.js
 // Vercel Serverless Function — Cardify AI (Powered by Google Gemini)
-// POST /api/generate  { text: string, theme?: string }
-// Returns: CardPackageResponse JSON
+// POST /api/generate { text: string, theme?: string, style?: string, userApiKey?: string, licenseKey?: string, lang?: string }
+// Returns: CardPackageResponse JSON with channel tag ("custom_key" | "vip_official_key" | "free_tier")
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // ── Rate limiting (in-memory, resets on cold start) ──
 const rateLimitStore = new Map();
-const RATE_LIMIT = 10;
+const RATE_LIMIT = 10; // IP burst limit
 const RATE_WINDOW = 60 * 1000;
 
 function getRateKey(req) {
@@ -46,19 +46,18 @@ Return ONLY valid JSON (no markdown fences, no extra text):
 Rules: 3-5 cards, start with header, match input language, pick theme_color from dark/light/cyber/glass, output RAW JSON only.`,
 
   xiaohongshu: `你是一位顶级小红书爆款内容策划师，擅长将任何内容改写为高传播性的小红书风格知识卡片包。
-
-仅返回符合以下格式的纯 JSON（不加 markdown 标记）：
+仅返回符合以下格式的原生 JSON（不要 markdown 标记）：
 {
   "theme_color": "light",
   "total_cards": 4,
   "cards": [
-    { "card_id": 1, "type": "header", "title": "超吸睛标题（含数字/emoji，最多15字）", "subtitle": "引发共鸣的痛点副标题", "gold_quote": "最适合截图传播的金句（口语化、有情绪、有力量）", "key_takeaways": ["✨ 干货点1", "💡 干货点2", "🔥 干货点3"] },
+    { "card_id": 1, "type": "header", "title": "超吸睛标题（含数字与 emoji，最多 15 字）", "subtitle": "引发共鸣的痛点副标题", "gold_quote": "最适合截图传播的金句（口语化、有情绪、有力量）", "key_takeaways": ["📌 干货 1", "💡 干货 2", "🔥 干货 3"] },
     { "card_id": 2, "type": "metrics", "title": "📊 数据说话", "metrics": [{"label": "关键指标", "value": "震撼数字", "desc": "简短说明"}] },
     { "card_id": 3, "type": "action", "title": "🛠 手把手行动指南", "steps": ["第一步：具体行动", "第二步：具体行动", "⚠️ 最容易踩的坑"] },
-    { "card_id": 4, "type": "header", "title": "最后一句话总结", "subtitle": "升华主题的结语", "gold_quote": "适合收藏的人生感悟式结尾", "key_takeaways": ["📌 记住这一点", "📌 立刻去做这件事", "📌 避开这个误区"] }
+    { "card_id": 4, "type": "header", "title": "最后一句话总结", "subtitle": "升华主题的结论", "gold_quote": "适合收藏的人生感悟式结尾", "key_takeaways": ["📌 记住这一条", "📌 立刻去做这件事", "📌 避开这个误区"] }
   ]
 }
-要求：语言轻快活泼、有情绪感染力、善用 emoji、高饱和金句，输出原始 JSON。`,
+要求：语言轻快活泼、有情绪感染力、善用 emoji、高饱和金句，输出原生 JSON。`,
 
   twitter: `You are a top-tier business analyst and LinkedIn thought leader. Transform the input into data-driven, professional insight cards optimized for Twitter/X threads and LinkedIn posts.
 
@@ -91,7 +90,6 @@ Return ONLY raw JSON (no markdown):
 Rules: Clear hierarchy, outline-focused, match input language, raw JSON only.`
 };
 
-
 // ── Input validation ──
 function validateInput(body) {
   if (!body || typeof body !== 'object') return 'Request body must be JSON';
@@ -101,18 +99,16 @@ function validateInput(body) {
   return null;
 }
 
-// ── JSON extraction (strip markdown fences if model adds them) ──
+// ── JSON extraction ──
 function extractJSON(raw) {
   const trimmed = raw.trim();
   try { return JSON.parse(trimmed); } catch (_) {}
 
-  // Strip ```json ... ``` or ``` ... ```
   const fenceMatch = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/);
   if (fenceMatch) {
     try { return JSON.parse(fenceMatch[1].trim()); } catch (_) {}
   }
 
-  // Find first { ... } block
   const start = trimmed.indexOf('{');
   const end = trimmed.lastIndexOf('}');
   if (start !== -1 && end !== -1 && end > start) {
@@ -154,17 +150,9 @@ const LANG_MAP = {
   de: 'German (Deutsch)',
 };
 
-// ── Main handler ──
-// ── Helper to collect all available Gemini API Keys ──
-function getAvailableApiKeys(userKey) {
+// ── System Environment Keys Collector ──
+function getSystemEnvKeys() {
   const keys = [];
-
-  // 1. Client user-provided key (highest priority)
-  if (userKey && typeof userKey === 'string' && userKey.trim().length > 5) {
-    keys.push(userKey.trim());
-  }
-
-  # Collect from environment variables (GEMINI_API_KEY, GEMINI_API_KEY_BACKUP, etc.)
   const envVars = [
     process.env.GEMINI_API_KEY,
     process.env.GEMINI_API_KEY_BACKUP,
@@ -185,6 +173,7 @@ function getAvailableApiKeys(userKey) {
   return keys;
 }
 
+// ── Main Handler ──
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -195,25 +184,44 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed. Use POST.' });
   }
 
-  // Validate
   const validationError = validateInput(req.body);
   if (validationError) return res.status(400).json({ error: validationError });
 
   const { text, theme, style, userApiKey, licenseKey, lang } = req.body;
 
-  const apiKeys = getAvailableApiKeys(userApiKey);
-  if (apiKeys.length === 0) {
-    console.error('No API key available in request or environment variables');
-    return res.status(500).json({ error: 'Server configuration error: No Gemini API Key configured' });
-  }
+  // ══════════════════════════════════════════════════════════
+  // STRICT 3-TIER KEY & AUTH PRIORITY SCHEDULER
+  // ══════════════════════════════════════════════════════════
+  const userKeyClean = userApiKey && typeof userApiKey === 'string' && userApiKey.trim().length > 5 ? userApiKey.trim() : null;
+  const isVipMember = licenseKey && typeof licenseKey === 'string' && licenseKey.trim().length >= 5;
 
-  // If NOT using user's own key AND NOT having a valid license, apply rate limiting
-  const hasVipAccess = !!(userApiKey?.trim() || (licenseKey && String(licenseKey).trim().length >= 5));
-  if (!hasVipAccess) {
+  let activeChannel = 'free_tier';
+  let keysToTry = [];
+
+  if (userKeyClean) {
+    // ✦ Tier 1: Custom User API Key (Forced Custom Channel, Bypass Rate Limits)
+    activeChannel = 'custom_key';
+    keysToTry = [userKeyClean];
+  } else if (isVipMember) {
+    // ✦ Tier 2: VIP License Member (VIP Channel, Bypass Rate Limits, Official Keys Pool)
+    activeChannel = 'vip_official_key';
+    keysToTry = getSystemEnvKeys();
+  } else {
+    // ✦ Tier 3: Free Tier User (Free Channel, Rate Limited)
+    activeChannel = 'free_tier';
     const ip = getRateKey(req);
     if (isRateLimited(ip)) {
-      return res.status(429).json({ error: 'Too many requests. Please wait a moment.', retryAfter: 60 });
+      return res.status(429).json({
+        error: 'DAILY_LIMIT_EXCEEDED',
+        detail: 'Today's daily free limit reached. Please upgrade to VIP or enter your own Gemini API Key.'
+      });
     }
+    keysToTry = getSystemEnvKeys();
+  }
+
+  if (keysToTry.length === 0) {
+    console.error(`[Auth Error] No API key available for channel "${activeChannel}".`);
+    return res.status(500).json({ error: 'Server configuration error: No Gemini API Key configured for this channel' });
   }
 
   const stylePrompt = STYLE_PROMPTS[style] || STYLE_PROMPTS.default;
@@ -236,8 +244,10 @@ CRITICAL LANGUAGE INSTRUCTION: You MUST output all text fields (title, subtitle,
   let rawText = '';
   let lastError = null;
 
-  // Multi-Key & Multi-Model failover loop
-  for (const currentApiKey of apiKeys) {
+  // ══════════════════════════════════════════════════════════
+  // MULTI-KEY & MULTI-MODEL FAILOVER LOOP
+  // ══════════════════════════════════════════════════════════
+  for (const currentApiKey of keysToTry) {
     const genAI = new GoogleGenerativeAI(currentApiKey);
 
     // 1. Try Primary Model (gemini-2.0-flash)
@@ -267,7 +277,6 @@ CRITICAL LANGUAGE INSTRUCTION: You MUST output all text fields (title, subtitle,
       } catch (fallbackErr) {
         console.warn(`[Key Failover] Fallback model (${fallbackModel}) failed with key ...${currentApiKey.slice(-4)}: ${fallbackErr.message}`);
         lastError = fallbackErr;
-        // Continue loop to try next API key
       }
     }
   }
@@ -286,6 +295,7 @@ CRITICAL LANGUAGE INSTRUCTION: You MUST output all text fields (title, subtitle,
   try {
     const parsed = extractJSON(rawText);
     const normalized = normalizeResponse(parsed, theme || 'dark');
+    normalized.channel = activeChannel; // Attach authenticated channel tag!
     return res.status(200).json(normalized);
   } catch (parseErr) {
     console.error('JSON Parse error:', parseErr);
