@@ -982,6 +982,12 @@ Example: Annual report excerpts, academic abstracts, blog posts, newsletter cont
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
 // ══════════════════════════════════════════════════════════
+// GLOBAL STATE & DECLARATIONS
+// ══════════════════════════════════════════════════════════
+let selectedTheme = 'dark';
+let swiper = null;
+
+// ══════════════════════════════════════════════════════════
 // DEMO DATA — replace AI API call with real fetch() later
 // ══════════════════════════════════════════════════════════
 const DEMO_RESPONSES = {
@@ -1779,7 +1785,7 @@ document.querySelectorAll('.theme-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    selectedTheme = btn.dataset.theme;
+    selectedTheme = btn.dataset.theme || 'dark';
   });
 });
 
@@ -1831,7 +1837,7 @@ async function doGenerate() {
     const licenseKey = getLicenseKey();
     const payload = {
       text,
-      theme: selectedTheme,
+      theme: selectedTheme || 'dark',
       style: selectedStyle,
       lang: currentLang
     };
@@ -1862,7 +1868,7 @@ async function doGenerate() {
     showToast(err.name === 'AbortError' ? '⏱️ 请求超时，展示演示卡片' : `⚠️ API 响应异常: ${err.message || '未知错误'}`, 'error', 6000);
   }
 
-  cardData.theme_color = selectedTheme;
+  cardData.theme_color = selectedTheme || 'dark';
   renderCards(cardData);
 
   document.getElementById('loading-state').classList.remove('visible');
