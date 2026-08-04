@@ -200,7 +200,7 @@ export default async function handler(req, res) {
 
   if (userKeyClean) {
     // ✦ Tier 1: Custom User API Key (Forced Custom Channel, Bypass Rate Limits)
-    activeChannel = 'custom_key';
+    activeChannel = 'user_custom_key';
     keysToTry = [userKeyClean];
   } else if (isVipMember) {
     // ✦ Tier 2: VIP License Member (VIP Channel, Bypass Rate Limits, Official Keys Pool)
