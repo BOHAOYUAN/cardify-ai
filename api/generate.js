@@ -201,7 +201,14 @@ export default async function handler(req, res) {
         maxOutputTokens: 2048,
         responseMimeType: 'application/json',
       },
-      systemInstruction: `${systemPrompt}\n\nCRITICAL LANGUAGE INSTRUCTION: You MUST output all text fields (title, subtitle, gold_quote, key_takeaways, metrics labels/desc, action steps) strictly in ${targetLang}.`,
+      systemInstruction: `${systemPrompt}
+
+SERIES & CHAPTER AWARENESS RULE:
+1. Analyze if the input text belongs to a chapter, section, or part of a larger book/report (e.g., contains "Part 1", "Chapter 1", "第一章", "上集", "第1节", or is an excerpt of a longer work).
+2. If a chapter or part is identified (or if user pastes a multi-part excerpt), prefix the Card 1 (Header card) title with a series/chapter tag, e.g. "[ Part 1 ] Title" or "[ 第一章 ] 标题" or "[ 01/连载 ] 标题". If no specific number is found but it appears to be a chapter, use "[ 01/连载 ] Title".
+3. Keep the total cards count strictly between 3 to 5 cards per request. Output concise, high-value cards without exceeding JSON length limits.
+
+CRITICAL LANGUAGE INSTRUCTION: You MUST output all text fields (title, subtitle, gold_quote, key_takeaways, metrics labels/desc, action steps) strictly in ${targetLang}.`,
     });
 
     const userPrompt = `Target Output Language: ${targetLang}\nVisual Theme: "${theme || 'dark'}"\n\nGenerate knowledge cards for the following input text:\n\n${text.trim()}`;

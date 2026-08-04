@@ -735,6 +735,21 @@
     .theme-glass .metric-value { color: #fff; }
     .theme-glass .gold-quote-wrap { border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.05); }
 
+    /* Longtext Tip Banner */
+    .longtext-tip {
+      font-size: 12px;
+      color: var(--accent);
+      background: rgba(124,92,252,0.08);
+      border: 1px dashed rgba(124,92,252,0.3);
+      border-radius: 8px;
+      padding: 8px 12px;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      line-height: 1.4;
+    }
+
     /* ── Footer ── */
     footer { text-align: center; padding: 48px 0 36px; color: var(--text-muted); font-size: 13px; }
     footer a { color: var(--accent); text-decoration: none; }
@@ -811,6 +826,7 @@
 Example: Annual report excerpts, academic abstracts, blog posts, newsletter content, meeting notes..."></textarea>
       <span class="char-count" id="char-count">0 chars</span>
     </div>
+    <div class="longtext-tip" data-i18n="longtext_tip">💡 Tip: For long books/reports, paste chapter by chapter for the best series card packs!</div>
 
     <!-- Platform Style Selector -->
     <div class="style-row">
@@ -1076,6 +1092,7 @@ const I18N = {
     stat_export: "Export & share",
     input_label: "✦ Paste your content",
     input_placeholder: "Paste any article, research paper, report, or long-form text here...\n\nExample: Annual report excerpts, academic abstracts, blog posts, newsletter content, meeting notes...",
+    longtext_tip: "💡 Tip: For long books/reports, paste chapter by chapter for the best series card packs!",
     unit_chars: " chars",
     style_label: "✦ Style",
     opt_default: "✨ General Knowledge Cards (Default)",
@@ -1133,6 +1150,7 @@ const I18N = {
     stat_export: "一键无损导出",
     input_label: "✦ 粘贴您的长文内容",
     input_placeholder: "在此粘贴任何文章、学术论文、行业报告或长文...\n\n例如：年度报告摘要、博客文章、会议纪要、小红书干货草稿...",
+    longtext_tip: "💡 提示：超长长文/电子书？建议分章节/分批粘贴，AI 将为您生成极佳连载卡片包！",
     unit_chars: " 字符",
     style_label: "✦ 目标平台风格",
     opt_default: "✨ 通用知识卡片（默认）",
@@ -1190,6 +1208,7 @@ const I18N = {
     stat_export: "Exportar y compartir",
     input_label: "✦ Pega tu contenido",
     input_placeholder: "Pega cualquier artículo, informe o texto aquí...\n\nEjemplo: Extractos de informes anuales, resúmenes académicos, entradas de blog...",
+    longtext_tip: "💡 Consejo: Para libros/informes largos, ¡pega capítulo por capítulo para obtener la mejor serie!",
     unit_chars: " caract.",
     style_label: "✦ Estilo",
     opt_default: "✨ Tarjetas de conocimiento generales",
@@ -1247,6 +1266,7 @@ const I18N = {
     stat_export: "Exportar e compartilhar",
     input_label: "✦ Cole seu conteúdo",
     input_placeholder: "Cole qualquer artigo ou texto longo aqui...\n\nExemplo: Relatórios anuais, resumos acadêmicos, posts de blog...",
+    longtext_tip: "💡 Dica: Para livros/relatórios longos, cole capítulo por capítulo para obter as melhores séries!",
     unit_chars: " caract.",
     style_label: "✦ Estilo",
     opt_default: "✨ Cartões de conhecimento gerais",
@@ -1304,6 +1324,7 @@ const I18N = {
     stat_export: "Экспорт в 1 клик",
     input_label: "✦ Вставьте ваш текст",
     input_placeholder: "Вставьте текст статьи, отчета или заметки...\n\nПример: Выдержки из отчета, статьи, конспекты...",
+    longtext_tip: "💡 Совет: Для длинных книг/отчетов вставляйте текст по главам для создания серии карточек!",
     unit_chars: " симв.",
     style_label: "✦ Стиль",
     opt_default: "✨ Базовые карточки знаний",
@@ -1361,6 +1382,7 @@ const I18N = {
     stat_export: "ワンクリック高画質出力",
     input_label: "✦ テキストを入力",
     input_placeholder: "記事、論文、レポート、メモなどをここに貼り付けてください...\n\n例：年次報告の抜粋、ブログ記事、会議の要約...",
+    longtext_tip: "💡 ヒント：長文・電子書籍は章ごとに分けて貼り付けると、最高の連載カードが作成できます！",
     unit_chars: " 文字",
     style_label: "✦ 出力スタイル",
     opt_default: "✨ 標準ナレッジカード（デフォルト）",
@@ -1418,6 +1440,7 @@ const I18N = {
     stat_export: "원클릭 고화질 저장",
     input_label: "✦ 텍스트 붙여넣기",
     input_placeholder: "아티클, 논문, 보고서 등을 여기에 입력하세요...\n\n예: 연례 보고서 요약, 블로그 포스트, 회의록...",
+    longtext_tip: "💡 팁: 긴 책이나 보고서는 챕터별로 나누어 붙여넣으면 최고의 연재 카드가 생성됩니다!",
     unit_chars: " 자",
     style_label: "✦ 스타일",
     opt_default: "✨ 일반 지식 카드 (기본)",
@@ -1475,6 +1498,7 @@ const I18N = {
     stat_export: "Export rapide",
     input_label: "✦ Collez votre contenu",
     input_placeholder: "Collez votre article, étude ou texte ici...\n\nExemple: Extraits de rapport annuel, articles de blog...",
+    longtext_tip: "💡 Conseil : Pour les livres/rapports longs, collez chapitre par chapitre pour un pack de cartes en série parfait !",
     unit_chars: " caract.",
     style_label: "✦ Style",
     opt_default: "✨ Cartes générales (Défaut)",
@@ -1532,6 +1556,7 @@ const I18N = {
     stat_export: "1-Klick Export",
     input_label: "✦ Inhalt einfügen",
     input_placeholder: "Füge hier deinen Artikel oder Text ein...\n\nBeispiel: Auszüge aus Jahresberichten, Blogposts...",
+    longtext_tip: "💡 Tipp: Bei langen Büchern/Berichten füge den Text kapitelweise ein, um die besten Serien-Karten zu erhalten!",
     unit_chars: " Zeichen",
     style_label: "✦ Stil",
     opt_default: "✨ Allgemeine Wissenskarten (Standard)",
