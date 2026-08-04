@@ -1989,18 +1989,23 @@ async function doGenerate() {
         throw new Error(errBody.message || dict.quota_empty || 'Daily limit reached');
       }
       if (errCode === 'QUOTA_EXHAUSTED') {
-        throw new Error(dict.toast_api_error ? dict.toast_api_error + ': Quota exhausted. Try again later.' : 'Gemini quota exhausted. Try again later or use your own API Key.');
+        throw new Error('Gemini quota exhausted. Try again later or use your own API Key.');
       }
       if (errCode === 'API_KEY_INVALID') {
-        throw new Error(dict.toast_api_invalid ? dict.toast_api_invalid + ' (Key rejected by Gemini)' : 'API Key invalid. Please check your Gemini API Key.');
+        // Show detail from backend — tells user the key format is wrong
+        const detail = errBody.detail || 'Key rejected by Gemini. Keys must start with "AIza" from https://aistudio.google.com/apikey';
+        showLimitModal();  // prompt user to enter correct key
+        throw new Error('⚠️ API Key Invalid: ' + detail);
       }
       if (errCode === 'AI_RESPONSE_FORMAT_ERROR') {
         throw new Error('AI returned unreadable response. Please try again.');
       }
       if (errCode === 'GENERATION_FAILED') {
-        throw new Error('AI generation failed. Please try again in a moment.');
+        // Show the actual backend detail message for easy debugging
+        const detail = errBody.detail || 'AI generation failed.';
+        throw new Error('❌ Generation Failed: ' + detail);
       }
-      throw new Error(errCode || `HTTP ${resp.status}`);
+      throw new Error((errBody.detail || errCode) || `HTTP ${resp.status}`);
     }
 
     cardData = await resp.json();

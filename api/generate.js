@@ -215,10 +215,17 @@ function getSystemEnvKeys() {
   envVars.forEach(val => {
     if (val && typeof val === 'string') {
       val.split(',').map(k => k.trim()).filter(k => k.length > 5).forEach(k => {
+        // Warn if key doesn't look like a valid Gemini API key (should start with AIza)
+        if (!k.startsWith('AIza')) {
+          console.warn(`[Key Warning] Env key "${k.slice(0,8)}..." does NOT look like a valid Gemini API key. Gemini keys must start with "AIza". Got: ${k.slice(0,12)}`);
+        }
         if (!keys.includes(k)) keys.push(k);
       });
     }
   });
+  if (keys.length === 0) {
+    console.error('[Key Error] No GEMINI_API_KEY found in environment variables! Set GEMINI_API_KEY in Vercel project settings.');
+  }
   return keys;
 }
 
@@ -331,18 +338,31 @@ CRITICAL OUTPUT RULES (highest priority — always obey):
     }
   }
 
-  // ── Handle total failure ──
+  // ── Handle total failure — return detailed error for debugging ──
   if (!rawText || rawText.trim().length < 10) {
     const errMsg = lastError ? lastError.message : 'All models & keys failed';
-    console.error('[Generate] All attempts failed:', errMsg);
+    console.error('[Generate] All attempts failed. Channel:', activeChannel, '| Error:', errMsg);
+    console.error('[Generate] Keys used (last 4 chars):', keysToTry.map(k => '...' + k.slice(-4)));
 
-    if (/API_KEY_INVALID|API key not valid/i.test(errMsg)) {
-      return res.status(401).json({ error: 'API_KEY_INVALID' });
+    if (/API_KEY_INVALID|API key not valid|UNAUTHENTICATED/i.test(errMsg)) {
+      return res.status(401).json({
+        error: 'API_KEY_INVALID',
+        detail: 'The Gemini API Key is invalid or malformed. Gemini keys must start with "AIza" and be obtained from https://aistudio.google.com/apikey',
+        raw: errMsg
+      });
     }
     if (/RESOURCE_EXHAUSTED|quota|429/i.test(errMsg)) {
-      return res.status(429).json({ error: 'QUOTA_EXHAUSTED' });
+      return res.status(429).json({
+        error: 'QUOTA_EXHAUSTED',
+        detail: 'Gemini API quota exhausted. Try again later or use your own API Key.',
+        raw: errMsg
+      });
     }
-    return res.status(500).json({ error: 'GENERATION_FAILED' });
+    return res.status(500).json({
+      error: 'GENERATION_FAILED',
+      detail: errMsg,  // ← Expose actual error message for frontend display & debugging
+      channel: activeChannel
+    });
   }
 
   // ── Defensive JSON parse & normalize ──
