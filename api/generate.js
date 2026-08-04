@@ -192,54 +192,61 @@ export default async function handler(req, res) {
   const systemPrompt = STYLE_PROMPTS[style] || STYLE_PROMPTS.default;
   const targetLang = LANG_MAP[lang] || 'English';
 
-  try {
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-      model: modelName,
-      generationConfig: {
-        temperature: 0.75,
-        maxOutputTokens: 2048,
-        responseMimeType: 'application/json',
-      },
-      systemInstruction: `${systemPrompt}
+  const sysInstruction = `${systemPrompt}
 
 SERIES & CHAPTER AWARENESS RULE:
 1. Analyze if the input text belongs to a chapter, section, or part of a larger book/report (e.g., contains "Part 1", "Chapter 1", "第一章", "上集", "第1节", or is an excerpt of a longer work).
 2. If a chapter or part is identified (or if user pastes a multi-part excerpt), prefix the Card 1 (Header card) title with a series/chapter tag, e.g. "[ Part 1 ] Title" or "[ 第一章 ] 标题" or "[ 01/连载 ] 标题". If no specific number is found but it appears to be a chapter, use "[ 01/连载 ] Title".
 3. Keep the total cards count strictly between 3 to 5 cards per request. Output concise, high-value cards without exceeding JSON length limits.
 
-CRITICAL LANGUAGE INSTRUCTION: You MUST output all text fields (title, subtitle, gold_quote, key_takeaways, metrics labels/desc, action steps) strictly in ${targetLang}.`,
+CRITICAL LANGUAGE INSTRUCTION: You MUST output all text fields (title, subtitle, gold_quote, key_takeaways, metrics labels/desc, action steps) strictly in ${targetLang}.`;
+
+  const userPrompt = `Target Output Language: ${targetLang}\nVisual Theme: "${theme || 'dark'}"\n\nGenerate knowledge cards for the following input text:\n\n${text.trim()}`;
+
+  const primaryModel = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
+  const fallbackModel = 'gemini-1.5-flash';
+
+  let rawText = '';
+  const genAI = new GoogleGenerativeAI(apiKey);
+
+  try {
+    const model = genAI.getGenerativeModel({
+      model: primaryModel,
+      generationConfig: { temperature: 0.75, maxOutputTokens: 2048, responseMimeType: 'application/json' },
+      systemInstruction: sysInstruction,
     });
-
-    const userPrompt = `Target Output Language: ${targetLang}\nVisual Theme: "${theme || 'dark'}"\n\nGenerate knowledge cards for the following input text:\n\n${text.trim()}`;
-
     const result = await model.generateContent(userPrompt);
-    const rawText = result.response.text();
+    rawText = result.response.text();
+  } catch (primaryErr) {
+    console.warn(`Primary model (${primaryModel}) failed: ${primaryErr.message}. Trying fallback model (${fallbackModel})...`);
+    try {
+      const model = genAI.getGenerativeModel({
+        model: fallbackModel,
+        generationConfig: { temperature: 0.75, maxOutputTokens: 2048, responseMimeType: 'application/json' },
+        systemInstruction: sysInstruction,
+      });
+      const result = await model.generateContent(userPrompt);
+      rawText = result.response.text();
+    } catch (fallbackErr) {
+      console.error('Fallback model also failed:', fallbackErr);
+      const errMsg = fallbackErr.message || primaryErr.message || 'Gemini API call failed';
+      if (errMsg.includes('API_KEY_INVALID') || errMsg.includes('API key not valid')) {
+        return res.status(401).json({ error: 'Gemini API Key 无效/未开启，请检查配置或输入有效的 Key' });
+      }
+      if (errMsg.includes('RESOURCE_EXHAUSTED') || errMsg.includes('429')) {
+        return res.status(429).json({ error: 'Gemini API 额度不足/请求过快，请稍后重试或使用个人 Key' });
+      }
+      return res.status(500).json({ error: `Gemini API 调用失败: ${errMsg}` });
+    }
+  }
 
+  try {
     if (!rawText) throw new Error('Empty response from Gemini');
-
     const parsed = extractJSON(rawText);
     const normalized = normalizeResponse(parsed, theme);
-
     return res.status(200).json(normalized);
-
-  } catch (err) {
-    console.error('Gemini generation error:', err);
-
-    // Gemini quota / auth errors
-    if (err.message?.includes('API_KEY_INVALID') || err.message?.includes('401')) {
-      return res.status(500).json({ error: 'Invalid Gemini API key. Please check your configuration.' });
-    }
-    if (err.message?.includes('RESOURCE_EXHAUSTED') || err.message?.includes('429')) {
-      return res.status(429).json({ error: 'Gemini rate limit reached. Please try again in a moment.' });
-    }
-    if (err.message?.includes('SAFETY')) {
-      return res.status(400).json({ error: 'Content was blocked by safety filters. Please try different content.' });
-    }
-
-    return res.status(500).json({
-      error: 'Card generation failed. Please try again.',
-      detail: process.env.NODE_ENV === 'development' ? err.message : undefined
-    });
+  } catch (parseErr) {
+    console.error('JSON Parse error:', parseErr);
+    return res.status(500).json({ error: `卡片数据解析失败: ${parseErr.message}` });
   }
 }
