@@ -4,6 +4,7 @@
   "description": "Turn any content into beautiful AI knowledge cards",
   "private": true,
   "scripts": {
+    "build": "echo 'No build step needed'",
     "dev": "vercel dev",
     "deploy": "vercel --prod"
   },
