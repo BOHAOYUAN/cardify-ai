@@ -1,9 +1,7 @@
 // /api/generate.js
-// Vercel Serverless Function — Cardify AI (Powered by Google Gemini)
+// Vercel Serverless Function — Cardify AI
+// Multi-Provider Failover Engine (Groq -> OpenRouter -> Gemini REST)
 // POST /api/generate { text, theme?, style?, userApiKey?, licenseKey?, lang? }
-// Returns: CardPackageResponse JSON with channel tag
-
-import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // ══════════════════════════════════════════════════════════
 // DAILY IP RATE LIMITER (3 free/day per IP, UTC reset)
@@ -87,7 +85,7 @@ Return ONLY a raw JSON object — NO markdown fences, NO \`\`\`json:
   "total_cards": 4,
   "cards": [
     { "card_id": 1, "type": "header", "title": "Video/Article Title Hook", "subtitle": "Core promise: what viewers will learn", "gold_quote": "Opening hook line that stops the scroll", "key_takeaways": ["Main argument 1", "Main argument 2", "Main argument 3"] },
-    { "card_id": 2, "type": "action", "title": "Part 1: Opening & Context", "steps": ["Hook & problem statement", "Why this matters now", "Preview of what's coming"] },
+    { "card_id": 3, "type": "action", "title": "Part 1: Opening & Context", "steps": ["Hook & problem statement", "Why this matters now", "Preview of what's coming"] },
     { "card_id": 3, "type": "action", "title": "Part 2: Core Content", "steps": ["Key point A with evidence", "Key point B with evidence", "Key point C with evidence"] },
     { "card_id": 4, "type": "action", "title": "Part 3: Conclusion & CTA", "steps": ["Summary of key takeaways", "Actionable next step for audience", "Call-to-action / closing line"] }
   ]
@@ -138,7 +136,6 @@ function extractJSON(raw) {
   if (arrStart !== -1 && arrEnd > arrStart) {
     try {
       const arr = JSON.parse(text.slice(arrStart, arrEnd + 1));
-      // Wrap bare array into expected shape
       return { theme_color: 'dark', cards: arr, total_cards: arr.length };
     } catch (_) {}
   }
@@ -160,18 +157,15 @@ function extractJSON(raw) {
 function normalizeResponse(data, themeOverride) {
   const validThemes = ['dark', 'light', 'cyber', 'glass'];
 
-  // Ensure theme_color is valid
   if (!validThemes.includes(data.theme_color)) data.theme_color = 'dark';
   if (themeOverride && validThemes.includes(themeOverride)) {
     data.theme_color = themeOverride;
   }
 
-  // Ensure cards array exists and is non-empty
   if (!Array.isArray(data.cards) || data.cards.length === 0) {
     throw new Error('AI_RESPONSE_NO_CARDS');
   }
 
-  // Clamp to max 5 cards
   data.cards = data.cards.slice(0, 5);
   data.total_cards = data.cards.length;
 
@@ -185,9 +179,6 @@ function normalizeResponse(data, themeOverride) {
   return data;
 }
 
-// ══════════════════════════════════════════════════════════
-// LANGUAGE MAP
-// ══════════════════════════════════════════════════════════
 const LANG_MAP = {
   en: 'English',
   zh: 'Simplified Chinese (简体中文)',
@@ -201,32 +192,171 @@ const LANG_MAP = {
 };
 
 // ══════════════════════════════════════════════════════════
-// SYSTEM ENVIRONMENT KEYS COLLECTOR (multi-key pool)
+// NATIVE FETCH AI PROVIDERS (Zero SDK dependencies)
 // ══════════════════════════════════════════════════════════
-function getSystemEnvKeys() {
-  const keys = [];
-  const envVars = [
-    process.env.GEMINI_API_KEY,
-    process.env.GEMINI_API_KEY_BACKUP,
-    process.env['Gemini-API'],
-    process.env.GEMINI_API,
-    process.env.GEMINI_KEY
-  ];
-  envVars.forEach(val => {
-    if (val && typeof val === 'string') {
-      val.split(',').map(k => k.trim()).filter(k => k.length > 5).forEach(k => {
-        // Warn if key doesn't look like a valid Gemini API key (should start with AIza)
-        if (!k.startsWith('AIza')) {
-          console.warn(`[Key Warning] Env key "${k.slice(0,8)}..." does NOT look like a valid Gemini API key. Gemini keys must start with "AIza". Got: ${k.slice(0,12)}`);
-        }
-        if (!keys.includes(k)) keys.push(k);
-      });
+
+// ✦ Provider 1: Groq (Ultra-fast, Llama 3.1 8B Instant / Llama 3.3 70B)
+async function callGroq(apiKey, sysInstruction, userPrompt) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+  try {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey.trim()}`,
+        'Content-Type': 'application/json'
+      },
+      signal: controller.signal,
+      body: JSON.stringify({
+        model: 'llama-3.1-8b-instant',
+        messages: [
+          { role: 'system', content: sysInstruction },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature: 0.7,
+        max_tokens: 2048,
+        response_format: { type: 'json_object' }
+      })
+    });
+    clearTimeout(timeout);
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '');
+      throw new Error(`Groq HTTP ${res.status}: ${errText.slice(0, 200)}`);
     }
-  });
-  if (keys.length === 0) {
-    console.error('[Key Error] No GEMINI_API_KEY found in environment variables! Set GEMINI_API_KEY in Vercel project settings.');
+    const data = await res.json();
+    return data.choices?.[0]?.message?.content || '';
+  } catch (e) {
+    clearTimeout(timeout);
+    throw e;
   }
-  return keys;
+}
+
+// ✦ Provider 2: OpenRouter (Free Fallback Channel)
+async function callOpenRouter(apiKey, sysInstruction, userPrompt) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+  try {
+    const key = apiKey || process.env.OPENROUTER_API_KEY || '';
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': key ? `Bearer ${key.trim()}` : '',
+        'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://cardifyai.lumiere-private.com',
+        'X-Title': 'Cardify AI'
+      },
+      signal: controller.signal,
+      body: JSON.stringify({
+        model: 'meta-llama/llama-3.2-11b-vision-instruct:free',
+        messages: [
+          { role: 'system', content: sysInstruction },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature: 0.7,
+        max_tokens: 2048
+      })
+    });
+    clearTimeout(timeout);
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '');
+      throw new Error(`OpenRouter HTTP ${res.status}: ${errText.slice(0, 200)}`);
+    }
+    const data = await res.json();
+    return data.choices?.[0]?.message?.content || '';
+  } catch (e) {
+    clearTimeout(timeout);
+    throw e;
+  }
+}
+
+// ✦ Provider 3: Gemini REST API Native (No SDK overhead)
+async function callGeminiRest(apiKey, sysInstruction, userPrompt) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+  try {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey.trim()}`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: sysInstruction }] },
+        contents: [{ parts: [{ text: userPrompt }] }],
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 2048,
+          responseMimeType: 'application/json'
+        }
+      })
+    });
+    clearTimeout(timeout);
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '');
+      throw new Error(`Gemini HTTP ${res.status}: ${errText.slice(0, 200)}`);
+    }
+    const data = await res.json();
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  } catch (e) {
+    clearTimeout(timeout);
+    throw e;
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// MULTI-PROVIDER FAILOVER EXECUTION ENGINE
+// ══════════════════════════════════════════════════════════
+async function executeWithFallback({ sysInstruction, userPrompt, userApiKey }) {
+  const groqKey = process.env.GROQ_API_KEY || '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';
+  const openRouterKey = process.env.OPENROUTER_API_KEY || '';
+  const geminiKey = process.env.GEMINI_API_KEY || '';
+
+  // Build ordered provider pipeline
+  const providers = [];
+
+  // User custom key handles
+  if (userApiKey) {
+    const cleanUserKey = userApiKey.trim();
+    if (cleanUserKey.startsWith('gsk_')) {
+      providers.push({ name: 'Groq (User Key)', fn: () => callGroq(cleanUserKey, sysInstruction, userPrompt) });
+    } else if (cleanUserKey.startsWith('AIza')) {
+      providers.push({ name: 'Gemini (User Key)', fn: () => callGeminiRest(cleanUserKey, sysInstruction, userPrompt) });
+    } else if (cleanUserKey.startsWith('sk-or-')) {
+      providers.push({ name: 'OpenRouter (User Key)', fn: () => callOpenRouter(cleanUserKey, sysInstruction, userPrompt) });
+    } else {
+      // Fallback try user key on Groq and Gemini
+      providers.push({ name: 'Groq (User Key)', fn: () => callGroq(cleanUserKey, sysInstruction, userPrompt) });
+      providers.push({ name: 'Gemini (User Key)', fn: () => callGeminiRest(cleanUserKey, sysInstruction, userPrompt) });
+    }
+  }
+
+  // System environment fallback chain
+  if (groqKey) {
+    providers.push({ name: 'Groq (Primary)', fn: () => callGroq(groqKey, sysInstruction, userPrompt) });
+  }
+  providers.push({ name: 'OpenRouter (Free Fallback)', fn: () => callOpenRouter(openRouterKey, sysInstruction, userPrompt) });
+  if (geminiKey && geminiKey.startsWith('AIza')) {
+    providers.push({ name: 'Gemini (Fallback)', fn: () => callGeminiRest(geminiKey, sysInstruction, userPrompt) });
+  }
+
+  let lastErr = null;
+
+  for (const provider of providers) {
+    try {
+      console.log(`[Failover Engine] Attempting Provider: ${provider.name}...`);
+      const rawText = await provider.fn();
+      if (rawText && rawText.trim().length > 10) {
+        console.log(`[Failover Engine] ✅ Success via Provider: ${provider.name}`);
+        return { rawText, providerName: provider.name };
+      }
+    } catch (err) {
+      console.warn(`[Failover Engine] ⚠️ Provider "${provider.name}" failed: ${err.message}. Fast failing to next provider...`);
+      lastErr = err;
+      // Fast 50ms pause before trying next provider
+      await new Promise(r => setTimeout(r, 50));
+    }
+  }
+
+  throw lastErr || new Error('All AI Providers exhausted');
 }
 
 // ══════════════════════════════════════════════════════════
@@ -248,49 +378,32 @@ export default async function handler(req, res) {
   const { text, theme, style, userApiKey, licenseKey, lang } = req.body;
 
   // ══════════════════════════════════════════════════════════
-  // STRICT 3-TIER KEY & AUTH PRIORITY SCHEDULER
-  // Priority 1: User's own API key  → bypass rate limit, use user key
-  // Priority 2: VIP license key     → bypass rate limit, use system key
-  // Priority 3: Free tier           → enforce 3/day IP rate limit
+  // RATE LIMIT & AUTH SCHEDULER
   // ══════════════════════════════════════════════════════════
   const userKeyClean = (typeof userApiKey === 'string' && userApiKey.trim().length > 5)
     ? userApiKey.trim() : null;
   const isVipMember = (typeof licenseKey === 'string' && licenseKey.trim().length >= 5);
 
   let activeChannel = 'free_tier';
-  let keysToTry = [];
 
   if (userKeyClean) {
-    // ✦ Tier 1: User's personal API key — unlimited, forced priority
     activeChannel = 'user_custom_key';
-    keysToTry = [userKeyClean];
-
   } else if (isVipMember) {
-    // ✦ Tier 2: VIP license member — use official key pool, bypass rate limit
     activeChannel = 'vip_official_key';
-    keysToTry = getSystemEnvKeys();
-
   } else {
-    // ✦ Tier 3: Free tier — enforce daily 3-request IP limit
     activeChannel = 'free_tier';
     const ip = getRateKey(req);
     const limitCheck = checkDailyIpLimit(ip);
     if (!limitCheck.allowed) {
       return res.status(429).json({
         error: 'DAILY_LIMIT_EXCEEDED',
-        message: 'You have reached your daily limit of 3 free cards. Upgrade to VIP or use your own Gemini API Key.'
+        message: 'You have reached your daily limit of 3 free cards. Upgrade to VIP or use your own API Key.'
       });
     }
-    keysToTry = getSystemEnvKeys();
-  }
-
-  if (keysToTry.length === 0) {
-    console.error(`[Auth] No API key available for channel "${activeChannel}"`);
-    return res.status(500).json({ error: 'SERVER_KEY_MISSING' });
   }
 
   // ══════════════════════════════════════════════════════════
-  // BUILD SYSTEM INSTRUCTION WITH LANGUAGE LOCK
+  // INSTRUCTION BUILDER
   // ══════════════════════════════════════════════════════════
   const stylePrompt = STYLE_PROMPTS[style] || STYLE_PROMPTS.default;
   const targetLang  = LANG_MAP[lang] || 'English';
@@ -306,74 +419,27 @@ CRITICAL OUTPUT RULES (highest priority — always obey):
   const userPrompt = `Target Output Language: ${targetLang}\nVisual Theme: "${theme || 'dark'}"\n\nContent to transform into knowledge cards:\n\n${text.trim()}`;
 
   // ══════════════════════════════════════════════════════════
-  // MULTI-KEY & MULTI-MODEL FAILOVER LOOP
+  // EXECUTE FAILOVER PIPELINE
   // ══════════════════════════════════════════════════════════
-  const primaryModel  = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
-  const fallbackModel = 'gemini-1.5-flash';
-
-  let rawText  = '';
-  let lastError = null;
-
-  outer: for (const currentApiKey of keysToTry) {
-    const genAI = new GoogleGenerativeAI(currentApiKey);
-
-    for (const modelName of [primaryModel, fallbackModel]) {
-      try {
-        const model = genAI.getGenerativeModel({
-          model: modelName,
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 2048,
-            responseMimeType: 'application/json'
-          },
-          systemInstruction: sysInstruction,
-        });
-        const result = await model.generateContent(userPrompt);
-        rawText = result.response.text();
-        if (rawText && rawText.trim().length > 10) break outer;
-      } catch (err) {
-        console.warn(`[Failover] model=${modelName} key=...${currentApiKey.slice(-4)} err=${err.message}`);
-        lastError = err;
-      }
-    }
-  }
-
-  // ── Handle total failure — return detailed error for debugging ──
-  if (!rawText || rawText.trim().length < 10) {
-    const errMsg = lastError ? lastError.message : 'All models & keys failed';
-    console.error('[Generate] All attempts failed. Channel:', activeChannel, '| Error:', errMsg);
-    console.error('[Generate] Keys used (last 4 chars):', keysToTry.map(k => '...' + k.slice(-4)));
-
-    if (/API_KEY_INVALID|API key not valid|UNAUTHENTICATED/i.test(errMsg)) {
-      return res.status(401).json({
-        error: 'API_KEY_INVALID',
-        detail: 'The Gemini API Key is invalid or malformed. Gemini keys must start with "AIza" and be obtained from https://aistudio.google.com/apikey',
-        raw: errMsg
-      });
-    }
-    if (/RESOURCE_EXHAUSTED|quota|429/i.test(errMsg)) {
-      return res.status(429).json({
-        error: 'QUOTA_EXHAUSTED',
-        detail: 'Gemini API quota exhausted. Try again later or use your own API Key.',
-        raw: errMsg
-      });
-    }
-    return res.status(500).json({
-      error: 'GENERATION_FAILED',
-      detail: errMsg,  // ← Expose actual error message for frontend display & debugging
-      channel: activeChannel
-    });
-  }
-
-  // ── Defensive JSON parse & normalize ──
   try {
-    const parsed     = extractJSON(rawText);
+    const { rawText, providerName } = await executeWithFallback({
+      sysInstruction,
+      userPrompt,
+      userApiKey: userKeyClean
+    });
+
+    const parsed = extractJSON(rawText);
     const normalized = normalizeResponse(parsed, theme || 'dark');
     normalized.channel = activeChannel;
+    normalized.provider = providerName;
     return res.status(200).json(normalized);
-  } catch (parseErr) {
-    console.error('[JSON Parse] Failed. Raw snippet:', rawText.slice(0, 300));
-    console.error('[JSON Parse] Error:', parseErr.message);
-    return res.status(500).json({ error: 'AI_RESPONSE_FORMAT_ERROR' });
+
+  } catch (err) {
+    console.error('[Generate Handler] All Providers Failed:', err.message);
+    return res.status(500).json({
+      error: 'GENERATION_FAILED',
+      detail: err.message,
+      channel: activeChannel
+    });
   }
 }

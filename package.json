@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "description": "Turn any content into beautiful AI knowledge cards",
   "private": true,
-  "dependencies": {
-    "@google/generative-ai": "^0.21.0"
-  },
+  "dependencies": {},
   "engines": {
     "node": ">=18"
   }
