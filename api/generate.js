@@ -85,7 +85,7 @@ Return ONLY a raw JSON object — NO markdown fences, NO \`\`\`json:
   "total_cards": 4,
   "cards": [
     { "card_id": 1, "type": "header", "title": "Video/Article Title Hook", "subtitle": "Core promise: what viewers will learn", "gold_quote": "Opening hook line that stops the scroll", "key_takeaways": ["Main argument 1", "Main argument 2", "Main argument 3"] },
-    { "card_id": 3, "type": "action", "title": "Part 1: Opening & Context", "steps": ["Hook & problem statement", "Why this matters now", "Preview of what's coming"] },
+    { "card_id": 2, "type": "action", "title": "Part 1: Opening & Context", "steps": ["Hook & problem statement", "Why this matters now", "Preview of what's coming"] },
     { "card_id": 3, "type": "action", "title": "Part 2: Core Content", "steps": ["Key point A with evidence", "Key point B with evidence", "Key point C with evidence"] },
     { "card_id": 4, "type": "action", "title": "Part 3: Conclusion & CTA", "steps": ["Summary of key takeaways", "Actionable next step for audience", "Call-to-action / closing line"] }
   ]
@@ -195,16 +195,15 @@ const LANG_MAP = {
 // NATIVE FETCH AI PROVIDERS (Zero SDK dependencies)
 // ══════════════════════════════════════════════════════════
 
-// ✔ Provider 1: Groq (Ultra-fast — llama-3.3-70b-versatile with JSON mode)
+// ✦ Provider 1: Groq (Ultra-fast, llama-3.3-70b / llama-3.1-8b)
 async function callGroq(apiKey, sysInstruction, userPrompt) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 20000);
 
-  // Models to try in order — 70b supports json_object; 8b does not, so skip json_object for it
   const modelsToTry = [
-    { model: 'llama-3.3-70b-versatile',   jsonMode: true  },
-    { model: 'llama-3.1-8b-instant',      jsonMode: false }, // 8b does NOT support json_object
-    { model: 'mixtral-8x7b-32768',        jsonMode: false },
+    { model: 'llama-3.3-70b-versatile', jsonMode: true },
+    { model: 'llama-3.1-8b-instant', jsonMode: false },
+    { model: 'mixtral-8x7b-32768', jsonMode: false },
   ];
 
   let lastErr = null;
@@ -214,10 +213,10 @@ async function callGroq(apiKey, sysInstruction, userPrompt) {
         model,
         messages: [
           { role: 'system', content: sysInstruction },
-          { role: 'user',   content: userPrompt }
+          { role: 'user', content: userPrompt }
         ],
         temperature: 0.7,
-        max_tokens: 2048,
+        max_tokens: 2048
       };
       if (jsonMode) body.response_format = { type: 'json_object' };
 
@@ -233,9 +232,9 @@ async function callGroq(apiKey, sysInstruction, userPrompt) {
 
       if (!res.ok) {
         const errText = await res.text().catch(() => '');
-        console.warn(`[Groq] model=${model} HTTP ${res.status}: ${errText.slice(0, 300)}`);
-        lastErr = new Error(`Groq HTTP ${res.status} (${model}): ${errText.slice(0, 200)}`);
-        continue; // try next model
+        console.warn(`[Groq] model=${model} HTTP ${res.status}: ${errText.slice(0, 200)}`);
+        lastErr = new Error(`Groq HTTP ${res.status} (${model}): ${errText.slice(0, 150)}`);
+        continue;
       }
 
       const data = await res.json();
@@ -248,7 +247,7 @@ async function callGroq(apiKey, sysInstruction, userPrompt) {
       lastErr = new Error(`Groq ${model} returned empty content`);
     } catch (e) {
       lastErr = e;
-      console.warn(`[Groq] model=${model} exception: ${e.message}`);
+      console.warn(`[Groq] model=${model} error: ${e.message}`);
     }
   }
 
@@ -256,14 +255,13 @@ async function callGroq(apiKey, sysInstruction, userPrompt) {
   throw lastErr || new Error('Groq: all models failed');
 }
 
-// ✔ Provider 2: OpenRouter (Free Fallback Channel)
+// ✦ Provider 2: OpenRouter (Free Fallback Channel)
 async function callOpenRouter(apiKey, sysInstruction, userPrompt) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 20000);
 
   const key = (apiKey && apiKey.trim()) || (process.env.OPENROUTER_API_KEY || '').trim();
 
-  // Models to try — free models only if no key
   const modelsToTry = [
     'meta-llama/llama-3.2-11b-vision-instruct:free',
     'mistralai/mistral-7b-instruct:free',
@@ -277,56 +275,101 @@ async function callOpenRouter(apiKey, sysInstruction, userPrompt) {
         'Content-Type': 'application/json',
         'HTTP-Referer': 'https://cardifyai.lumiere-private.com',
         'X-Title': 'Cardify AI'
-          { role: 'user', content: userPrompt }
-        ],
-        temperature: 0.7,
-        max_tokens: 2048
-      })
-    });
-    clearTimeout(timeout);
-    if (!res.ok) {
-      const errText = await res.text().catch(() => '');
-      throw new Error(`OpenRouter HTTP ${res.status}: ${errText.slice(0, 200)}`);
+      };
+      if (key) headers['Authorization'] = `Bearer ${key}`;
+
+      const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers,
+        signal: controller.signal,
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: 'system', content: sysInstruction },
+            { role: 'user', content: userPrompt }
+          ],
+          temperature: 0.7,
+          max_tokens: 2048
+        })
+      });
+
+      if (!res.ok) {
+        const errText = await res.text().catch(() => '');
+        console.warn(`[OpenRouter] model=${model} HTTP ${res.status}: ${errText.slice(0, 200)}`);
+        lastErr = new Error(`OpenRouter HTTP ${res.status} (${model}): ${errText.slice(0, 150)}`);
+        continue;
+      }
+
+      const data = await res.json();
+      const text = data.choices?.[0]?.message?.content || '';
+      if (text && text.trim().length > 10) {
+        clearTimeout(timeout);
+        console.log(`[OpenRouter] ✅ Success via model: ${model}`);
+        return text;
+      }
+      lastErr = new Error(`OpenRouter ${model} returned empty content`);
+    } catch (e) {
+      lastErr = e;
+      console.warn(`[OpenRouter] model=${model} error: ${e.message}`);
     }
-    const data = await res.json();
-    return data.choices?.[0]?.message?.content || '';
-  } catch (e) {
-    clearTimeout(timeout);
-    throw e;
   }
+
+  clearTimeout(timeout);
+  throw lastErr || new Error('OpenRouter: all models failed');
 }
 
 // ✦ Provider 3: Gemini REST API Native (No SDK overhead)
 async function callGeminiRest(apiKey, sysInstruction, userPrompt) {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15000);
-  try {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey.trim()}`;
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      signal: controller.signal,
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: sysInstruction }] },
-        contents: [{ parts: [{ text: userPrompt }] }],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 2048,
-          responseMimeType: 'application/json'
-        }
-      })
-    });
-    clearTimeout(timeout);
-    if (!res.ok) {
-      const errText = await res.text().catch(() => '');
-      throw new Error(`Gemini HTTP ${res.status}: ${errText.slice(0, 200)}`);
+  const timeout = setTimeout(() => controller.abort(), 20000);
+
+  const modelsToTry = [
+    { model: 'gemini-2.0-flash', jsonMode: true },
+    { model: 'gemini-1.5-flash', jsonMode: true },
+    { model: 'gemini-1.5-flash-8b', jsonMode: false },
+  ];
+
+  let lastErr = null;
+  for (const { model, jsonMode } of modelsToTry) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey.trim()}`;
+      const genConfig = { temperature: 0.7, maxOutputTokens: 2048 };
+      if (jsonMode) genConfig.responseMimeType = 'application/json';
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: sysInstruction }] },
+          contents: [{ parts: [{ text: userPrompt }] }],
+          generationConfig: genConfig
+        })
+      });
+
+      if (!res.ok) {
+        const errText = await res.text().catch(() => '');
+        console.warn(`[Gemini] model=${model} HTTP ${res.status}: ${errText.slice(0, 200)}`);
+        lastErr = new Error(`Gemini HTTP ${res.status} (${model}): ${errText.slice(0, 150)}`);
+        continue;
+      }
+
+      const data = await res.json();
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      if (text && text.trim().length > 10) {
+        clearTimeout(timeout);
+        console.log(`[Gemini] ✅ Success via model: ${model}`);
+        return text;
+      }
+      lastErr = new Error(`Gemini ${model} returned empty content`);
+    } catch (e) {
+      lastErr = e;
+      console.warn(`[Gemini] model=${model} error: ${e.message}`);
     }
-    const data = await res.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-  } catch (e) {
-    clearTimeout(timeout);
-    throw e;
   }
+
+  clearTimeout(timeout);
+  throw lastErr || new Error('Gemini: all models failed');
 }
 
 // ══════════════════════════════════════════════════════════
@@ -337,7 +380,6 @@ async function executeWithFallback({ sysInstruction, userPrompt, userApiKey }) {
   const openRouterKey = process.env.OPENROUTER_API_KEY || '';
   const geminiKey = process.env.GEMINI_API_KEY || '';
 
-  // Build ordered provider pipeline
   const providers = [];
 
   // User custom key handles
@@ -350,7 +392,6 @@ async function executeWithFallback({ sysInstruction, userPrompt, userApiKey }) {
     } else if (cleanUserKey.startsWith('sk-or-')) {
       providers.push({ name: 'OpenRouter (User Key)', fn: () => callOpenRouter(cleanUserKey, sysInstruction, userPrompt) });
     } else {
-      // Fallback try user key on Groq and Gemini
       providers.push({ name: 'Groq (User Key)', fn: () => callGroq(cleanUserKey, sysInstruction, userPrompt) });
       providers.push({ name: 'Gemini (User Key)', fn: () => callGeminiRest(cleanUserKey, sysInstruction, userPrompt) });
     }
@@ -378,7 +419,6 @@ async function executeWithFallback({ sysInstruction, userPrompt, userApiKey }) {
     } catch (err) {
       console.warn(`[Failover Engine] ⚠️ Provider "${provider.name}" failed: ${err.message}. Fast failing to next provider...`);
       lastErr = err;
-      // Fast 50ms pause before trying next provider
       await new Promise(r => setTimeout(r, 50));
     }
   }
