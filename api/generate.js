@@ -172,7 +172,7 @@ export default async function handler(req, res) {
   const { text, theme, style, userApiKey, licenseKey, lang } = req.body;
 
   // Use user-provided key (from frontend localStorage) OR fall back to server env key
-  const apiKey = userApiKey?.trim() || process.env.GEMINI_API_KEY;
+  const apiKey = userApiKey?.trim() || process.env.GEMINI_API_KEY || process.env['Gemini-API'] || process.env.GEMINI_API || process.env.GEMINI_KEY;
 
   if (!apiKey) {
     console.error('No API key available');
