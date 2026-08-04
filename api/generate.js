@@ -155,6 +155,36 @@ const LANG_MAP = {
 };
 
 // ── Main handler ──
+// ── Helper to collect all available Gemini API Keys ──
+function getAvailableApiKeys(userKey) {
+  const keys = [];
+
+  // 1. Client user-provided key (highest priority)
+  if (userKey && typeof userKey === 'string' && userKey.trim().length > 5) {
+    keys.push(userKey.trim());
+  }
+
+  # Collect from environment variables (GEMINI_API_KEY, GEMINI_API_KEY_BACKUP, etc.)
+  const envVars = [
+    process.env.GEMINI_API_KEY,
+    process.env.GEMINI_API_KEY_BACKUP,
+    process.env['Gemini-API'],
+    process.env.GEMINI_API,
+    process.env.GEMINI_KEY
+  ];
+
+  envVars.forEach(val => {
+    if (val && typeof val === 'string') {
+      const splitKeys = val.split(',').map(k => k.trim()).filter(k => k.length > 5);
+      splitKeys.forEach(k => {
+        if (!keys.includes(k)) keys.push(k);
+      });
+    }
+  });
+
+  return keys;
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -171,12 +201,10 @@ export default async function handler(req, res) {
 
   const { text, theme, style, userApiKey, licenseKey, lang } = req.body;
 
-  // Use user-provided key (from frontend localStorage) OR fall back to server env key
-  const apiKey = userApiKey?.trim() || process.env.GEMINI_API_KEY || process.env['Gemini-API'] || process.env.GEMINI_API || process.env.GEMINI_KEY;
-
-  if (!apiKey) {
-    console.error('No API key available');
-    return res.status(500).json({ error: 'Server configuration error: API key not configured' });
+  const apiKeys = getAvailableApiKeys(userApiKey);
+  if (apiKeys.length === 0) {
+    console.error('No API key available in request or environment variables');
+    return res.status(500).json({ error: 'Server configuration error: No Gemini API Key configured' });
   }
 
   // If NOT using user's own key AND NOT having a valid license, apply rate limiting
@@ -188,11 +216,10 @@ export default async function handler(req, res) {
     }
   }
 
-  const modelName = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
-  const systemPrompt = STYLE_PROMPTS[style] || STYLE_PROMPTS.default;
+  const stylePrompt = STYLE_PROMPTS[style] || STYLE_PROMPTS.default;
   const targetLang = LANG_MAP[lang] || 'English';
 
-  const sysInstruction = `${systemPrompt}
+  const sysInstruction = `${stylePrompt}
 
 SERIES & CHAPTER AWARENESS RULE:
 1. Analyze if the input text belongs to a chapter, section, or part of a larger book/report (e.g., contains "Part 1", "Chapter 1", "第一章", "上集", "第1节", or is an excerpt of a longer work).
@@ -207,43 +234,58 @@ CRITICAL LANGUAGE INSTRUCTION: You MUST output all text fields (title, subtitle,
   const fallbackModel = 'gemini-1.5-flash';
 
   let rawText = '';
-  const genAI = new GoogleGenerativeAI(apiKey);
+  let lastError = null;
 
-  try {
-    const model = genAI.getGenerativeModel({
-      model: primaryModel,
-      generationConfig: { temperature: 0.75, maxOutputTokens: 2048, responseMimeType: 'application/json' },
-      systemInstruction: sysInstruction,
-    });
-    const result = await model.generateContent(userPrompt);
-    rawText = result.response.text();
-  } catch (primaryErr) {
-    console.warn(`Primary model (${primaryModel}) failed: ${primaryErr.message}. Trying fallback model (${fallbackModel})...`);
+  // Multi-Key & Multi-Model failover loop
+  for (const currentApiKey of apiKeys) {
+    const genAI = new GoogleGenerativeAI(currentApiKey);
+
+    // 1. Try Primary Model (gemini-2.0-flash)
     try {
       const model = genAI.getGenerativeModel({
-        model: fallbackModel,
+        model: primaryModel,
         generationConfig: { temperature: 0.75, maxOutputTokens: 2048, responseMimeType: 'application/json' },
         systemInstruction: sysInstruction,
       });
       const result = await model.generateContent(userPrompt);
       rawText = result.response.text();
-    } catch (fallbackErr) {
-      console.error('Fallback model also failed:', fallbackErr);
-      const errMsg = fallbackErr.message || primaryErr.message || 'Gemini API call failed';
-      if (errMsg.includes('API_KEY_INVALID') || errMsg.includes('API key not valid')) {
-        return res.status(401).json({ error: 'Gemini API Key 无效/未开启，请检查配置或输入有效的 Key' });
+      if (rawText) break;
+    } catch (primaryErr) {
+      console.warn(`[Key Failover] Primary model (${primaryModel}) failed with key ...${currentApiKey.slice(-4)}: ${primaryErr.message}`);
+      lastError = primaryErr;
+
+      // 2. Try Fallback Model (gemini-1.5-flash) with same key
+      try {
+        const model = genAI.getGenerativeModel({
+          model: fallbackModel,
+          generationConfig: { temperature: 0.75, maxOutputTokens: 2048, responseMimeType: 'application/json' },
+          systemInstruction: sysInstruction,
+        });
+        const result = await model.generateContent(userPrompt);
+        rawText = result.response.text();
+        if (rawText) break;
+      } catch (fallbackErr) {
+        console.warn(`[Key Failover] Fallback model (${fallbackModel}) failed with key ...${currentApiKey.slice(-4)}: ${fallbackErr.message}`);
+        lastError = fallbackErr;
+        // Continue loop to try next API key
       }
-      if (errMsg.includes('RESOURCE_EXHAUSTED') || errMsg.includes('429')) {
-        return res.status(429).json({ error: 'Gemini API 额度不足/请求过快，请稍后重试或使用个人 Key' });
-      }
-      return res.status(500).json({ error: `Gemini API 调用失败: ${errMsg}` });
     }
   }
 
+  if (!rawText) {
+    const errMsg = lastError ? lastError.message : 'All API Keys & Model attempts failed';
+    if (errMsg.includes('API_KEY_INVALID') || errMsg.includes('API key not valid')) {
+      return res.status(401).json({ error: 'Gemini API Key 无效，请检查配置或输入有效的 Key' });
+    }
+    if (errMsg.includes('RESOURCE_EXHAUSTED') || errMsg.includes('429')) {
+      return res.status(429).json({ error: 'Gemini API 额度不足/请求过于频繁，请稍后重试或使用个人 Key' });
+    }
+    return res.status(500).json({ error: `Gemini API 调用失败: ${errMsg}` });
+  }
+
   try {
-    if (!rawText) throw new Error('Empty response from Gemini');
     const parsed = extractJSON(rawText);
-    const normalized = normalizeResponse(parsed, theme);
+    const normalized = normalizeResponse(parsed, theme || 'dark');
     return res.status(200).json(normalized);
   } catch (parseErr) {
     console.error('JSON Parse error:', parseErr);

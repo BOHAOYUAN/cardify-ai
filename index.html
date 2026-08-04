@@ -986,9 +986,10 @@ Example: Annual report excerpts, academic abstracts, blog posts, newsletter cont
 // ══════════════════════════════════════════════════════════
 let selectedTheme = 'dark';
 let swiper = null;
+let currentLang = localStorage.getItem('cardify_language') || 'en';
 
 // ══════════════════════════════════════════════════════════
-// DEMO DATA — replace AI API call with real fetch() later
+// DEMO DATA
 // ══════════════════════════════════════════════════════════
 const DEMO_RESPONSES = {
   en: {
@@ -1611,7 +1612,7 @@ const I18N = {
   }
 };
 
-let currentLang = localStorage.getItem('cardify_language') || 'en';
+// currentLang initialized globally at top of script
 
 function applyLanguage(lang) {
   currentLang = lang;
@@ -1796,14 +1797,21 @@ textarea.addEventListener('input', updateCharCount);
 
 // ── Generate ──
 async function doGenerate() {
-  const text = textarea.value.trim();
-  const selectedStyle = document.getElementById('style-select').value;
-  const userApiKey = getUserApiKey();
+  const textarea = document.getElementById('content-input');
+  const text = textarea ? textarea.value.trim() : '';
+  const styleSelectEl = document.getElementById('style-select');
+  const selectedStyle = styleSelectEl ? styleSelectEl.value : 'default';
+  const themeToUse = typeof selectedTheme !== 'undefined' ? (selectedTheme || 'dark') : 'dark';
+  const langToUse = typeof currentLang !== 'undefined' ? (currentLang || 'en') : 'en';
+  const userApiKey = getUserApiKey() || '';
+  const licenseKey = getLicenseKey() || '';
 
   if (!text) {
-    textarea.focus();
-    textarea.style.borderColor = 'rgba(252,92,156,0.6)';
-    setTimeout(() => textarea.style.borderColor = '', 1500);
+    if (textarea) {
+      textarea.focus();
+      textarea.style.borderColor = 'rgba(252,92,156,0.6)';
+      setTimeout(() => textarea.style.borderColor = '', 1500);
+    }
     return;
   }
 
