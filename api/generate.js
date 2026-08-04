@@ -195,61 +195,88 @@ const LANG_MAP = {
 // NATIVE FETCH AI PROVIDERS (Zero SDK dependencies)
 // ══════════════════════════════════════════════════════════
 
-// ✦ Provider 1: Groq (Ultra-fast, Llama 3.1 8B Instant / Llama 3.3 70B)
+// ✔ Provider 1: Groq (Ultra-fast — llama-3.3-70b-versatile with JSON mode)
 async function callGroq(apiKey, sysInstruction, userPrompt) {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15000);
-  try {
-    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey.trim()}`,
-        'Content-Type': 'application/json'
-      },
-      signal: controller.signal,
-      body: JSON.stringify({
-        model: 'llama-3.1-8b-instant',
+  const timeout = setTimeout(() => controller.abort(), 20000);
+
+  // Models to try in order — 70b supports json_object; 8b does not, so skip json_object for it
+  const modelsToTry = [
+    { model: 'llama-3.3-70b-versatile',   jsonMode: true  },
+    { model: 'llama-3.1-8b-instant',      jsonMode: false }, // 8b does NOT support json_object
+    { model: 'mixtral-8x7b-32768',        jsonMode: false },
+  ];
+
+  let lastErr = null;
+  for (const { model, jsonMode } of modelsToTry) {
+    try {
+      const body = {
+        model,
         messages: [
           { role: 'system', content: sysInstruction },
-          { role: 'user', content: userPrompt }
+          { role: 'user',   content: userPrompt }
         ],
         temperature: 0.7,
         max_tokens: 2048,
-        response_format: { type: 'json_object' }
-      })
-    });
-    clearTimeout(timeout);
-    if (!res.ok) {
-      const errText = await res.text().catch(() => '');
-      throw new Error(`Groq HTTP ${res.status}: ${errText.slice(0, 200)}`);
+      };
+      if (jsonMode) body.response_format = { type: 'json_object' };
+
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey.trim()}`,
+          'Content-Type': 'application/json'
+        },
+        signal: controller.signal,
+        body: JSON.stringify(body)
+      });
+
+      if (!res.ok) {
+        const errText = await res.text().catch(() => '');
+        console.warn(`[Groq] model=${model} HTTP ${res.status}: ${errText.slice(0, 300)}`);
+        lastErr = new Error(`Groq HTTP ${res.status} (${model}): ${errText.slice(0, 200)}`);
+        continue; // try next model
+      }
+
+      const data = await res.json();
+      const text = data.choices?.[0]?.message?.content || '';
+      if (text && text.trim().length > 10) {
+        clearTimeout(timeout);
+        console.log(`[Groq] ✅ Success via model: ${model}`);
+        return text;
+      }
+      lastErr = new Error(`Groq ${model} returned empty content`);
+    } catch (e) {
+      lastErr = e;
+      console.warn(`[Groq] model=${model} exception: ${e.message}`);
     }
-    const data = await res.json();
-    return data.choices?.[0]?.message?.content || '';
-  } catch (e) {
-    clearTimeout(timeout);
-    throw e;
   }
+
+  clearTimeout(timeout);
+  throw lastErr || new Error('Groq: all models failed');
 }
 
-// ✦ Provider 2: OpenRouter (Free Fallback Channel)
+// ✔ Provider 2: OpenRouter (Free Fallback Channel)
 async function callOpenRouter(apiKey, sysInstruction, userPrompt) {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15000);
-  try {
-    const key = apiKey || process.env.OPENROUTER_API_KEY || '';
-    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': key ? `Bearer ${key.trim()}` : '',
+  const timeout = setTimeout(() => controller.abort(), 20000);
+
+  const key = (apiKey && apiKey.trim()) || (process.env.OPENROUTER_API_KEY || '').trim();
+
+  // Models to try — free models only if no key
+  const modelsToTry = [
+    'meta-llama/llama-3.2-11b-vision-instruct:free',
+    'mistralai/mistral-7b-instruct:free',
+    'google/gemma-2-9b-it:free',
+  ];
+
+  let lastErr = null;
+  for (const model of modelsToTry) {
+    try {
+      const headers = {
         'Content-Type': 'application/json',
         'HTTP-Referer': 'https://cardifyai.lumiere-private.com',
         'X-Title': 'Cardify AI'
-      },
-      signal: controller.signal,
-      body: JSON.stringify({
-        model: 'meta-llama/llama-3.2-11b-vision-instruct:free',
-        messages: [
-          { role: 'system', content: sysInstruction },
           { role: 'user', content: userPrompt }
         ],
         temperature: 0.7,
