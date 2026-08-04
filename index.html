@@ -1038,11 +1038,19 @@ Example: Annual report excerpts, academic abstracts, blog posts, newsletter cont
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
 // ══════════════════════════════════════════════════════════
-// GLOBAL STATE & DECLARATIONS
+// GLOBAL STATE & DECLARATIONS (window-scoped safety guards)
 // ══════════════════════════════════════════════════════════
-let selectedTheme = 'dark';
+let selectedTheme = window.selectedTheme || 'dark';
 let swiper = null;
 let currentLang = localStorage.getItem('cardify_language') || 'en';
+
+// Expose to window so any inline handler or async callback can safely read
+window.selectedTheme = selectedTheme;
+window.currentLang   = currentLang;
+
+// Guard re-assignment so window stays in sync
+function setSelectedTheme(t) { selectedTheme = t; window.selectedTheme = t; }
+function setCurrentLang(l)   { currentLang = l;   window.currentLang   = l; }
 
 // ══════════════════════════════════════════════════════════
 // DEMO DATA
@@ -1701,7 +1709,7 @@ const I18N = {
 // currentLang initialized globally at top of script
 
 function applyLanguage(lang) {
-  currentLang = lang;
+  setCurrentLang(lang);
   localStorage.setItem('cardify_language', lang);
   const dict = I18N[lang] || I18N.en;
 
@@ -1897,7 +1905,7 @@ document.querySelectorAll('.theme-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    selectedTheme = btn.dataset.theme || 'dark';
+    setSelectedTheme(btn.dataset.theme || 'dark');
   });
 });
 
@@ -1973,11 +1981,26 @@ async function doGenerate() {
 
     if (!resp.ok) {
       const errBody = await resp.json().catch(() => ({}));
-      if (resp.status === 429 || errBody.error === 'DAILY_LIMIT_EXCEEDED') {
+      const errCode = errBody.error || '';
+
+      // Map backend error codes to user-friendly i18n messages
+      if (resp.status === 429 || errCode === 'DAILY_LIMIT_EXCEEDED') {
         showLimitModal();
-        throw new Error(errBody.message || (dict.quota_empty || 'Daily limit reached'));
+        throw new Error(errBody.message || dict.quota_empty || 'Daily limit reached');
       }
-      throw new Error(errBody.error || `HTTP ${resp.status}`);
+      if (errCode === 'QUOTA_EXHAUSTED') {
+        throw new Error(dict.toast_api_error ? dict.toast_api_error + ': Quota exhausted. Try again later.' : 'Gemini quota exhausted. Try again later or use your own API Key.');
+      }
+      if (errCode === 'API_KEY_INVALID') {
+        throw new Error(dict.toast_api_invalid ? dict.toast_api_invalid + ' (Key rejected by Gemini)' : 'API Key invalid. Please check your Gemini API Key.');
+      }
+      if (errCode === 'AI_RESPONSE_FORMAT_ERROR') {
+        throw new Error('AI returned unreadable response. Please try again.');
+      }
+      if (errCode === 'GENERATION_FAILED') {
+        throw new Error('AI generation failed. Please try again in a moment.');
+      }
+      throw new Error(errCode || `HTTP ${resp.status}`);
     }
 
     cardData = await resp.json();
