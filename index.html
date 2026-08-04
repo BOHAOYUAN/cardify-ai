@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.min.mjs" type="module"></script>
   <style>
     :root {
       --bg: #0a0a0f;
@@ -750,6 +751,48 @@
       line-height: 1.4;
     }
 
+    /* ── PDF Upload Zone ── */
+    .pdf-upload-zone {
+      border: 2px dashed rgba(124,92,252,0.35);
+      border-radius: 14px;
+      background: rgba(124,92,252,0.04);
+      padding: 18px 20px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: all 0.22s;
+      position: relative;
+    }
+    .pdf-upload-zone:hover, .pdf-upload-zone.dragover {
+      border-color: var(--accent);
+      background: rgba(124,92,252,0.1);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(124,92,252,0.15);
+    }
+    .pdf-upload-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: linear-gradient(135deg, rgba(124,92,252,0.25), rgba(252,92,156,0.25));
+      display: grid; place-items: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .pdf-upload-text { flex: 1; }
+    .pdf-upload-title {
+      font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 2px;
+    }
+    .pdf-upload-hint { font-size: 11px; color: var(--text-muted); }
+    .pdf-upload-status {
+      font-size: 12px; font-weight: 600;
+      color: #4ade80; display: none;
+      align-items: center; gap: 6px;
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.3);
+      border-radius: 8px; padding: 6px 12px;
+    }
+    .pdf-upload-status.visible { display: flex; }
+    #pdf-file-input { display: none; }
+
     /* ── Footer ── */
     footer { text-align: center; padding: 48px 0 36px; color: var(--text-muted); font-size: 13px; }
     footer a { color: var(--accent); text-decoration: none; }
@@ -820,6 +863,18 @@
   <!-- Input -->
   <div class="input-card">
     <label class="input-label" for="content-input" data-i18n="input_label">✦ Paste your content</label>
+
+    <!-- PDF Upload Zone -->
+    <div class="pdf-upload-zone" id="pdf-upload-zone" role="button" tabindex="0" aria-label="Upload PDF">
+      <div class="pdf-upload-icon">📄</div>
+      <div class="pdf-upload-text">
+        <div class="pdf-upload-title" data-i18n="pdf_upload_title">Upload or drag & drop a PDF</div>
+        <div class="pdf-upload-hint" data-i18n="pdf_upload_hint">PDF text will be auto-extracted and filled in below (max 15,000 chars)</div>
+      </div>
+      <div class="pdf-upload-status" id="pdf-upload-status">✅ <span id="pdf-status-text"></span></div>
+      <input type="file" id="pdf-file-input" accept=".pdf" />
+    </div>
+
     <div class="textarea-wrap">
       <textarea id="content-input" data-i18n-ph="input_placeholder" placeholder="Paste any article, research paper, report, or long-form text here...
 
@@ -892,11 +947,11 @@ Example: Annual report excerpts, academic abstracts, blog posts, newsletter cont
     <div class="export-bar" id="export-bar">
       <button class="export-btn-large export-current" id="export-current-btn">
         <div class="btn-spinner"></div>
-        <span class="btn-label">📷 导出当前卡片</span>
+        <span class="btn-label" id="export-current-label">📷 Export Current Card</span>
       </button>
       <button class="export-btn-large export-all" id="export-all-btn">
         <div class="btn-spinner"></div>
-        <span class="btn-label">✦ 导出全部卡片包 (PNG)</span>
+        <span class="btn-label" id="export-all-label">✦ Export All Cards (PNG)</span>
       </button>
     </div>
   </section>
@@ -1115,6 +1170,21 @@ const I18N = {
     loading_step3: "✨ Generating beautiful card layouts...",
     export_current: "📷 Export Current Card",
     export_all: "✦ Export All Cards (PNG)",
+    pdf_upload_title: "Upload or drag & drop a PDF",
+    pdf_upload_hint: "PDF text will be auto-extracted and filled below (max 15,000 chars)",
+    pdf_success: "PDF extracted successfully! ({count} chars)",
+    pdf_error: "Failed to extract PDF. Please paste text manually.",
+    pdf_parsing: "📄 Parsing PDF...",
+    card_type_header: "⭐ Key Insights",
+    card_type_metrics: "📊 Data & Metrics",
+    card_type_action: "⚡ Action Plan",
+    card_watermark: "✦ Cardify AI",
+    toast_key_invalid: "⚠️ Please enter a valid License Key",
+    toast_key_activated: "🎉 VIP activated! Unlimited generation unlocked!",
+    toast_api_invalid: "⚠️ Please enter a valid Gemini API Key",
+    toast_api_saved: "🔓 Personal Key saved. Unlimited generation unlocked!",
+    toast_timeout: "⏱️ Request timed out. Showing demo cards.",
+    toast_api_error: "⚠️ API error",
     modal_title: "Unlock Cardify AI VIP Unlimited",
     modal_desc: "Bypass the 3 daily limits and enjoy full professional card generation & 2x HD export privileges!",
     plan_pro_badge: "⚡ Most Popular",
@@ -1173,6 +1243,21 @@ const I18N = {
     loading_step3: "✨ 正在渲染高清卡片视觉布局...",
     export_current: "📷 导出当前卡片",
     export_all: "✦ 导出全部卡片包 (PNG)",
+    pdf_upload_title: "上传或拖拽 PDF 文件",
+    pdf_upload_hint: "PDF 文字将自动提取并填入输入框（最多 15,000 字）",
+    pdf_success: "PDF 提取成功！（{count} 字符）",
+    pdf_error: "PDF 提取失败，请手动粘贴文字。",
+    pdf_parsing: "📄 正在解析 PDF...",
+    card_type_header: "⭐ 核心洞见",
+    card_type_metrics: "📊 数据指标",
+    card_type_action: "⚡ 行动指南",
+    card_watermark: "✦ Cardify AI 生成",
+    toast_key_invalid: "⚠️ 请输入有效的 License Key",
+    toast_key_activated: "🎉 VIP 成功激活！无限生成已解锁！",
+    toast_api_invalid: "⚠️ 请输入有效的 Gemini API Key",
+    toast_api_saved: "🔓 个人 Key 已保存，无限生成已解锁！",
+    toast_timeout: "⏱️ 请求超时，展示演示卡片",
+    toast_api_error: "⚠️ API 响应异常",
     modal_title: "解锁 Cardify AI VIP 无限生成",
     modal_desc: "突破每日 3 次限制，享受全套专业级知识卡片生成与 2 倍超清海报导出特权！",
     plan_pro_badge: "⚡ 个人创作者推荐",
@@ -1642,6 +1727,12 @@ function applyLanguage(lang) {
     genBtn.innerHTML = `<span class="btn-icon">✦</span> ${dict.btn_generate || 'Generate Cards'}`;
   }
 
+  // Update export button labels (i18n fix: no more hardcoded Chinese)
+  const exportCurrentLabel = document.getElementById('export-current-label');
+  if (exportCurrentLabel) exportCurrentLabel.textContent = dict.export_current || '📷 Export Current Card';
+  const exportAllLabel = document.getElementById('export-all-label');
+  if (exportAllLabel) exportAllLabel.textContent = dict.export_all || '✦ Export All Cards (PNG)';
+
   // Update char count unit
   updateCharCount();
 
@@ -1775,28 +1866,30 @@ document.getElementById('quota-badge')?.addEventListener('click', () => {
 
 // Activate License Key
 document.getElementById('activate-license-btn').addEventListener('click', () => {
+  const dict = I18N[currentLang] || I18N.en;
   const key = document.getElementById('license-key-input').value.trim();
   if (!key || key.length < 5) {
-    showToast('⚠️ 请输入有效的 License Key', 'error');
+    showToast(dict.toast_key_invalid || '⚠️ Please enter a valid License Key', 'error');
     return;
   }
   saveLicenseKey(key);
   hideLimitModal();
   updateQuotaBadge();
-  showToast('🎉 VIP 成功激活！无限生成已解锁！', 'success', 4000);
+  showToast(dict.toast_key_activated || '🎉 VIP activated! Unlimited generation unlocked!', 'success', 4000);
 });
 
 // Save Gemini API Key
 document.getElementById('modal-save-key-btn').addEventListener('click', () => {
+  const dict = I18N[currentLang] || I18N.en;
   const key = document.getElementById('modal-api-key-input').value.trim();
   if (!key || key.length < 10) {
-    showToast('⚠️ 请输入有效的 Gemini API Key', 'error');
+    showToast(dict.toast_api_invalid || '⚠️ Please enter a valid Gemini API Key', 'error');
     return;
   }
   saveUserApiKey(key);
   hideLimitModal();
   updateQuotaBadge();
-  showToast('🔓 个人 Key 已保存，无限生成已解锁！', 'success');
+  showToast(dict.toast_api_saved || '🔓 Personal Key saved. Unlimited generation unlocked!', 'success');
 });
 
 // ── Theme selector ──
@@ -1882,7 +1975,7 @@ async function doGenerate() {
       const errBody = await resp.json().catch(() => ({}));
       if (resp.status === 429 || errBody.error === 'DAILY_LIMIT_EXCEEDED') {
         showLimitModal();
-        throw new Error(errBody.detail || '今日 3 次免费生成额度已用完！请升级 VIP 或输入您的 Gemini API Key');
+        throw new Error(errBody.message || (dict.quota_empty || 'Daily limit reached'));
       }
       throw new Error(errBody.error || `HTTP ${resp.status}`);
     }
@@ -1895,7 +1988,10 @@ async function doGenerate() {
     cardData = isChinese
       ? JSON.parse(JSON.stringify(DEMO_RESPONSES.zh))
       : JSON.parse(JSON.stringify(DEMO_RESPONSES.en));
-    showToast(err.name === 'AbortError' ? '⏱️ 请求超时，展示演示卡片' : `⚠️ API 响应异常: ${err.message || '未知错误'}`, 'error', 6000);
+    const toastMsg = err.name === 'AbortError'
+      ? (dict.toast_timeout || '⏱️ Request timed out. Showing demo cards.')
+      : `${dict.toast_api_error || '⚠️ API error'}: ${err.message || '?'}`;
+    showToast(toastMsg, 'error', 6000);
   }
 
   cardData.theme_color = selectedTheme || 'dark';
@@ -2055,7 +2151,14 @@ function renderCards(data) {
 }
 
 function buildCard(card, num, total, theme) {
-  const typeLabel = { header: '⭐ Key Insights', metrics: '📊 Data & Metrics', action: '⚡ Action Plan' };
+  // i18n-aware type labels and watermark — no more hardcoded strings!
+  const dict = I18N[currentLang] || I18N.en;
+  const typeLabel = {
+    header: dict.card_type_header || '⭐ Key Insights',
+    metrics: dict.card_type_metrics || '📊 Data & Metrics',
+    action: dict.card_type_action || '⚡ Action Plan'
+  };
+  const watermarkText = dict.card_watermark || '✦ Cardify AI';
   const themeClass = `theme-${theme}`;
 
   let body = '';
@@ -2100,10 +2203,100 @@ function buildCard(card, num, total, theme) {
       <h2>${card.title}</h2>
       ${card.subtitle ? `<div class="subtitle">${card.subtitle}</div>` : ''}
       ${body}
-      <div class="kcard-watermark">✦ Cardify AI</div>
+      <div class="kcard-watermark">${watermarkText}</div>
     </div>
   `;
 }
+
+// ══════════════════════════════════════════════════════════
+// PDF UPLOAD & PARSE ENGINE (pdfjs-dist via CDN)
+// ══════════════════════════════════════════════════════════
+(async function initPdfUpload() {
+  // Dynamically import pdf.js as ES module
+  let pdfjsLib = null;
+  try {
+    // Try loading pdfjs as module — works in modern browsers
+    const mod = await import('https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.min.mjs');
+    pdfjsLib = mod;
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs';
+  } catch(e) {
+    console.warn('pdfjs-dist could not be loaded:', e);
+    return;
+  }
+
+  const zone = document.getElementById('pdf-upload-zone');
+  const fileInput = document.getElementById('pdf-file-input');
+  const statusBox = document.getElementById('pdf-upload-status');
+  const statusText = document.getElementById('pdf-status-text');
+  const contentTextarea = document.getElementById('content-input');
+  if (!zone || !fileInput || !contentTextarea) return;
+
+  async function parsePdf(file) {
+    const dict = I18N[currentLang] || I18N.en;
+    statusBox.classList.add('visible');
+    statusText.textContent = dict.pdf_parsing || '📄 Parsing PDF...';
+    statusBox.style.color = '#7c5cfc';
+    statusBox.style.background = 'rgba(124,92,252,0.1)';
+    statusBox.style.borderColor = 'rgba(124,92,252,0.3)';
+
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let fullText = '';
+      const MAX_CHARS = 15000;
+
+      for (let p = 1; p <= pdf.numPages; p++) {
+        if (fullText.length >= MAX_CHARS) break;
+        const page = await pdf.getPage(p);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items.map(item => item.str).join(' ');
+        fullText += pageText + '\n';
+      }
+
+      fullText = fullText.trim().slice(0, MAX_CHARS);
+      contentTextarea.value = fullText;
+      updateCharCount();
+
+      // Success state
+      const successMsg = (dict.pdf_success || 'PDF extracted! ({count} chars)').replace('{count}', fullText.length.toLocaleString());
+      statusText.textContent = successMsg;
+      statusBox.style.color = '#4ade80';
+      statusBox.style.background = 'rgba(34,197,94,0.1)';
+      statusBox.style.borderColor = 'rgba(34,197,94,0.3)';
+      showToast('📄 ' + successMsg, 'success', 4000);
+    } catch(err) {
+      console.error('PDF parse error:', err);
+      const dict2 = I18N[currentLang] || I18N.en;
+      statusText.textContent = dict2.pdf_error || 'Failed to extract PDF. Please paste text manually.';
+      statusBox.style.color = '#f87171';
+      statusBox.style.background = 'rgba(239,68,68,0.1)';
+      statusBox.style.borderColor = 'rgba(239,68,68,0.3)';
+    }
+  }
+
+  // Click to open file picker
+  zone.addEventListener('click', () => fileInput.click());
+  zone.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') fileInput.click(); });
+  fileInput.addEventListener('change', e => {
+    if (e.target.files && e.target.files[0]) parsePdf(e.target.files[0]);
+    fileInput.value = '';
+  });
+
+  // Drag & drop
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type === 'application/pdf') {
+      parsePdf(file);
+    } else {
+      showToast('⚠️ Please drop a valid PDF file.', 'error');
+    }
+  });
+})();
 </script>
 </body>
 </html>
