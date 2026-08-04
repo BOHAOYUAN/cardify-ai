@@ -5,10 +5,9 @@
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-// ── Rate limiting (in-memory, resets on cold start) ──
+// ── Rate limiting (daily 3 free cards per IP, resets UTC 00:00) ──
 const rateLimitStore = new Map();
-const RATE_LIMIT = 10; // IP burst limit
-const RATE_WINDOW = 60 * 1000;
+const DAILY_FREE_LIMIT = 3;
 
 function getRateKey(req) {
   return req.headers['x-forwarded-for']?.split(',')[0]?.trim()
@@ -16,18 +15,24 @@ function getRateKey(req) {
     || 'unknown';
 }
 
-function isRateLimited(ip) {
-  const now = Date.now();
-  const record = rateLimitStore.get(ip) || { count: 0, resetAt: now + RATE_WINDOW };
-  if (now > record.resetAt) {
-    rateLimitStore.set(ip, { count: 1, resetAt: now + RATE_WINDOW });
-    return false;
+function checkDailyIpLimit(ip) {
+  const today = new Date().toISOString().slice(0, 10);
+  const record = rateLimitStore.get(ip);
+
+  if (!record || record.dateStr !== today) {
+    rateLimitStore.set(ip, { count: 1, dateStr: today });
+    return { allowed: true, count: 1 };
   }
-  if (record.count >= RATE_LIMIT) return true;
-  record.count++;
+
+  if (record.count >= DAILY_FREE_LIMIT) {
+    return { allowed: false, count: record.count };
+  }
+
+  record.count += 1;
   rateLimitStore.set(ip, record);
-  return false;
+  return { allowed: true, count: record.count };
 }
+
 
 // ── Style-based System Prompts ──
 const STYLE_PROMPTS = {
@@ -207,13 +212,14 @@ export default async function handler(req, res) {
     activeChannel = 'vip_official_key';
     keysToTry = getSystemEnvKeys();
   } else {
-    // ✦ Tier 3: Free Tier User (Free Channel, Rate Limited)
+    // ✦ Tier 3: Free Tier User (Free Channel, Rate Limited to 3/day per IP)
     activeChannel = 'free_tier';
     const ip = getRateKey(req);
-    if (isRateLimited(ip)) {
+    const limitCheck = checkDailyIpLimit(ip);
+    if (!limitCheck.allowed) {
       return res.status(429).json({
         error: 'DAILY_LIMIT_EXCEEDED',
-        detail: 'Today's daily free limit reached. Please upgrade to VIP or enter your own Gemini API Key.'
+        message: 'You have reached your daily limit of 3 free cards.'
       });
     }
     keysToTry = getSystemEnvKeys();

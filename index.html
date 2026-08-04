@@ -1667,16 +1667,24 @@ const QUOTA_KEY = 'cardify_quota';
 
 function getQuota() {
   try {
+    const today = todayStr();
+    const storedDate = localStorage.getItem('cardify_free_usage_date');
+    if (storedDate !== today) {
+      localStorage.setItem('cardify_free_usage_date', today);
+      localStorage.setItem('cardify_free_usage_count', '0');
+    }
     const raw = localStorage.getItem(QUOTA_KEY);
-    if (!raw) return { date: todayStr(), count: 0 };
+    if (!raw) return { date: today, count: parseInt(localStorage.getItem('cardify_free_usage_count') || '0', 10) };
     const data = JSON.parse(raw);
-    if (data.date !== todayStr()) return { date: todayStr(), count: 0 };
+    if (data.date !== today) return { date: today, count: 0 };
     return data;
   } catch { return { date: todayStr(), count: 0 }; }
 }
 
 function saveQuota(q) {
   localStorage.setItem(QUOTA_KEY, JSON.stringify(q));
+  localStorage.setItem('cardify_free_usage_date', q.date || todayStr());
+  localStorage.setItem('cardify_free_usage_count', String(q.count || 0));
 }
 
 function todayStr() {
