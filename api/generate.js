@@ -7,7 +7,7 @@
 // DAILY IP RATE LIMITER (3 free/day per IP, UTC reset)
 // ══════════════════════════════════════════════════════════
 const rateLimitStore = new Map();
-const DAILY_FREE_LIMIT = 10;
+const DAILY_FREE_LIMIT = 20;
 
 function getRateKey(req) {
   return req.headers['x-forwarded-for']?.split(',')[0]?.trim()
@@ -464,7 +464,7 @@ export default async function handler(req, res) {
     if (!limitCheck.allowed) {
       return res.status(429).json({
         error: 'DAILY_LIMIT_EXCEEDED',
-        message: 'You have reached your daily limit of 10 free cards. Upgrade to Pro to remove watermark & unlock unlimited generations.'
+        message: 'You have reached your daily limit of 20 free cards. Upgrade to Pro to remove watermark & unlock unlimited generations.'
       });
     }
   }
