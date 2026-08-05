@@ -918,7 +918,7 @@ Example: Annual report excerpts, academic abstracts, blog posts, newsletter cont
         <button class="theme-btn" data-theme="glass"><span class="dot dot-glass"></span>Glass</button>
       </div>
       <div style="display:flex;align-items:center;gap:10px;">
-        <span class="quota-badge" id="quota-badge">✦ 今日剩余 3 次</span>
+        <span class="quota-badge" id="quota-badge">✦ 10 free generations left today</span>
         <button class="generate-btn" id="generate-btn">
           <span class="btn-icon">✦</span>
           Generate Cards
@@ -1782,7 +1782,7 @@ function updateCharCount() {
 document.getElementById('lang-select')?.addEventListener('change', (e) => {
   applyLanguage(e.target.value);
 });
-const DAILY_LIMIT = 3;
+const DAILY_LIMIT = 10;
 const QUOTA_KEY = 'cardify_quota';
 
 function getQuota() {
