@@ -798,6 +798,20 @@
     /* ── Footer ── */
     footer { text-align: center; padding: 48px 0 36px; color: var(--text-muted); font-size: 13px; }
     footer a { color: var(--accent); text-decoration: none; }
+    .footer-ph-badge {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+    .footer-ph-badge a {
+      display: inline-block;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      opacity: 0.92;
+    }
+    .footer-ph-badge a:hover {
+      transform: translateY(-2px) scale(1.04);
+      opacity: 1;
+    }
 
     /* ── Responsive ── */
     @media (max-width: 600px) {
@@ -1033,6 +1047,11 @@ Example: Annual report excerpts, academic abstracts, blog posts, newsletter cont
   <div id="toast"></div>
 
   <footer>
+    <div class="footer-ph-badge">
+      <a href="https://www.producthunt.com/products/cardify-ai?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-cardify-ai" target="_blank" rel="noopener noreferrer">
+        <img alt="Cardify AI - Turn long text, PDFs &amp; reports into visual cards in 10s | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1214614&theme=dark&t=1785906828477" />
+      </a>
+    </div>
     <span data-i18n="footer_made">Made with ✦ by</span> <a href="#">Cardify AI</a> — <span data-i18n="footer_powered">Powered by Gemini</span> &nbsp;·&nbsp; <a href="#" data-i18n="footer_pricing">Pricing</a> &nbsp;·&nbsp; <a href="#">Twitter</a>
   </footer>
 </div>
