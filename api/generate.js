@@ -7,7 +7,7 @@
 // DAILY IP RATE LIMITER (3 free/day per IP, UTC reset)
 // ══════════════════════════════════════════════════════════
 const rateLimitStore = new Map();
-const DAILY_FREE_LIMIT = 3;
+const DAILY_FREE_LIMIT = 10;
 
 function getRateKey(req) {
   return req.headers['x-forwarded-for']?.split(',')[0]?.trim()
@@ -464,7 +464,7 @@ export default async function handler(req, res) {
     if (!limitCheck.allowed) {
       return res.status(429).json({
         error: 'DAILY_LIMIT_EXCEEDED',
-        message: 'You have reached your daily limit of 3 free cards. Upgrade to VIP or use your own API Key.'
+        message: 'You have reached your daily limit of 10 free cards. Upgrade to Pro to remove watermark & unlock unlimited generations.'
       });
     }
   }
@@ -499,6 +499,7 @@ CRITICAL OUTPUT RULES (highest priority — always obey):
     const normalized = normalizeResponse(parsed, theme || 'dark');
     normalized.channel = activeChannel;
     normalized.provider = providerName;
+    normalized.hasWatermark = (activeChannel === 'free_tier');
     return res.status(200).json(normalized);
 
   } catch (err) {

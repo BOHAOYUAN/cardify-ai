@@ -2182,7 +2182,8 @@ function renderCards(data) {
   data.cards.forEach((card, idx) => {
     const slide = document.createElement('div');
     slide.className = 'swiper-slide';
-    slide.innerHTML = buildCard(card, idx + 1, data.total_cards, data.theme_color);
+    const showWm = data.hasWatermark !== false && data.channel === 'free_tier';
+    slide.innerHTML = buildCard(card, idx + 1, data.total_cards, data.theme_color, showWm);
     wrapper.appendChild(slide);
   });
 
@@ -2199,7 +2200,7 @@ function renderCards(data) {
   });
 }
 
-function buildCard(card, num, total, theme) {
+function buildCard(card, num, total, theme, showWatermark = true) {
   // i18n-aware type labels and watermark — no more hardcoded strings!
   const dict = I18N[currentLang] || I18N.en;
   const typeLabel = {
@@ -2252,7 +2253,7 @@ function buildCard(card, num, total, theme) {
       <h2>${card.title}</h2>
       ${card.subtitle ? `<div class="subtitle">${card.subtitle}</div>` : ''}
       ${body}
-      <div class="kcard-watermark">${watermarkText}</div>
+      ${showWatermark ? `<div class="kcard-watermark">${watermarkText}</div>` : ''}
     </div>
   `;
 }
