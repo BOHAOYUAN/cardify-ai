@@ -1,2352 +1,711 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en" class="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cardify AI — Turn Any Content Into Beautiful Knowledge Cards</title>
-  <meta name="description" content="Paste any PDF, article or long text. Get stunning shareable knowledge cards in 10 seconds. Powered by AI." />
-  <link rel="icon" type="image/png" href="/logo_120.png" />
-  <meta property="og:image" content="/logo.png" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.min.mjs" type="module"></script>
-  <style>
-    :root {
-      --bg: #0a0a0f;
-      --surface: #13131a;
-      --surface2: #1c1c28;
-      --border: rgba(255,255,255,0.07);
-      --text: #f0f0f8;
-      --text-muted: #7a7a9a;
-      --accent: #7c5cfc;
-      --accent2: #fc5c9c;
-      --accent3: #5cf8fc;
-      --radius: 20px;
-      --card-w: 380px;
-      --card-h: 560px;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cardify.ai 2.0 — Multi-Platform AI Content & Viral Card Studio</title>
+  <meta name="description" content="Turn any article or PDF into viral Xiaohongshu guides, Twitter threads, LinkedIn posts, and stunning visual knowledge cards in 10 seconds.">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f5f3ff',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+              700: '#6d28d9',
+              900: '#4c1d95'
+            }
+          }
+        }
+      }
     }
+  </script>
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+  <!-- Swiper.js CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
     body {
       font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      overflow-x: hidden;
+      background-color: #0b0f17;
+      color: #f3f4f6;
     }
-
-    /* ── Noise overlay ── */
-    body::before {
-      content: '';
-      position: fixed; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-      pointer-events: none; z-index: 0;
+    .font-outfit { font-family: 'Outfit', sans-serif; }
+    
+    /* Glassmorphism utility */
+    .glass-panel {
+      background: rgba(17, 24, 39, 0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
-
-    /* ── Gradient orbs ── */
-    .orb {
-      position: fixed;
-      border-radius: 50%;
-      filter: blur(120px);
-      opacity: 0.18;
-      pointer-events: none;
-      z-index: 0;
-      animation: orbFloat 8s ease-in-out infinite alternate;
-    }
-    .orb1 { width: 600px; height: 600px; background: var(--accent); top: -200px; right: -200px; }
-    .orb2 { width: 500px; height: 500px; background: var(--accent2); bottom: -200px; left: -200px; animation-delay: -4s; }
-    .orb3 { width: 300px; height: 300px; background: var(--accent3); top: 50%; left: 50%; animation-delay: -2s; }
-    @keyframes orbFloat { from { transform: translate(0,0) scale(1); } to { transform: translate(30px, -30px) scale(1.05); } }
-
-    /* ── Layout ── */
-    .container { max-width: 900px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
-
-    /* ── Header ── */
-    header { padding: 28px 0 0; }
-    .logo {
-      display: inline-flex; align-items: center; gap: 10px;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 22px; font-weight: 700; letter-spacing: -0.5px;
-    }
-    .logo-icon {
-      width: 36px; height: 36px; border-radius: 10px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      display: grid; place-items: center; font-size: 18px;
-    }
-    .badge {
-      font-size: 11px; font-weight: 600; padding: 3px 8px;
-      background: linear-gradient(135deg, rgba(124,92,252,0.3), rgba(252,92,156,0.3));
-      border: 1px solid rgba(124,92,252,0.4);
-      border-radius: 100px; color: #c4a8ff; letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
-
-    /* ── Hero ── */
-    .hero { text-align: center; padding: 60px 0 48px; }
-    .hero-eyebrow {
-      display: inline-flex; align-items: center; gap: 8px;
-      font-size: 12px; font-weight: 600; letter-spacing: 1.5px;
-      text-transform: uppercase; color: var(--accent3);
-      margin-bottom: 20px;
-    }
-    .hero-eyebrow::before, .hero-eyebrow::after {
-      content: ''; flex: 1; height: 1px;
-      background: linear-gradient(to right, transparent, var(--accent3));
-      width: 40px;
-    }
-    .hero-eyebrow::after { background: linear-gradient(to left, transparent, var(--accent3)); }
-    h1 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(36px, 6vw, 58px);
-      font-weight: 800; line-height: 1.1;
-      letter-spacing: -2px;
-      background: linear-gradient(135deg, #fff 0%, #b8a8ff 50%, #fc5c9c 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 18px;
-    }
-    .hero p {
-      font-size: 17px; color: var(--text-muted); max-width: 520px;
-      margin: 0 auto 36px; line-height: 1.7;
-    }
-
-    /* ── Stats row ── */
-    .stats { display: flex; justify-content: center; gap: 40px; margin-bottom: 48px; }
-    .stat { text-align: center; }
-    .stat-num { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 700; color: #fff; }
-    .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-
-    /* ── Input Card ── */
-    .input-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 28px;
-      margin-bottom: 40px;
+    
+    .glass-card {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%);
       backdrop-filter: blur(20px);
-    }
-    .input-label {
-      font-size: 13px; font-weight: 600; color: var(--text-muted);
-      text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px;
-      display: block;
-    }
-    .textarea-wrap { position: relative; }
-    textarea {
-      width: 100%; min-height: 160px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 16px 20px;
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      font-size: 14.5px; line-height: 1.7;
-      resize: vertical;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      outline: none;
-    }
-    textarea::placeholder { color: var(--text-muted); }
-    textarea:focus {
-      border-color: rgba(124,92,252,0.5);
-      box-shadow: 0 0 0 3px rgba(124,92,252,0.12);
-    }
-    .char-count {
-      position: absolute; bottom: 12px; right: 14px;
-      font-size: 11px; color: var(--text-muted);
+      border: 1px solid rgba(139, 92, 246, 0.25);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
 
-    .input-controls {
-      display: flex; align-items: center;
-      justify-content: space-between; margin-top: 16px; gap: 12px;
-      flex-wrap: wrap;
+    .glow-purple {
+      box-shadow: 0 0 35px -5px rgba(139, 92, 246, 0.4);
     }
 
-    .theme-selector { display: flex; gap: 8px; }
-    .theme-btn {
-      display: flex; align-items: center; gap: 6px;
-      padding: 8px 14px; border-radius: 100px;
-      border: 1px solid var(--border);
-      background: var(--surface2);
-      font-size: 12px; font-weight: 600;
-      color: var(--text-muted); cursor: pointer;
-      transition: all 0.2s;
-    }
-    .theme-btn:hover, .theme-btn.active {
-      border-color: var(--accent);
-      color: var(--text);
-      background: rgba(124,92,252,0.15);
-    }
-    .theme-btn .dot { width: 8px; height: 8px; border-radius: 50%; }
-    .dot-dark { background: #555; }
-    .dot-light { background: #e0e0e0; }
-    .dot-cyber { background: var(--accent3); }
-    .dot-glass { background: linear-gradient(135deg, rgba(255,255,255,0.5), rgba(124,92,252,0.5)); }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+    ::-webkit-scrollbar-thumb { background: rgba(139, 92, 246, 0.3); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(139, 92, 246, 0.6); }
 
-    .generate-btn {
-      display: flex; align-items: center; gap-8px; gap: 10px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff; font-size: 15px; font-weight: 700;
-      padding: 13px 28px; border-radius: 100px; border: none;
-      cursor: pointer; position: relative; overflow: hidden;
-      transition: transform 0.2s, box-shadow 0.2s;
-      box-shadow: 0 4px 24px rgba(124,92,252,0.4);
-    }
-    .generate-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(124,92,252,0.55); }
-    .generate-btn:active { transform: translateY(0); }
-    .generate-btn::after {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
-      pointer-events: none;
-    }
-    .btn-icon { font-size: 18px; }
-
-    /* ── Loading ── */
-    .loading-state { display: none; text-align: center; padding: 60px 0; }
-    .loading-state.visible { display: block; }
-    .spinner {
-      width: 48px; height: 48px; border-radius: 50%;
-      border: 3px solid var(--surface2);
-      border-top-color: var(--accent);
-      margin: 0 auto 20px;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .loading-text { color: var(--text-muted); font-size: 14px; }
-    .loading-steps { margin-top: 16px; }
-    .loading-step {
-      font-size: 12px; color: var(--text-muted);
-      padding: 4px 0;
-      opacity: 0;
-      animation: fadeUp 0.5s forwards;
-    }
-    .loading-step:nth-child(1) { animation-delay: 0.2s; }
-    .loading-step:nth-child(2) { animation-delay: 1.2s; }
-    .loading-step:nth-child(3) { animation-delay: 2.2s; }
-    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } from { opacity: 0; transform: translateY(6px); } }
-
-    /* ── Cards Section ── */
-    #cards-section { display: none; }
-    #cards-section.visible { display: block; }
-
-    .cards-header {
-      display: flex; justify-content: space-between;
-      align-items: center; margin-bottom: 28px;
-    }
-    .cards-title {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 20px; font-weight: 700;
-    }
-    .cards-meta { font-size: 13px; color: var(--text-muted); }
-    .action-btns { display: flex; gap: 10px; }
-    .action-btn {
-      display: flex; align-items: center; gap: 6px;
-      padding: 9px 16px; border-radius: 100px;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      font-size: 13px; font-weight: 600;
-      color: var(--text-muted); cursor: pointer;
-      transition: all 0.2s;
-    }
-    .action-btn:hover { border-color: var(--accent); color: var(--text); background: rgba(124,92,252,0.1); }
-    .action-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-    .action-btn.primary:hover { background: #8f72ff; box-shadow: 0 4px 16px rgba(124,92,252,0.4); }
-    .action-btn.success { background: #16a34a; border-color: #16a34a; color: #fff; }
-
-    /* ── Export bar ── */
-    .export-bar {
-      display: flex; gap: 12px; justify-content: center;
-      margin-top: 24px; flex-wrap: wrap;
-    }
-    .export-btn-large {
-      display: flex; align-items: center; gap: 10px;
-      padding: 14px 28px; border-radius: 100px; border: none;
-      font-family: 'Inter', sans-serif;
-      font-size: 14px; font-weight: 700; cursor: pointer;
-      transition: all 0.22s; position: relative; overflow: hidden;
-    }
-    .export-btn-large::after {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.14), transparent);
-      pointer-events: none;
-    }
-    .export-current {
-      background: linear-gradient(135deg, #1e293b, #334155);
-      border: 1px solid rgba(255,255,255,0.12);
-      color: #f8fafc;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-    }
-    .export-current:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.5); }
-    .export-all {
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff;
-      box-shadow: 0 4px 24px rgba(124,92,252,0.45);
-    }
-    .export-all:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(124,92,252,0.6); }
-    .export-btn-large:disabled { opacity: 0.55; cursor: not-allowed; transform: none !important; }
-    .export-btn-large .btn-spinner {
-      width: 16px; height: 16px; border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-top-color: #fff;
-      animation: spin 0.7s linear infinite;
-      display: none;
-    }
-    .export-btn-large.loading .btn-spinner { display: block; }
-    .export-btn-large.loading .btn-label { opacity: 0.7; }
-
-    /* ── Toast ── */
-    #toast {
-      position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
-      background: #1e293b; border: 1px solid rgba(255,255,255,0.1);
-      color: #f8fafc; font-size: 13px; font-weight: 600;
-      padding: 12px 22px; border-radius: 100px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.28s, transform 0.28s;
-      z-index: 9999; white-space: nowrap;
-      display: flex; align-items: center; gap: 8px;
-    }
-    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-    #toast.toast-success { border-color: rgba(34,197,94,0.4); background: #052e16; }
-    #toast.toast-error { border-color: rgba(239,68,68,0.4); background: #2d0a0a; }
-
-    /* ── Quota badge ── */
-    .quota-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-size: 12px; font-weight: 600;
-      padding: 5px 12px; border-radius: 100px;
-      background: rgba(252,92,156,0.12);
-      border: 1px solid rgba(252,92,156,0.3);
-      color: #fc5c9c; cursor: default;
-    }
-    .quota-badge.unlimited {
-      background: rgba(34,197,94,0.12);
-      border-color: rgba(34,197,94,0.3);
-      color: #4ade80;
-    }
-
-    /* ── Style dropdown ── */
-    .style-row {
-      display: flex; align-items: center; gap: 10px;
-      margin-top: 12px; flex-wrap: wrap;
-    }
-    .style-label { font-size: 12px; font-weight: 600; color: var(--text-muted); white-space: nowrap; }
-    .style-select {
-      flex: 1; min-width: 220px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 9px 14px;
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      font-size: 13px; font-weight: 500;
-      cursor: pointer; outline: none;
-      transition: border-color 0.2s;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a7a9a' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 14px center;
-      padding-right: 36px;
-    }
-    .style-select:focus { border-color: rgba(124,92,252,0.5); box-shadow: 0 0 0 3px rgba(124,92,252,0.12); }
-    .style-select option { background: #1c1c28; }
-
-    /* ── Modal overlay ── */
-    .modal-overlay {
-      position: fixed; inset: 0; z-index: 10000;
-      background: rgba(0,0,0,0.75);
-      backdrop-filter: blur(8px);
-      display: flex; align-items: center; justify-content: center;
-      padding: 20px;
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.3s;
-    }
-    .modal-overlay.show { opacity: 1; pointer-events: all; }
-    .modal-card {
-      background: linear-gradient(145deg, #1a1a2e, #16213e);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 28px;
-      padding: 40px 36px;
-      max-width: 480px; width: 100%;
-      box-shadow: 0 40px 100px rgba(0,0,0,0.7);
-      transform: translateY(20px) scale(0.96);
-      transition: transform 0.3s;
-      position: relative;
-    }
-    .modal-overlay.show .modal-card { transform: translateY(0) scale(1); }
-    .modal-close {
-      position: absolute; top: 18px; right: 18px;
-      background: rgba(255,255,255,0.07); border: none;
-      color: var(--text-muted); font-size: 18px;
-      width: 32px; height: 32px; border-radius: 50%;
-      cursor: pointer; display: grid; place-items: center;
-      transition: all 0.2s;
-    }
-    .modal-close:hover { background: rgba(255,255,255,0.14); color: var(--text); }
-    .modal-icon { font-size: 48px; text-align: center; margin-bottom: 16px; }
-    .modal-title {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 22px; font-weight: 800;
-      text-align: center; margin-bottom: 10px;
-      background: linear-gradient(135deg, #fff, #fc5c9c);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .modal-desc { font-size: 14px; color: var(--text-muted); text-align: center; line-height: 1.7; margin-bottom: 28px; }
-    .modal-divider {
-      display: flex; align-items: center; gap: 12px;
-      margin: 22px 0; color: var(--text-muted); font-size: 12px;
-    }
-    .modal-divider::before, .modal-divider::after {
-      content: ''; flex: 1; height: 1px; background: var(--border);
-    }
-    .modal-key-input {
-      width: 100%;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px 16px;
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      font-size: 13px; outline: none;
-      transition: border-color 0.2s;
-      margin-bottom: 10px;
-    }
-    .modal-key-input:focus { border-color: rgba(124,92,252,0.5); box-shadow: 0 0 0 3px rgba(124,92,252,0.12); }
-    .modal-key-hint { font-size: 11px; color: var(--text-muted); margin-bottom: 16px; }
-    .modal-key-hint a { color: var(--accent); text-decoration: none; }
-    .modal-btn {
-      width: 100%; padding: 14px;
-      border-radius: 100px; border: none;
-      font-family: 'Inter', sans-serif;
-      font-size: 14px; font-weight: 700;
-      cursor: pointer; transition: all 0.2s;
-    }
-    .modal-btn-primary {
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff; margin-bottom: 10px;
-      box-shadow: 0 4px 20px rgba(124,92,252,0.4);
-    }
-    .modal-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(124,92,252,0.55); }
-    .modal-btn-secondary {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-    }
-    .modal-btn-secondary:hover { background: rgba(255,255,255,0.1); color: var(--text); }
-    /* ── Header Nav Upgrade ── */
-    header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 24px 0 20px; flex-wrap: wrap; gap: 14px;
-    }
-    .header-nav-btns { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .lang-select {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid var(--border);
-      border-radius: 100px;
-      padding: 7px 14px;
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      font-size: 12.5px; font-weight: 600;
-      cursor: pointer; outline: none;
-      transition: all 0.22s;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%237a7a9a' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 10px center;
-      padding-right: 28px;
-    }
-    .lang-select:hover { border-color: rgba(255,255,255,0.2); background-color: rgba(255,255,255,0.1); }
-    .lang-select option { background: #1c1c28; color: #fff; }
-    .nav-upgrade-btn {
-      padding: 8px 18px; border-radius: 100px; border: 1px solid var(--border);
-      font-family: 'Inter', sans-serif; font-size: 12.5px; font-weight: 700;
-      cursor: pointer; transition: all 0.22s; outline: none;
-    }
-    .nav-upgrade-btn.btn-pro {
-      background: rgba(124,92,252,0.12); border-color: rgba(124,92,252,0.35);
-      color: #c4a8ff;
-    }
-    .nav-upgrade-btn.btn-pro:hover {
-      background: rgba(124,92,252,0.25); border-color: #7c5cfc;
-      transform: translateY(-1px); box-shadow: 0 4px 16px rgba(124,92,252,0.35);
-    }
-    .nav-upgrade-btn.btn-lifetime {
-      background: linear-gradient(135deg, rgba(252,92,156,0.18), rgba(92,248,252,0.18));
-      border: 1px solid rgba(252,92,156,0.4); color: #fff;
-    }
-    .nav-upgrade-btn.btn-lifetime:hover {
-      background: linear-gradient(135deg, rgba(252,92,156,0.32), rgba(92,248,252,0.32));
-      transform: translateY(-1px); box-shadow: 0 4px 20px rgba(252,92,156,0.4);
-    }
-
-    /* ── VIP Badge ── */
-    .quota-badge.vip {
-      background: linear-gradient(135deg, rgba(252,92,156,0.2), rgba(124,92,252,0.2));
-      border-color: rgba(252,92,156,0.5);
-      color: #ff94c7;
-      font-weight: 700;
-      box-shadow: 0 0 12px rgba(252,92,156,0.2);
-    }
-
-    /* ── VIP Modal Card (Wide Glassmorphism) ── */
-    .modal-card.vip-modal-card {
-      max-width: 680px; padding: 36px 32px;
-      background: linear-gradient(145deg, #121222 0%, #1a162b 100%);
-      border: 1px solid rgba(255,255,255,0.12);
-    }
-    .pricing-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 24px 0 20px;
-    }
-    @media (max-width: 640px) {
-      .pricing-grid { grid-template-columns: 1fr; }
-    }
-    .plan-card {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 20px; padding: 22px 20px;
-      display: flex; flex-direction: column; position: relative;
-      transition: all 0.22s;
-    }
-    .plan-card:hover { border-color: rgba(124,92,252,0.4); background: rgba(255,255,255,0.05); }
-    .plan-card.featured {
-      background: linear-gradient(145deg, rgba(252,92,156,0.08), rgba(124,92,252,0.12));
-      border: 1px solid rgba(252,92,156,0.4);
-      box-shadow: 0 12px 30px rgba(252,92,156,0.15);
-    }
-    .plan-badge {
-      display: inline-flex; align-items: center; gap: 4px;
-      font-size: 10px; font-weight: 800; letter-spacing: 0.5px;
-      padding: 3px 8px; border-radius: 100px; margin-bottom: 10px; width: fit-content;
-    }
-    .plan-badge.pro { background: rgba(124,92,252,0.2); color: #c4a8ff; border: 1px solid rgba(124,92,252,0.3); }
-    .plan-badge.lifetime { background: rgba(252,92,156,0.25); color: #ff85b8; border: 1px solid rgba(252,92,156,0.4); }
-    .plan-name { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 800; margin-bottom: 8px; }
-    .plan-price-wrap { display: flex; align-items: baseline; gap: 6px; margin-bottom: 14px; }
-    .plan-price { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 900; color: #fff; }
-    .plan-period { font-size: 12px; color: var(--text-muted); }
-    .plan-old-price { font-size: 13px; color: var(--text-muted); text-decoration: line-through; }
-    .plan-features { list-style: none; margin-bottom: 20px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
-    .plan-features li { font-size: 12px; color: #d0d0e6; display: flex; align-items: center; gap: 6px; }
-    .plan-buy-btn {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 100%; padding: 12px; border-radius: 100px;
-      font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700;
-      text-decoration: none; cursor: pointer; transition: all 0.2s; border: none;
-    }
-    .plan-buy-btn.btn-pro-sub {
-      background: linear-gradient(135deg, var(--accent), #8f72ff);
-      color: #fff; box-shadow: 0 4px 16px rgba(124,92,252,0.35);
-    }
-    .plan-buy-btn.btn-pro-sub:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(124,92,252,0.5); }
-    .plan-buy-btn.btn-lifetime-buy {
-      background: linear-gradient(135deg, var(--accent2), #fc855c);
-      color: #fff; box-shadow: 0 4px 16px rgba(252,92,156,0.35);
-    }
-    .plan-buy-btn.btn-lifetime-buy:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(252,92,156,0.55); }
-
-    .activation-box {
-      background: rgba(0,0,0,0.25); border: 1px solid var(--border);
-      border-radius: 16px; padding: 18px 20px; margin-top: 10px;
-    }
-    .activation-title { font-size: 13px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
-    .activation-input-row { display: flex; gap: 10px; margin-bottom: 10px; }
-    .activation-input-row input { flex: 1; margin-bottom: 0; }
-    .activation-btn {
-      padding: 0 20px; border-radius: 12px; border: none;
-      background: rgba(124,92,252,0.25); border: 1px solid rgba(124,92,252,0.4);
-      color: #c4a8ff; font-weight: 700; font-size: 13px; cursor: pointer;
-      white-space: nowrap; transition: all 0.2s;
-    }
-    .activation-btn:hover { background: var(--accent); color: #fff; }
-    /* ── Swiper ── */
-    .swiper-outer {
-      padding-bottom: 50px;
-    }
-    .swiper {
-      overflow: visible;
-      padding: 20px 0 10px;
-    }
-    .swiper-slide {
-      width: var(--card-w) !important;
-      height: var(--card-h) !important;
-      transition: transform 0.4s, opacity 0.4s;
-    }
-    .swiper-slide:not(.swiper-slide-active) { opacity: 0.55; transform: scale(0.93); }
-
-    /* ── Swiper nav ── */
-    .swiper-pagination-bullet { background: var(--text-muted); opacity: 0.5; }
-    .swiper-pagination-bullet-active { background: var(--accent); opacity: 1; }
-    .swiper-button-prev, .swiper-button-next {
-      color: var(--text);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 50%; width: 44px; height: 44px;
-      --swiper-navigation-size: 18px;
-      transition: all 0.2s;
-    }
-    .swiper-button-prev:hover, .swiper-button-next:hover {
-      background: var(--accent); border-color: var(--accent);
-    }
-
-    /* ══════════════════════════════
-       CARD STYLES
-    ══════════════════════════════ */
-    .kcard {
-      width: 100%; height: 100%;
-      border-radius: 28px;
-      padding: 32px 28px;
-      display: flex; flex-direction: column;
-      position: relative; overflow: hidden;
-      cursor: grab;
-      user-select: none;
-    }
-    .kcard::before {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 60%);
-      pointer-events: none;
-    }
-    .kcard-num {
-      position: absolute; top: 28px; right: 28px;
-      font-size: 12px; font-weight: 700; letter-spacing: 1px;
-      opacity: 0.4;
-    }
-    .kcard-type-badge {
-      display: inline-flex; align-items: center; gap: 5px;
-      font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
-      text-transform: uppercase;
-      padding: 4px 10px; border-radius: 100px;
-      margin-bottom: 20px; width: fit-content;
-    }
-    .kcard h2 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 26px; font-weight: 800;
-      line-height: 1.2; letter-spacing: -0.5px;
-      margin-bottom: 10px;
-    }
-    .kcard .subtitle {
-      font-size: 13.5px; opacity: 0.65; line-height: 1.6; margin-bottom: 18px;
-    }
-    .gold-quote-wrap {
-      margin-top: auto;
-      border-left: 3px solid currentColor;
-      padding: 12px 16px;
-      border-radius: 0 12px 12px 0;
-      background: rgba(255,255,255,0.05);
-    }
-    .gold-quote {
-      font-size: 15px; font-weight: 600;
-      font-style: italic; line-height: 1.5;
-      opacity: 0.9;
-    }
-    .key-takeaways { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
-    .takeaway {
-      display: flex; align-items: flex-start; gap: 10px;
-      font-size: 13.5px; line-height: 1.5;
-    }
-    .takeaway-dot { width: 6px; height: 6px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
-
-    /* Metrics card */
-    .metrics-grid { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; flex: 1; }
-    .metric-item {
-      padding: 14px 16px; border-radius: 14px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.07);
-    }
-    .metric-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
-    .metric-label { font-size: 11px; font-weight: 600; opacity: 0.55; text-transform: uppercase; letter-spacing: 0.8px; }
-    .metric-value { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 800; }
-    .metric-desc { font-size: 12px; opacity: 0.5; line-height: 1.4; }
-
-    /* Action card */
-    .steps-list { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; flex: 1; }
-    .step-item { display: flex; gap: 14px; align-items: flex-start; }
-    .step-num {
-      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
-      display: grid; place-items: center;
-      font-size: 12px; font-weight: 800;
-    }
-    .step-text { font-size: 13.5px; line-height: 1.55; padding-top: 4px; }
-
-    /* Watermark */
-    .kcard-watermark {
-      position: absolute; bottom: 16px; right: 20px;
-      font-size: 10px; font-weight: 700;
-      letter-spacing: 0.5px; opacity: 0.25;
-    }
-
-    /* ══ THEMES ══ */
-
-    /* dark */
-    .theme-dark {
-      background: linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-      border: 1px solid rgba(255,255,255,0.08);
-      color: #e8e8f8;
-      box-shadow: 0 32px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06);
-    }
-    .theme-dark .kcard-type-badge { background: rgba(124,92,252,0.2); color: #c4a8ff; border: 1px solid rgba(124,92,252,0.3); }
-    .theme-dark .takeaway-dot { background: #7c5cfc; }
-    .theme-dark .step-num { background: rgba(124,92,252,0.25); color: #c4a8ff; }
-    .theme-dark .metric-value { color: #c4a8ff; }
-    .theme-dark .gold-quote-wrap { border-color: #7c5cfc; }
-
-    /* light */
-    .theme-light {
-      background: linear-gradient(145deg, #ffffff 0%, #f5f3ff 100%);
-      border: 1px solid rgba(0,0,0,0.06);
-      color: #1a1a2e;
-      box-shadow: 0 32px 80px rgba(0,0,0,0.12);
-    }
-    .theme-light .kcard-num { opacity: 0.25; }
-    .theme-light .subtitle { opacity: 0.55; }
-    .theme-light .kcard-type-badge { background: rgba(124,92,252,0.1); color: #5b37c7; border: 1px solid rgba(124,92,252,0.2); }
-    .theme-light .takeaway-dot { background: var(--accent); }
-    .theme-light .metric-item { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.07); }
-    .theme-light .step-num { background: rgba(124,92,252,0.12); color: #5b37c7; }
-    .theme-light .metric-value { color: var(--accent); }
-    .theme-light .gold-quote-wrap { background: rgba(124,92,252,0.06); border-color: var(--accent); }
-    .theme-light .kcard-watermark { color: #1a1a2e; }
-
-    /* cyber */
-    .theme-cyber {
-      background: linear-gradient(145deg, #001a20 0%, #002a35 50%, #001620 100%);
-      border: 1px solid rgba(92,248,252,0.2);
-      color: #e0feff;
-      box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(92,248,252,0.1), 0 0 60px rgba(92,248,252,0.06) inset;
-    }
-    .theme-cyber .kcard-type-badge { background: rgba(92,248,252,0.1); color: var(--accent3); border: 1px solid rgba(92,248,252,0.3); }
-    .theme-cyber h2 { color: var(--accent3); }
-    .theme-cyber .takeaway-dot { background: var(--accent3); box-shadow: 0 0 8px var(--accent3); }
-    .theme-cyber .metric-value { color: var(--accent3); text-shadow: 0 0 20px rgba(92,248,252,0.5); }
-    .theme-cyber .step-num { background: rgba(92,248,252,0.1); color: var(--accent3); border: 1px solid rgba(92,248,252,0.3); }
-    .theme-cyber .gold-quote-wrap { border-color: var(--accent3); background: rgba(92,248,252,0.05); }
-
-    /* glass */
-    .theme-glass {
-      background: rgba(255,255,255,0.06);
-      backdrop-filter: blur(40px) saturate(180%);
-      border: 1px solid rgba(255,255,255,0.15);
-      color: #fff;
-      box-shadow: 0 32px 80px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
-    }
-    .theme-glass .kcard-type-badge { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.2); }
-    .theme-glass .metric-item { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
-    .theme-glass .takeaway-dot { background: rgba(255,255,255,0.7); }
-    .theme-glass .step-num { background: rgba(255,255,255,0.12); color: #fff; }
-    .theme-glass .metric-value { color: #fff; }
-    .theme-glass .gold-quote-wrap { border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.05); }
-
-    /* Longtext Tip Banner */
-    .longtext-tip {
-      font-size: 12px;
-      color: var(--accent);
-      background: rgba(124,92,252,0.08);
-      border: 1px dashed rgba(124,92,252,0.3);
-      border-radius: 8px;
-      padding: 8px 12px;
-      margin-top: 10px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      line-height: 1.4;
-    }
-
-    /* ── PDF Upload Zone ── */
-    .pdf-upload-zone {
-      border: 2px dashed rgba(124,92,252,0.35);
-      border-radius: 14px;
-      background: rgba(124,92,252,0.04);
-      padding: 18px 20px;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      cursor: pointer;
-      transition: all 0.22s;
-      position: relative;
-    }
-    .pdf-upload-zone:hover, .pdf-upload-zone.dragover {
-      border-color: var(--accent);
-      background: rgba(124,92,252,0.1);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 20px rgba(124,92,252,0.15);
-    }
-    .pdf-upload-icon {
-      width: 40px; height: 40px; border-radius: 10px;
-      background: linear-gradient(135deg, rgba(124,92,252,0.25), rgba(252,92,156,0.25));
-      display: grid; place-items: center;
-      font-size: 20px; flex-shrink: 0;
-    }
-    .pdf-upload-text { flex: 1; }
-    .pdf-upload-title {
-      font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 2px;
-    }
-    .pdf-upload-hint { font-size: 11px; color: var(--text-muted); }
-    .pdf-upload-status {
-      font-size: 12px; font-weight: 600;
-      color: #4ade80; display: none;
-      align-items: center; gap: 6px;
-      background: rgba(34,197,94,0.1);
-      border: 1px solid rgba(34,197,94,0.3);
-      border-radius: 8px; padding: 6px 12px;
-    }
-    .pdf-upload-status.visible { display: flex; }
-    #pdf-file-input { display: none; }
-
-    /* ── Footer ── */
-    footer { text-align: center; padding: 48px 0 36px; color: var(--text-muted); font-size: 13px; }
-    footer a { color: var(--accent); text-decoration: none; }
-    .footer-ph-badge {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 18px;
-    }
-    .footer-ph-badge a {
-      display: inline-block;
-      transition: transform 0.2s ease, opacity 0.2s ease;
-      opacity: 0.92;
-    }
-    .footer-ph-badge a:hover {
-      transform: translateY(-2px) scale(1.04);
-      opacity: 1;
-    }
-
-    /* ── Responsive ── */
-    @media (max-width: 600px) {
-      :root { --card-w: 320px !important; --card-h: 520px !important; }
-      h1 { letter-spacing: -1.5px; }
-      .stats { gap: 24px; }
-      .input-controls { flex-direction: column; align-items: stretch; }
-      .generate-btn { width: 100%; justify-content: center; }
-    }
+    .swiper-pagination-bullet-active {
+      background: #8b5cf6 !important;
+      width: 24px !important;
+      border-radius: 4px !important;
+    }
+    .swiper-pagination-bullet { background: rgba(255,255,255,0.3); }
   </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col antialiased selection:bg-purple-500 selection:text-white">
 
-<div class="orb orb1"></div>
-<div class="orb orb2"></div>
-<div class="orb orb3"></div>
+  <!-- ================= TOP HEADER ================= -->
+  <header class="sticky top-0 z-40 w-full glass-panel border-b border-gray-800/80 px-4 lg:px-8 py-3">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
+          <i data-lucide="layers" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <span class="text-xl font-extrabold font-outfit tracking-tight text-white flex items-center gap-2">
+            Cardify<span class="text-purple-400">.ai</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">v2.0 PRO</span>
+          </span>
+        </div>
+      </div>
 
-<div class="container">
-  <!-- Header -->
-  <header>
-    <div class="logo">
-      <div class="logo-icon">✦</div>
-      Cardify AI
-      <span class="badge">Beta</span>
-    </div>
-    <div class="header-nav-btns">
-      <select class="lang-select" id="lang-select" aria-label="Language Selector">
-        <option value="en">🇺🇸 English</option>
-        <option value="zh">🇨🇳 简体中文</option>
-        <option value="es">🇪🇸 Español</option>
-        <option value="pt">🇵🇹 Português</option>
-        <option value="ru">🇷🇺 Русский</option>
-        <option value="ja">🇯🇵 日本語</option>
-        <option value="ko">🇰🇷 한국어</option>
-        <option value="fr">🇫🇷 Français</option>
-        <option value="de">🇩🇪 Deutsch</option>
-      </select>
-      <button class="nav-upgrade-btn btn-pro" id="nav-pro-btn" data-i18n="nav_pro">⚡ Upgrade Pro ($9.9/mo)</button>
-      <button class="nav-upgrade-btn btn-lifetime" id="nav-lifetime-btn" data-i18n="nav_lifetime">💎 Lifetime Pass ($39.9)</button>
+      <!-- Controls & Upgrade CTA -->
+      <div class="flex items-center gap-3">
+        
+        <!-- Language Selector -->
+        <div class="relative">
+          <select id="langSelect" onchange="handleLangChange(this.value)" class="bg-gray-900/90 text-gray-200 text-xs font-medium px-3 py-2 rounded-lg border border-gray-700/80 focus:outline-none focus:border-purple-500 transition-all cursor-pointer">
+            <option value="en">🇺🇸 English</option>
+            <option value="zh">🇨🇳 简体中文</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="pt">🇵🇹 Português</option>
+            <option value="ru">🇷🇺 Русский</option>
+            <option value="ja">🇯🇵 日本語</option>
+            <option value="ko">🇰🇷 한국어</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="de">🇩🇪 Deutsch</option>
+          </select>
+        </div>
+
+        <!-- Quota Badge -->
+        <div id="quotaBadge" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-800/80 border border-gray-700 text-xs font-medium text-purple-300">
+          <i data-lucide="zap" class="w-3.5 h-3.5 text-yellow-400"></i>
+          <span id="quotaText">✦ 3 Free Left</span>
+        </div>
+
+        <!-- Upgrade Pro Button -->
+        <button onclick="openUpgradeModal()" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold text-xs transition-all shadow-md hover:shadow-purple-500/25 active:scale-95">
+          <i data-lucide="crown" class="w-4 h-4 text-amber-300"></i>
+          <span>Upgrade Pro ($9.9/mo)</span>
+        </button>
+
+      </div>
     </div>
   </header>
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="hero-eyebrow" data-i18n="hero_eyebrow">✦ AI-POWERED KNOWLEDGE CARDS</div>
-    <h1 data-i18n="hero_title">Turn Any Content Into<br/>Beautiful Cards</h1>
-    <p data-i18n="hero_desc">Paste a PDF, article, or long text. Get stunning, shareable knowledge cards in 10 seconds — ready to post anywhere.</p>
+  <!-- ================= MAIN WORKSPACE (DUAL PANELS) ================= -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-    <div class="stats">
-      <div class="stat">
-        <div class="stat-num">10s</div>
-        <div class="stat-label" data-i18n="stat_time">Generation time</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num">4</div>
-        <div class="stat-label" data-i18n="stat_themes">Visual themes</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num">1-click</div>
-        <div class="stat-label" data-i18n="stat_export">Export & share</div>
-      </div>
-    </div>
-  </section>
+    <!-- ================= LEFT PANEL: CONTROL & GENERATION (7 cols) ================= -->
+    <section class="lg:col-span-7 flex flex-col gap-5">
+      
+      <!-- Input Box + Drag Drop PDF -->
+      <div class="glass-panel rounded-2xl p-5 border border-gray-800 flex flex-col gap-4">
+        
+        <div class="flex items-center justify-between">
+          <label class="text-sm font-semibold text-gray-200 flex items-center gap-2">
+            <i data-lucide="file-text" class="w-4 h-4 text-purple-400"></i>
+            Source Content (Text or PDF)
+          </label>
+          <span class="text-xs text-gray-400" id="charCount">0 / 15,000</span>
+        </div>
 
-  <!-- Input -->
-  <div class="input-card">
-    <label class="input-label" for="content-input" data-i18n="input_label">✦ Paste your content</label>
+        <!-- Textarea -->
+        <div class="relative">
+          <textarea id="inputText" rows="6" oninput="updateCharCount()" 
+            placeholder="Paste your long article, product overview, blog draft, or drop a PDF file here..."
+            class="w-full bg-gray-950/80 border border-gray-800 rounded-xl p-4 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all resize-none"></textarea>
+          
+          <!-- PDF Upload Overlay Button -->
+          <div class="absolute bottom-3 right-3 flex items-center gap-2">
+            <input type="file" id="pdfFileInput" accept="application/pdf" class="hidden" onchange="handlePdfUpload(event)">
+            <button onclick="document.getElementById('pdfFileInput').click()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-gray-800/90 hover:bg-gray-700 text-xs text-gray-300 border border-gray-700 transition-all">
+              <i data-lucide="upload" class="w-3.5 h-3.5 text-purple-400"></i>
+              <span>Upload PDF</span>
+            </button>
+          </div>
+        </div>
 
-    <!-- PDF Upload Zone -->
-    <div class="pdf-upload-zone" id="pdf-upload-zone" role="button" tabindex="0" aria-label="Upload PDF">
-      <div class="pdf-upload-icon">📄</div>
-      <div class="pdf-upload-text">
-        <div class="pdf-upload-title" data-i18n="pdf_upload_title">Upload or drag & drop a PDF</div>
-        <div class="pdf-upload-hint" data-i18n="pdf_upload_hint">PDF text will be auto-extracted and filled in below (max 15,000 chars)</div>
-      </div>
-      <div class="pdf-upload-status" id="pdf-upload-status">✅ <span id="pdf-status-text"></span></div>
-      <input type="file" id="pdf-file-input" accept=".pdf" />
-    </div>
+        <!-- Style & Custom Key Bar -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          
+          <!-- Style Choice -->
+          <div>
+            <label class="block text-xs font-medium text-gray-400 mb-1.5">Target Tone & Niche</label>
+            <select id="styleSelect" class="w-full bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-xs text-gray-200 focus:border-purple-500 focus:outline-none">
+              <option value="xiaohongshu">📕 小红书爆款 (Xiaohongshu Viral)</option>
+              <option value="twitter">🐦 Twitter & LinkedIn 商业洞察 (Business Insight)</option>
+              <option value="outline">📺 视频大纲 / 脚本 (Video Outline)</option>
+              <option value="default">🌐 通用精炼 (General Concise)</option>
+            </select>
+          </div>
 
-    <div class="textarea-wrap">
-      <textarea id="content-input" data-i18n-ph="input_placeholder" placeholder="Paste any article, research paper, report, or long-form text here...
+          <!-- Custom API Key Accordion Trigger -->
+          <div>
+            <label class="block text-xs font-medium text-gray-400 mb-1.5">Custom API Key (Optional)</label>
+            <button onclick="toggleApiKeyInput()" class="w-full flex items-center justify-between bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-xs text-gray-400 hover:text-gray-200 transition-all">
+              <span id="keyStatusText" class="flex items-center gap-1.5">
+                <i data-lucide="key" class="w-3.5 h-3.5 text-emerald-400"></i>
+                <span id="keyLabel">Bypass limits with custom Key</span>
+              </span>
+              <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
 
-Example: Annual report excerpts, academic abstracts, blog posts, newsletter content, meeting notes..."></textarea>
-      <span class="char-count" id="char-count">0 chars</span>
-    </div>
-    <div class="longtext-tip" data-i18n="longtext_tip">💡 Tip: For long books/reports, paste chapter by chapter for the best series card packs!</div>
+        </div>
 
-    <!-- Platform Style Selector -->
-    <div class="style-row">
-      <span class="style-label" data-i18n="style_label">✦ Style</span>
-      <select class="style-select" id="style-select">
-        <option value="default" data-i18n="opt_default">✨ General Knowledge Cards (Default)</option>
-        <option value="xiaohongshu" data-i18n="opt_xiaohongshu">📕 Viral Social Post (Quotes & Action Guide)</option>
-        <option value="twitter" data-i18n="opt_twitter">🐦 Twitter / LinkedIn Insights (Data & Metrics)</option>
-        <option value="outline" data-i18n="opt_outline">📺 Video / Article Fast Outline (Key Points & Steps)</option>
-      </select>
-    </div>
+        <!-- Collapsible API Key Box -->
+        <div id="apiKeyContainer" class="hidden p-3 rounded-lg bg-gray-950 border border-purple-900/40">
+          <input type="password" id="userApiKey" placeholder="Enter your Groq (gsk_...) or Gemini (AIza...) API Key"
+            class="w-full bg-gray-900 border border-gray-800 rounded-md px-3 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-purple-500">
+          <p class="text-[10px] text-gray-500 mt-1">Your key is processed solely in memory for the request and never stored.</p>
+        </div>
 
-    <div class="input-controls">
-      <div class="theme-selector">
-        <button class="theme-btn active" data-theme="dark"><span class="dot dot-dark"></span>Dark</button>
-        <button class="theme-btn" data-theme="light"><span class="dot dot-light"></span>Light</button>
-        <button class="theme-btn" data-theme="cyber"><span class="dot dot-cyber"></span>Cyber</button>
-        <button class="theme-btn" data-theme="glass"><span class="dot dot-glass"></span>Glass</button>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span class="quota-badge" id="quota-badge">✦ 20 free generations left today</span>
-        <button class="generate-btn" id="generate-btn">
-          <span class="btn-icon">✦</span>
-          Generate Cards
+        <!-- GENERATE BUTTON -->
+        <button id="generateBtn" onclick="generateContent()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-sm flex items-center justify-center gap-2 glow-purple transition-all active:scale-[0.99]">
+          <i data-lucide="wand-2" class="w-4 h-4"></i>
+          <span>一键重构全平台贴文 (Generate All Posts & Cards)</span>
         </button>
-      </div>
-    </div>
-  </div>
 
-  <!-- Loading -->
-  <div class="loading-state" id="loading-state">
-    <div class="spinner"></div>
-    <div class="loading-text" data-i18n="loading_title">Crafting your knowledge cards...</div>
-    <div class="loading-steps">
-      <div class="loading-step" data-i18n="loading_step1">📖 Reading and parsing content...</div>
-      <div class="loading-step" data-i18n="loading_step2">🧠 Extracting key insights with AI...</div>
-      <div class="loading-step" data-i18n="loading_step3">✨ Generating beautiful card layouts...</div>
-    </div>
-  </div>
-
-  <!-- Cards Section -->
-  <section id="cards-section">
-    <div class="cards-header">
-      <div>
-        <div class="cards-title">Your Knowledge Cards</div>
-        <div class="cards-meta" id="cards-meta"></div>
       </div>
-      <div class="action-btns">
-        <button class="action-btn" id="reset-btn">↩ New</button>
-      </div>
-    </div>
 
-    <div class="swiper-outer">
-      <div class="swiper" id="card-swiper">
-        <div class="swiper-wrapper" id="swiper-wrapper"></div>
-        <div class="swiper-pagination"></div>
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-button-next"></div>
-      </div>
-    </div>
+      <!-- Generated Posts Display Area (Tabs) -->
+      <div id="outputContainer" class="hidden glass-panel rounded-2xl p-5 border border-gray-800 flex flex-col gap-4">
+        
+        <!-- Platform Tabs Header -->
+        <div class="flex items-center justify-between border-b border-gray-800 pb-3 overflow-x-auto">
+          <div class="flex items-center gap-2">
+            <button onclick="switchTab('twitter')" id="tab-twitter" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-purple-400 bg-purple-500/10 border border-purple-500/30 flex items-center gap-1.5">
+              <span>🐦 Twitter Thread</span>
+            </button>
+            <button onclick="switchTab('linkedin')" id="tab-linkedin" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-gray-200 flex items-center gap-1.5">
+              <span>💼 LinkedIn</span>
+            </button>
+            <button onclick="switchTab('xiaohongshu')" id="tab-xiaohongshu" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-gray-200 flex items-center gap-1.5">
+              <span>📕 小红书</span>
+            </button>
+            <button onclick="switchTab('instagram')" id="tab-instagram" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-gray-200 flex items-center gap-1.5">
+              <span>📸 Instagram</span>
+            </button>
+          </div>
 
-    <!-- Export Bar -->
-    <div class="export-bar" id="export-bar">
-      <button class="export-btn-large export-current" id="export-current-btn">
-        <div class="btn-spinner"></div>
-        <span class="btn-label" id="export-current-label">📷 Export Current Card</span>
+          <!-- Copy Button -->
+          <button onclick="copyCurrentTabContent()" class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-xs font-medium text-gray-200 transition-all border border-gray-700">
+            <i data-lucide="copy" class="w-3.5 h-3.5 text-purple-400"></i>
+            <span id="copyBtnText">Copy Post</span>
+          </button>
+        </div>
+
+        <!-- Tab Content Panes -->
+        <div id="tabContentArea" class="bg-gray-950/60 rounded-xl p-4 border border-gray-900 min-h-[220px] text-xs text-gray-200 leading-relaxed font-mono whitespace-pre-wrap">
+          <!-- Dynamically filled by JS -->
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ================= RIGHT PANEL: VISUAL CARD CENTER (5 cols) ================= -->
+    <section class="lg:col-span-5 flex flex-col gap-5">
+      
+      <div class="glass-panel rounded-2xl p-5 border border-gray-800 flex flex-col gap-4">
+        
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-gray-200 flex items-center gap-2">
+            <i data-lucide="sparkle" class="w-4 h-4 text-purple-400"></i>
+            Visual Card Studio (Cardify Engine)
+          </h2>
+          <span class="text-[10px] bg-purple-900/40 text-purple-300 border border-purple-700/40 px-2 py-0.5 rounded-full font-mono">Live Preview</span>
+        </div>
+
+        <!-- SWIPER CAROUSEL -->
+        <div class="w-full overflow-hidden py-2">
+          <div class="swiper cardSwiper w-full max-w-[340px] sm:max-w-[380px] mx-auto">
+            <div class="swiper-wrapper" id="swiperWrapper">
+              
+              <!-- Placeholder Slide 1 -->
+              <div class="swiper-slide">
+                <div id="card-1" class="glass-card rounded-2xl p-6 min-h-[420px] flex flex-col justify-between relative overflow-hidden">
+                  <div class="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                  
+                  <div>
+                    <div class="text-[11px] font-bold text-purple-400 uppercase tracking-widest mb-2" id="previewSubtitle">[ Cardify AI ]</div>
+                    <h3 class="text-xl font-extrabold text-white font-outfit leading-snug mb-4" id="previewTitle">Your Viral Content Headline Appears Here</h3>
+                    
+                    <div class="bg-purple-950/40 border border-purple-500/20 rounded-xl p-4 mb-4">
+                      <p class="text-xs text-purple-200 italic leading-relaxed" id="previewGoldQuote">"The single most retweetable quote from your source text will be highlighted right here."</p>
+                    </div>
+                  </div>
+
+                  <!-- Footer Watermark -->
+                  <div class="pt-4 border-t border-gray-800/60 flex items-center justify-between">
+                    <span class="text-[10px] text-gray-400 font-mono" id="cardWatermark1">Generated by Cardify.ai</span>
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Placeholder Slide 2 -->
+              <div class="swiper-slide">
+                <div id="card-2" class="glass-card rounded-2xl p-6 min-h-[420px] flex flex-col justify-between relative overflow-hidden">
+                  <div>
+                    <div class="text-[11px] font-bold text-indigo-400 uppercase tracking-widest mb-2">Key Metrics & Data</div>
+                    <h3 class="text-lg font-bold text-white font-outfit mb-4">Core Numbers</h3>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-4" id="previewMetrics">
+                      <div class="bg-gray-900/80 border border-gray-800 rounded-xl p-3 text-center">
+                        <div class="text-xl font-extrabold text-purple-400 font-outfit">10x</div>
+                        <div class="text-[10px] text-gray-400 mt-0.5">Speedup</div>
+                      </div>
+                      <div class="bg-gray-900/80 border border-gray-800 rounded-xl p-3 text-center">
+                        <div class="text-xl font-extrabold text-indigo-400 font-outfit">100%</div>
+                        <div class="text-[10px] text-gray-400 mt-0.5">Automated</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="pt-4 border-t border-gray-800/60 flex items-center justify-between">
+                    <span class="text-[10px] text-gray-400 font-mono" id="cardWatermark2">Generated by Cardify.ai</span>
+                    <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 text-indigo-400"></i>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Placeholder Slide 3 -->
+              <div class="swiper-slide">
+                <div id="card-3" class="glass-card rounded-2xl p-6 min-h-[420px] flex flex-col justify-between relative overflow-hidden">
+                  <div>
+                    <div class="text-[11px] font-bold text-emerald-400 uppercase tracking-widest mb-2">Action Plan</div>
+                    <h3 class="text-lg font-bold text-white font-outfit mb-4">Execution Steps</h3>
+                    
+                    <div class="flex flex-col gap-2.5 mb-4" id="previewSteps">
+                      <div class="flex items-start gap-2 text-xs text-gray-300">
+                        <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] flex items-center justify-center font-bold">1</span>
+                        <span>Paste your source content or PDF</span>
+                      </div>
+                      <div class="flex items-start gap-2 text-xs text-gray-300">
+                        <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] flex items-center justify-center font-bold">2</span>
+                        <span>Click Generate for multi-platform suite</span>
+                      </div>
+                      <div class="flex items-start gap-2 text-xs text-gray-300">
+                        <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] flex items-center justify-center font-bold">3</span>
+                        <span>Export HD cards & copy posts</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="pt-4 border-t border-gray-800/60 flex items-center justify-between">
+                    <span class="text-[10px] text-gray-400 font-mono" id="cardWatermark3">Generated by Cardify.ai</span>
+                    <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <div class="swiper-pagination mt-4"></div>
+          </div>
+        </div>
+
+        <!-- Export Buttons -->
+        <div class="grid grid-cols-2 gap-3 mt-2">
+          <button onclick="exportCurrentCard()" class="py-2.5 px-3 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs font-semibold text-gray-200 flex items-center justify-center gap-1.5 transition-all">
+            <i data-lucide="image" class="w-3.5 h-3.5 text-purple-400"></i>
+            <span>Export Current (PNG)</span>
+          </button>
+          <button onclick="exportAllCards()" class="py-2.5 px-3 rounded-xl bg-purple-900/50 hover:bg-purple-800/50 border border-purple-700/50 text-xs font-semibold text-purple-200 flex items-center justify-center gap-1.5 transition-all">
+            <i data-lucide="layers" class="w-3.5 h-3.5 text-purple-300"></i>
+            <span>Export All Cards</span>
+          </button>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ================= DODO PAYMENTS / PRO MODAL ================= -->
+  <div id="upgradeModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-purple-500/30 flex flex-col gap-5 relative">
+      <button onclick="closeUpgradeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
       </button>
-      <button class="export-btn-large export-all" id="export-all-btn">
-        <div class="btn-spinner"></div>
-        <span class="btn-label" id="export-all-label">✦ Export All Cards (PNG)</span>
-      </button>
-    </div>
-  </section>
 
-  <!-- VIP Payment & Limit Modal -->
-  <div class="modal-overlay" id="limit-modal">
-    <div class="modal-card vip-modal-card">
-      <button class="modal-close" id="modal-close-btn">✕</button>
-      <div class="modal-icon">⚡</div>
-      <div class="modal-title" data-i18n="modal_title">解锁 Cardify AI VIP 无限生成</div>
-      <div class="modal-desc" data-i18n="modal_desc">突破每日 3 次限制，享受全套专业级知识卡片生成与高清海报导出特权！</div>
-
-      <!-- Pricing Grid (Dodo Payments) -->
-      <div class="pricing-grid">
-        <!-- Pro Monthly -->
-        <div class="plan-card">
-          <span class="plan-badge pro" data-i18n="plan_pro_badge">⚡ 个人创作者推荐</span>
-          <div class="plan-name" data-i18n="plan_pro_title">Pro 月度订阅</div>
-          <div class="plan-price-wrap">
-            <span class="plan-price">$9.90</span>
-            <span class="plan-period" data-i18n="plan_pro_period">/月</span>
-            <span class="plan-old-price">$19.90</span>
-          </div>
-          <ul class="plan-features">
-            <li data-i18n="plan_pro_f1">✦ 无限次生成知识卡片包</li>
-            <li data-i18n="plan_pro_f2">✦ 支持全部 4 套视觉主题</li>
-            <li data-i18n="plan_pro_f3">✦ 2 倍超清 PNG 无损导出</li>
-            <li data-i18n="plan_pro_f4">✦ 极速 Gemini 2.0 AI 解析</li>
-          </ul>
-          <a href="https://checkout.dodopayments.com/buy/pdt_0NkcXfJNzWNBKy0pBUaeU?quantity=1"
-             target="_blank" class="plan-buy-btn btn-pro-sub" data-i18n="plan_pro_btn">⚡ 订阅 Pro ($9.90/月)</a>
+      <div class="text-center flex flex-col items-center gap-2">
+        <div class="w-12 h-12 rounded-2xl bg-purple-600/30 border border-purple-500/50 flex items-center justify-center">
+          <i data-lucide="crown" class="w-6 h-6 text-amber-300"></i>
         </div>
+        <h3 class="text-xl font-bold text-white font-outfit">Upgrade to Cardify Pro</h3>
+        <p class="text-xs text-gray-400">Unlock unlimited AI generations, remove card watermarks, and access premium card themes.</p>
+      </div>
 
-        <!-- Lifetime Pass -->
-        <div class="plan-card featured">
-          <span class="plan-badge lifetime" data-i18n="plan_lt_badge">🔥 限量 50 名早鸟买断</span>
-          <div class="plan-name" data-i18n="plan_lt_title">Lifetime 终身卡</div>
-          <div class="plan-price-wrap">
-            <span class="plan-price">$39.90</span>
-            <span class="plan-period" data-i18n="plan_lt_period">一次性买断</span>
-            <span class="plan-old-price">$99.90</span>
-          </div>
-          <ul class="plan-features">
-            <li data-i18n="plan_lt_f1">✦ <strong>终身无限次</strong> 生成 (永久有效)</li>
-            <li data-i18n="plan_lt_f2">✦ 解锁未来所有新功能与模版</li>
-            <li data-i18n="plan_lt_f3">✦ 商业化使用授权 (Commercial)</li>
-            <li data-i18n="plan_lt_f4">✦ 专属 VIP 优先通道与支持</li>
-          </ul>
-          <a href="https://checkout.dodopayments.com/buy/pdt_0NkcYFQhPCGPVD546zbjW?quantity=1"
-             target="_blank" class="plan-buy-btn btn-lifetime-buy" data-i18n="plan_lt_btn">💎 抢购终身卡 ($39.90)</a>
+      <div class="bg-gray-950 p-4 rounded-xl border border-gray-800 flex flex-col gap-2.5 text-xs text-gray-300">
+        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span>Unlimited Multi-Platform Content Generations</span></div>
+        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span>No Watermarks on Visual Card Exports</span></div>
+        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span>Priority Groq Llama-3 70B & Gemini Flash</span></div>
+      </div>
+
+      <!-- License Key Activation -->
+      <div class="flex flex-col gap-2">
+        <label class="text-xs font-medium text-gray-400">Have a Pro License Key?</label>
+        <div class="flex gap-2">
+          <input type="text" id="licenseKeyInput" placeholder="CARDIFY-PRO-XXXX-XXXX" class="flex-1 bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-xs text-white uppercase font-mono">
+          <button onclick="activateLicense()" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded-lg text-xs font-bold text-white">Activate</button>
         </div>
       </div>
 
-      <!-- License Activation Section -->
-      <div class="activation-box">
-        <div class="activation-title" data-i18n="activation_title">🔑 购买后已拿到 License Key？在此激活</div>
-        <div class="activation-input-row">
-          <input class="modal-key-input" id="license-key-input" type="text" data-i18n-ph="activation_ph" placeholder="粘贴您的 License Key (例如: CARDIFY-VIP-XXXX)" />
-          <button class="activation-btn" id="activate-license-btn" data-i18n="activation_btn">激活 Key</button>
-        </div>
-
-        <!-- Personal API Key Toggle -->
-        <details style="margin-top:10px;" id="personal-key-details">
-          <summary style="font-size:12px;color:var(--text-muted);cursor:pointer;" data-i18n="personal_key_summary">或使用我自己的 Gemini API Key (免费通道)</summary>
-          <div style="margin-top:10px;display:flex;gap:10px;">
-            <input class="modal-key-input" id="modal-api-key-input" type="password" data-i18n-ph="personal_key_ph" placeholder="粘贴您的 Gemini API Key" style="margin-bottom:0;" />
-            <button class="activation-btn" id="modal-save-key-btn" data-i18n="save_key_btn">保存 Key</button>
-          </div>
-          <div id="key-priority-notice" style="font-size:11px;color:var(--accent);margin-top:6px;display:none;font-weight:600;">⚡ 已优先使用您的个人 API Key</div>
-</details>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- Toast -->
-  <div id="toast"></div>
-
-  <footer>
-    <div class="footer-ph-badge">
-      <a href="https://www.producthunt.com/products/cardify-ai?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-cardify-ai" target="_blank" rel="noopener noreferrer">
-        <img alt="Cardify AI - Turn long text, PDFs &amp; reports into visual cards in 10s | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1214614&theme=dark&t=1785906828477" />
+      <!-- Buy Link -->
+      <a href="https://dodopayments.com" target="_blank" class="w-full py-3 text-center rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-bold text-sm transition-all">
+        Buy Pro License ($9.9/mo)
       </a>
     </div>
-    <span data-i18n="footer_made">Made with ✦ by</span> <a href="#">Cardify AI</a> — <span data-i18n="footer_powered">Powered by Gemini</span> &nbsp;·&nbsp; <a href="#" data-i18n="footer_pricing">Pricing</a> &nbsp;·&nbsp; <a href="#">Twitter</a>
-  </footer>
-</div>
+  </div>
 
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-<script>
-// ══════════════════════════════════════════════════════════
-// GLOBAL STATE & DECLARATIONS (window-scoped safety guards)
-// ══════════════════════════════════════════════════════════
-let selectedTheme = window.selectedTheme || 'dark';
-let swiper = null;
-let currentLang = localStorage.getItem('cardify_language') || 'en';
+  <!-- ================= TOAST NOTIFICATION CONTAINER ================= -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 hidden max-w-sm px-4 py-3 rounded-xl bg-gray-900 border border-purple-500/50 shadow-2xl text-xs text-gray-200 flex items-center gap-3">
+    <i data-lucide="info" id="toastIcon" class="w-4 h-4 text-purple-400 flex-shrink-0"></i>
+    <span id="toastMsg">Notification message</span>
+  </div>
 
-// Expose to window so any inline handler or async callback can safely read
-window.selectedTheme = selectedTheme;
-window.currentLang   = currentLang;
+  <!-- External JS Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
-// Guard re-assignment so window stays in sync
-function setSelectedTheme(t) { selectedTheme = t; window.selectedTheme = t; }
-function setCurrentLang(l)   { currentLang = l;   window.currentLang   = l; }
+  <!-- ================= CORE APPLICATION LOGIC ================= -->
+  <script>
+    // Safe Initialization of all Required Global State Variables
+    let selectedTheme = 'dark';
+    let selectedStyle = 'xiaohongshu';
+    let selectedLang = 'en';
+    let userApiKey = '';
+    let licenseKey = localStorage.getItem('cardify_license_key') || '';
+    let currentPostsData = null;
+    let activeTab = 'twitter';
+    let swiperInstance = null;
 
-// ══════════════════════════════════════════════════════════
-// DEMO DATA
-// ══════════════════════════════════════════════════════════
-const DEMO_RESPONSES = {
-  en: {
-    theme_color: "dark",
-    total_cards: 4,
-    cards: [
-      {
-        card_id: 1,
-        type: "header",
-        title: "The Attention Economy Is Broken",
-        subtitle: "Why deep focus is now the scarcest competitive advantage",
-        gold_quote: "Whoever controls your attention controls your future.",
-        key_takeaways: [
-          "The average professional checks email 77 times per day",
-          "Deep work capacity is declining while its economic value is skyrocketing",
-          "Top performers are ruthlessly protecting 4+ hours of uninterrupted focus daily"
-        ]
-      },
-      {
-        card_id: 2,
-        type: "metrics",
-        title: "The Focus Crisis in Numbers",
-        metrics: [
-          { label: "Avg. focus block lost per day", value: "2.1 hrs", desc: "Due to notifications & meetings" },
-          { label: "Productivity loss from task-switching", value: "40%", desc: "Per study by APA, 2023" },
-          { label: "Deep workers salary premium", value: "+67%", desc: "vs distracted counterparts" },
-          { label: "Time to regain full focus", value: "23 min", desc: "After a single interruption" }
-        ]
-      },
-      {
-        card_id: 3,
-        type: "action",
-        title: "Reclaim Your Focus: 3 Power Moves",
-        steps: [
-          "Block 9–12AM as 'no-meeting deep work' every single day — treat it like a surgery",
-          "Delete Slack & email from your phone immediately. Check 3x daily on desktop only",
-          "⚠️ Avoid the trap: 'productivity tools' are the #1 destroyer of deep work habits"
-        ]
-      },
-      {
-        card_id: 4,
-        type: "header",
-        title: "The Rarest Skill of the 21st Century",
-        subtitle: "Deep work is not a lifestyle choice — it's a survival strategy",
-        gold_quote: "Distraction is not the enemy of focus. Comfort is.",
-        key_takeaways: [
-          "AI will automate shallow work — only deep thinkers thrive",
-          "The 1% who protect their attention will produce 10× the output",
-          "Build your deep work muscle now or get left behind in 3 years"
-        ]
-      }
-    ]
-  },
-  zh: {
-    theme_color: "cyber",
-    total_cards: 3,
-    cards: [
-      {
-        card_id: 1,
-        type: "header",
-        title: "注意力经济已经崩塌",
-        subtitle: "深度专注正在成为 21 世纪最稀缺的竞争力",
-        gold_quote: "谁掌控你的注意力，谁就掌控你的未来。",
-        key_takeaways: [
-          "普通职场人每天查看邮件超过 77 次，深度工作时间不足 1.5 小时",
-          "深度工作能力正在下滑，而其经济价值正以每年 30% 的速度飙升",
-          "顶尖人才每天保护至少 4 小时不被打扰的专注时间"
-        ]
-      },
-      {
-        card_id: 2,
-        type: "metrics",
-        title: "专注危机的核心数据",
-        metrics: [
-          { label: "每日平均损失专注时长", value: "2.1 小时", desc: "因通知与无效会议消耗" },
-          { label: "多任务切换导致的效率损失", value: "40%", desc: "来源：APA 2023 年研究" },
-          { label: "深度工作者的薪资溢价", value: "+67%", desc: "对比分心型同僚" },
-          { label: "单次打扰后恢复专注的时间", value: "23 分钟", desc: "平均所需时间" }
-        ]
-      },
-      {
-        card_id: 3,
-        type: "action",
-        title: "夺回专注力的 3 个核武器",
-        steps: [
-          "每天将 9:00–12:00 设为「深度工作」不可侵犯时段，像对待外科手术一样对待它",
-          "立即从手机卸载钉钉/微信工作消息，每日定点查看 3 次即可",
-          "⚠️ 最大陷阱：下载一堆「效率工具」本身就是深度工作的头号杀手"
-        ]
-      }
-    ]
-  }
-};
-
-// ══════════════════════════════════════════════════════════
-// i18n DICTIONARY & LOGIC
-// ══════════════════════════════════════════════════════════
-const I18N = {
-  en: {
-    nav_pro: "⚡ Upgrade Pro ($9.9/mo)",
-    nav_lifetime: "💎 Lifetime Pass ($39.9)",
-    hero_eyebrow: "✦ AI-POWERED KNOWLEDGE CARDS",
-    hero_title: "Turn Any Content Into<br/>Beautiful Cards",
-    hero_desc: "Paste a PDF, article, or long text. Get stunning, shareable knowledge cards in 10 seconds — ready to post anywhere.",
-    stat_time: "Generation time",
-    stat_themes: "Visual themes",
-    stat_export: "Export & share",
-    input_label: "✦ Paste your content",
-    input_placeholder: "Paste any article, research paper, report, or long-form text here...\n\nExample: Annual report excerpts, academic abstracts, blog posts, newsletter content, meeting notes...",
-    longtext_tip: "💡 Tip: For long books/reports, paste chapter by chapter for the best series card packs!",
-    unit_chars: " chars",
-    style_label: "✦ Style",
-    opt_default: "✨ General Knowledge Cards (Default)",
-    opt_xiaohongshu: "📕 Viral Social Post (Quotes & Action Guide)",
-    opt_twitter: "🐦 Twitter / LinkedIn Insights (Data & Metrics)",
-    opt_outline: "📺 Video / Article Fast Outline (Key Points & Steps)",
-    btn_generate: "Generate Cards",
-    btn_generating: "⚡ Generating Cards...",
-    loading_title: "Crafting your knowledge cards...",
-    loading_step1: "📖 Reading and parsing content...",
-    loading_step2: "🧠 Extracting key insights with AI...",
-    loading_step3: "✨ Generating beautiful card layouts...",
-    export_current: "📷 Export Current Card",
-    export_all: "✦ Export All Cards (PNG)",
-    pdf_upload_title: "Upload or drag & drop a PDF",
-    pdf_upload_hint: "PDF text will be auto-extracted and filled below (max 15,000 chars)",
-    pdf_success: "PDF extracted successfully! ({count} chars)",
-    pdf_error: "Failed to extract PDF. Please paste text manually.",
-    pdf_parsing: "📄 Parsing PDF...",
-    card_type_header: "⭐ Key Insights",
-    card_type_metrics: "📊 Data & Metrics",
-    card_type_action: "⚡ Action Plan",
-    card_watermark: "✦ Cardify AI",
-    toast_key_invalid: "⚠️ Please enter a valid License Key",
-    toast_key_activated: "🎉 VIP activated! Unlimited generation unlocked!",
-    toast_api_invalid: "⚠️ Please enter a valid Gemini API Key",
-    toast_api_saved: "🔓 Personal Key saved. Unlimited generation unlocked!",
-    toast_timeout: "⏱️ Request timed out. Showing demo cards.",
-    toast_api_error: "⚠️ API error",
-    modal_title: "Unlock Cardify AI VIP Unlimited",
-    modal_desc: "Bypass the 3 daily limits and enjoy full professional card generation & 2x HD export privileges!",
-    plan_pro_badge: "⚡ Most Popular",
-    plan_pro_title: "Pro Monthly",
-    plan_pro_period: "/month",
-    plan_pro_f1: "✦ Unlimited AI card pack generation",
-    plan_pro_f2: "✦ Access all 4 visual themes",
-    plan_pro_f3: "✦ 2x HD lossless PNG export",
-    plan_pro_f4: "✦ Ultra-fast Gemini 2.0 AI speed",
-    plan_pro_btn: "⚡ Subscribe Pro ($9.90/mo)",
-    plan_lt_badge: "🔥 Limited 50 Slots",
-    plan_lt_title: "Lifetime Pass",
-    plan_lt_period: "One-time payment",
-    plan_lt_f1: "✦ <strong>Lifetime Unlimited</strong> generation (Never expires)",
-    plan_lt_f2: "✦ Unlock all current & future features",
-    plan_lt_f3: "✦ Full commercial usage license",
-    plan_lt_f4: "✦ Priority VIP support channel",
-    plan_lt_btn: "💎 Grab Lifetime ($39.90)",
-    activation_title: "🔑 Received a License Key after purchase? Activate below",
-    activation_ph: "Paste your License Key (e.g. CARDIFY-VIP-XXXX)",
-    activation_btn: "Activate Key",
-    personal_key_summary: "Or use my own Gemini API Key (Free Channel)",
-    personal_key_ph: "Paste your Gemini API Key",
-    save_key_btn: "Save Key",
-    quota_left: "✦ {left} free generations left today",
-    quota_empty: "🔒 Daily limit reached",
-    quota_unlimited: "🔓 Unlimited (Personal Key)",
-    quota_vip: "🔓 VIP Active (Unlimited)",
-    footer_made: "Made with ✦ by",
-    footer_powered: "Powered by Gemini",
-    footer_pricing: "Pricing"
-  },
-  zh: {
-    nav_pro: "⚡ 升级 Pro ($9.9/月)",
-    nav_lifetime: "💎 终身卡买断 ($39.9)",
-    hero_eyebrow: "✦ AI 驱动视觉知识卡片包",
-    hero_title: "将任意长文与 PDF<br/>秒变高颜值卡片",
-    hero_desc: "粘贴文章、论文或报告。10 秒提炼极具视觉冲击力的精美知识卡片包 — 一键直接发布社交媒体。",
-    stat_time: "生成速度",
-    stat_themes: "视觉主题",
-    stat_export: "一键无损导出",
-    input_label: "✦ 粘贴您的长文内容",
-    input_placeholder: "在此粘贴任何文章、学术论文、行业报告或长文...\n\n例如：年度报告摘要、博客文章、会议纪要、小红书干货草稿...",
-    longtext_tip: "💡 提示：超长长文/电子书？建议分章节/分批粘贴，AI 将为您生成极佳连载卡片包！",
-    unit_chars: " 字符",
-    style_label: "✦ 目标平台风格",
-    opt_default: "✨ 通用知识卡片（默认）",
-    opt_xiaohongshu: "📕 小红书爆款风格（高饱和金句 + 行动指南）",
-    opt_twitter: "🐦 Twitter / LinkedIn 商业洞察（数据 + 硬核指标）",
-    opt_outline: "📺 视频 / 长文极速大纲（核心论点 + 分步大纲）",
-    btn_generate: "生成知识卡片包",
-    btn_generating: "⚡ 正在智能生成卡片中...",
-    loading_title: "正在为您匠心打造知识卡片包...",
-    loading_step1: "📖 正在解析文本与深度内容...",
-    loading_step2: "🧠 正在利用 AI 提炼核心金句与数据...",
-    loading_step3: "✨ 正在渲染高清卡片视觉布局...",
-    export_current: "📷 导出当前卡片",
-    export_all: "✦ 导出全部卡片包 (PNG)",
-    pdf_upload_title: "上传或拖拽 PDF 文件",
-    pdf_upload_hint: "PDF 文字将自动提取并填入输入框（最多 15,000 字）",
-    pdf_success: "PDF 提取成功！（{count} 字符）",
-    pdf_error: "PDF 提取失败，请手动粘贴文字。",
-    pdf_parsing: "📄 正在解析 PDF...",
-    card_type_header: "⭐ 核心洞见",
-    card_type_metrics: "📊 数据指标",
-    card_type_action: "⚡ 行动指南",
-    card_watermark: "✦ Cardify AI 生成",
-    toast_key_invalid: "⚠️ 请输入有效的 License Key",
-    toast_key_activated: "🎉 VIP 成功激活！无限生成已解锁！",
-    toast_api_invalid: "⚠️ 请输入有效的 Gemini API Key",
-    toast_api_saved: "🔓 个人 Key 已保存，无限生成已解锁！",
-    toast_timeout: "⏱️ 请求超时，展示演示卡片",
-    toast_api_error: "⚠️ API 响应异常",
-    modal_title: "解锁 Cardify AI VIP 无限生成",
-    modal_desc: "突破每日 3 次限制，享受全套专业级知识卡片生成与 2 倍超清海报导出特权！",
-    plan_pro_badge: "⚡ 个人创作者推荐",
-    plan_pro_title: "Pro 月度订阅",
-    plan_pro_period: "/月",
-    plan_pro_f1: "✦ 无限次生成知识卡片包",
-    plan_pro_f2: "✦ 支持全部 4 套视觉主题",
-    plan_pro_f3: "✦ 2 倍超清 PNG 无损导出",
-    plan_pro_f4: "✦ 极速 Gemini 2.0 AI 解析",
-    plan_pro_btn: "⚡ 订阅 Pro ($9.90/月)",
-    plan_lt_badge: "🔥 限量 50 名早鸟买断",
-    plan_lt_title: "Lifetime 终身卡",
-    plan_lt_period: "一次性买断",
-    plan_lt_f1: "✦ <strong>终身无限次</strong> 生成 (永久有效)",
-    plan_lt_f2: "✦ 解锁未来所有新功能与模版",
-    plan_lt_f3: "✦ 商业化使用授权 (Commercial)",
-    plan_lt_f4: "✦ 专属 VIP 优先通道与支持",
-    plan_lt_btn: "💎 抢购终身卡 ($39.90)",
-    activation_title: "🔑 购买后已拿到 License Key？在此激活",
-    activation_ph: "粘贴您的 License Key (例如: CARDIFY-VIP-XXXX)",
-    activation_btn: "激活 Key",
-    personal_key_summary: "或使用我自己的 Gemini API Key (免费通道)",
-    personal_key_ph: "粘贴您的 Gemini API Key",
-    save_key_btn: "保存 Key",
-    quota_left: "✦ 今日剩余 {left} 次",
-    quota_empty: "🔒 今日额度已用完",
-    quota_unlimited: "🔓 无限生成（个人 Key）",
-    quota_vip: "🔓 VIP 激活状态 (无限制)",
-    footer_made: "由 ✦ 精心打造",
-    footer_powered: "驱动引擎：Gemini",
-    footer_pricing: "价格方案"
-  },
-  es: {
-    nav_pro: "⚡ Mejorar Pro ($9.9/mes)",
-    nav_lifetime: "💎 Pase de por vida ($39.9)",
-    hero_eyebrow: "✦ TARJETAS DE CONOCIMIENTO CON IA",
-    hero_title: "Convierte contenido en<br/>tarjetas hermosas",
-    hero_desc: "Pega cualquier PDF o artículo. Obtén tarjetas de conocimiento listas para compartir en 10 segundos.",
-    stat_time: "Tiempo de generación",
-    stat_themes: "Temas visuales",
-    stat_export: "Exportar y compartir",
-    input_label: "✦ Pega tu contenido",
-    input_placeholder: "Pega cualquier artículo, informe o texto aquí...\n\nEjemplo: Extractos de informes anuales, resúmenes académicos, entradas de blog...",
-    longtext_tip: "💡 Consejo: Para libros/informes largos, ¡pega capítulo por capítulo para obtener la mejor serie!",
-    unit_chars: " caract.",
-    style_label: "✦ Estilo",
-    opt_default: "✨ Tarjetas de conocimiento generales",
-    opt_xiaohongshu: "📕 Publicación viral (Frases y guía de acción)",
-    opt_twitter: "🐦 Twitter / LinkedIn Insights (Datos y métricas)",
-    opt_outline: "📺 Esquema rápido de video/artículo",
-    btn_generate: "Generar tarjetas",
-    btn_generating: "⚡ Generando tarjetas...",
-    loading_title: "Creando tus tarjetas de conocimiento...",
-    loading_step1: "📖 Leyendo y analizando contenido...",
-    loading_step2: "🧠 Extrayendo datos clave con IA...",
-    loading_step3: "✨ Generando diseños visuales...",
-    export_current: "📷 Exportar tarjeta actual",
-    export_all: "✦ Exportar todas las tarjetas (PNG)",
-    modal_title: "Desbloquea Cardify AI VIP",
-    modal_desc: "Sin límites diarios y con exportación HD 2x ilimitada.",
-    plan_pro_badge: "⚡ Más popular",
-    plan_pro_title: "Pro Mensual",
-    plan_pro_period: "/mes",
-    plan_pro_f1: "✦ Generación ilimitada de tarjetas",
-    plan_pro_f2: "✦ Acceso a los 4 temas visuales",
-    plan_pro_f3: "✦ Exportación PNG 2x HD sin pérdidas",
-    plan_pro_f4: "✦ Procesamiento ultra rápido Gemini 2.0",
-    plan_pro_btn: "⚡ Suscribirse Pro ($9.90/mes)",
-    plan_lt_badge: "🔥 Limitado 50 plazas",
-    plan_lt_title: "Pase Vitalicio",
-    plan_lt_period: "Pago único",
-    plan_lt_f1: "✦ Generación <strong>Ilimitada de por vida</strong>",
-    plan_lt_f2: "✦ Desbloquea todas las funciones futuras",
-    plan_lt_f3: "✦ Licencia de uso comercial completa",
-    plan_lt_f4: "✦ Canal de soporte VIP prioritario",
-    plan_lt_btn: "💎 Obtener vitalicio ($39.90)",
-    activation_title: "🔑 ¿Tienes clave de licencia? Activa aquí",
-    activation_ph: "Pega tu clave de licencia (ej. CARDIFY-VIP-XXXX)",
-    activation_btn: "Activar clave",
-    personal_key_summary: "O usa tu propia clave API de Gemini (gratis)",
-    personal_key_ph: "Pega tu clave API de Gemini",
-    save_key_btn: "Guardar clave",
-    quota_left: "✦ {left} generaciones gratis hoy",
-    quota_empty: "🔒 Límite diario alcanzado",
-    quota_unlimited: "🔓 Ilimitado (Clave personal)",
-    quota_vip: "🔓 VIP Activo (Ilimitado)",
-    footer_made: "Creado con ✦ por",
-    footer_powered: "Potenciado por Gemini",
-    footer_pricing: "Precios"
-  },
-  pt: {
-    nav_pro: "⚡ Atualizar Pro ($9.9/mês)",
-    nav_lifetime: "💎 Passaporte Vitalício ($39.9)",
-    hero_eyebrow: "✦ CARTÕES DE CONHECIMENTO COM IA",
-    hero_title: "Transforme texto em<br/>cartões incríveis",
-    hero_desc: "Cole qualquer PDF ou artigo. Obtenha cartões visuais para compartilhar em 10 segundos.",
-    stat_time: "Tempo de geração",
-    stat_themes: "Temas visuais",
-    stat_export: "Exportar e compartilhar",
-    input_label: "✦ Cole seu conteúdo",
-    input_placeholder: "Cole qualquer artigo ou texto longo aqui...\n\nExemplo: Relatórios anuais, resumos acadêmicos, posts de blog...",
-    longtext_tip: "💡 Dica: Para livros/relatórios longos, cole capítulo por capítulo para obter as melhores séries!",
-    unit_chars: " caract.",
-    style_label: "✦ Estilo",
-    opt_default: "✨ Cartões de conhecimento gerais",
-    opt_xiaohongshu: "📕 Post viral (Citações e guia prático)",
-    opt_twitter: "🐦 Twitter / LinkedIn Insights (Dados e métricas)",
-    opt_outline: "📺 Esboço rápido para vídeo/artigo",
-    btn_generate: "Gerar cartões",
-    btn_generating: "⚡ Gerando cartões...",
-    loading_title: "Criando seus cartões de conhecimento...",
-    loading_step1: "📖 Lendo e analisando conteúdo...",
-    loading_step2: "🧠 Extraindo insights com IA...",
-    loading_step3: "✨ Gerando layouts visuais...",
-    export_current: "📷 Exportar cartão atual",
-    export_all: "✦ Exportar todos os cartões (PNG)",
-    modal_title: "Desbloqueie o Cardify AI VIP",
-    modal_desc: "Sem limites diários e exportação HD 2x ilimitada.",
-    plan_pro_badge: "⚡ Mais popular",
-    plan_pro_title: "Pro Mensal",
-    plan_pro_period: "/mês",
-    plan_pro_f1: "✦ Geração ilimitada de cartões",
-    plan_pro_f2: "✦ Acesso a todos os 4 temas visuais",
-    plan_pro_f3: "✦ Exportação PNG 2x HD sem perdas",
-    plan_pro_f4: "✦ Processamento super rápido Gemini 2.0",
-    plan_pro_btn: "⚡ Assinar Pro ($9.90/mês)",
-    plan_lt_badge: "🔥 Apenas 50 vagas",
-    plan_lt_title: "Vitalício",
-    plan_lt_period: "Pagamento único",
-    plan_lt_f1: "✦ Geração <strong>Vitalícia Ilimitada</strong>",
-    plan_lt_f2: "✦ Desbloqueie recursos atuais e futuros",
-    plan_lt_f3: "✦ Licença de uso comercial completa",
-    plan_lt_f4: "✦ Suporte VIP prioritário",
-    plan_lt_btn: "💎 Garantir Vitalício ($39.90)",
-    activation_title: "🔑 Tem uma chave de licença? Ative abaixo",
-    activation_ph: "Cole sua chave de licença (ex: CARDIFY-VIP-XXXX)",
-    activation_btn: "Ativar chave",
-    personal_key_summary: "Ou use sua própria API Key do Gemini (grátis)",
-    personal_key_ph: "Cole sua chave API do Gemini",
-    save_key_btn: "Salvar chave",
-    quota_left: "✦ {left} gerações gratuitas hoje",
-    quota_empty: "🔒 Limite diário atingido",
-    quota_unlimited: "🔓 Ilimitado (Chave pessoal)",
-    quota_vip: "🔓 VIP Ativo (Ilimitado)",
-    footer_made: "Feito com ✦ por",
-    footer_powered: "Desenvolvido por Gemini",
-    footer_pricing: "Preços"
-  },
-  ru: {
-    nav_pro: "⚡ Про-подписка ($9.9/мес)",
-    nav_lifetime: "💎 Пожизненный доступ ($39.9)",
-    hero_eyebrow: "✦ ИИ-КАРТОЧКИ ЗНАНИЙ",
-    hero_title: "Превратите любой текст<br/>в красивые карточки",
-    hero_desc: "Вставьте статью или PDF. Получите стильные визуальные карточки для соцсетей за 10 секунд.",
-    stat_time: "Время генерации",
-    stat_themes: "Темы оформления",
-    stat_export: "Экспорт в 1 клик",
-    input_label: "✦ Вставьте ваш текст",
-    input_placeholder: "Вставьте текст статьи, отчета или заметки...\n\nПример: Выдержки из отчета, статьи, конспекты...",
-    longtext_tip: "💡 Совет: Для длинных книг/отчетов вставляйте текст по главам для создания серии карточек!",
-    unit_chars: " симв.",
-    style_label: "✦ Стиль",
-    opt_default: "✨ Базовые карточки знаний",
-    opt_xiaohongshu: "📕 Вирусный пост (Цитаты и руководство)",
-    opt_twitter: "🐦 Twitter / LinkedIn Инсайты (Данные и цифры)",
-    opt_outline: "📺 Быстрый план видео или статьи",
-    btn_generate: "Создать карточки",
-    btn_generating: "⚡ Создание карточек...",
-    loading_title: "Создание ваших карточек знаний...",
-    loading_step1: "📖 Чтение и анализ текста...",
-    loading_step2: "🧠 Извлечение инсайтов с помощью ИИ...",
-    loading_step3: "✨ Оформление красивых карточек...",
-    export_current: "📷 Скачать текущую карточку",
-    export_all: "✦ Скачать все карточки (PNG)",
-    modal_title: "Разблокируйте VIP-доступ",
-    modal_desc: "Без суточных ограничений и с экспортом в 2K HD.",
-    plan_pro_badge: "⚡ Выбор авторов",
-    plan_pro_title: "Pro Месячный",
-    plan_pro_period: "/мес",
-    plan_pro_f1: "✦ Безлимитная генерация карточек",
-    plan_pro_f2: "✦ Доступ ко всем 4 темам оформления",
-    plan_pro_f3: "✦ Экспорт в 2K HD без потери качества",
-    plan_pro_f4: "✦ Высокая скорость Gemini 2.0 AI",
-    plan_pro_btn: "⚡ Подписаться Pro ($9.90/мес)",
-    plan_lt_badge: "🔥 Лимит 50 мест",
-    plan_lt_title: "Пожизненная карта",
-    plan_lt_period: "Разовый платеж",
-    plan_lt_f1: "✦ <strong>Пожизненный безлимит</strong> без подписок",
-    plan_lt_f2: "✦ Доступ ко всем будущим функциям",
-    plan_lt_f3: "✦ Полная коммерческая лицензия",
-    plan_lt_f4: "✦ Приоритетная VIP-поддержка",
-    plan_lt_btn: "💎 Купить навсегда ($39.90)",
-    activation_title: "🔑 Есть ключ лицензии? Активируйте здесь",
-    activation_ph: "Вставьте ваш ключ (например: CARDIFY-VIP-XXXX)",
-    activation_btn: "Активировать",
-    personal_key_summary: "Или используйте свой API ключ Gemini (бесплатно)",
-    personal_key_ph: "Вставьте ваш API ключ Gemini",
-    save_key_btn: "Сохранить ключ",
-    quota_left: "✦ Осталось {left} бесплатных генераций",
-    quota_empty: "🔒 Дневной лимит исчерпан",
-    quota_unlimited: "🔓 Безлимит (Свой ключ)",
-    quota_vip: "🔓 VIP Статус (Безлимит)",
-    footer_made: "Создано с ✦ от",
-    footer_powered: "На базе Gemini",
-    footer_pricing: "Тарифы"
-  },
-  ja: {
-    nav_pro: "⚡ Proプラン ($9.9/月)",
-    nav_lifetime: "💎 買い切り無制限 ($39.9)",
-    hero_eyebrow: "✦ AI視覚ナレッジカード生成",
-    hero_title: "あらゆる文章を<br/>美しいカードに変換",
-    hero_desc: "PDFや記事を貼り付けるだけ。10秒でSNSシェアに最適なナレッジカードパックを自動生成。",
-    stat_time: "生成速度",
-    stat_themes: "デザインテーマ",
-    stat_export: "ワンクリック高画質出力",
-    input_label: "✦ テキストを入力",
-    input_placeholder: "記事、論文、レポート、メモなどをここに貼り付けてください...\n\n例：年次報告の抜粋、ブログ記事、会議の要約...",
-    longtext_tip: "💡 ヒント：長文・電子書籍は章ごとに分けて貼り付けると、最高の連載カードが作成できます！",
-    unit_chars: " 文字",
-    style_label: "✦ 出力スタイル",
-    opt_default: "✨ 標準ナレッジカード（デフォルト）",
-    opt_xiaohongshu: "📕 バイラルSNS風（名言＋実践ガイド）",
-    opt_twitter: "🐦 Twitter / LinkedIn（データ＆数値指標）",
-    opt_outline: "📺 動画・記事要約アウトライン",
-    btn_generate: "カードパックを生成",
-    btn_generating: "⚡ カードを生成中...",
-    loading_title: "ナレッジカードを作成中...",
-    loading_step1: "📖 テキストを解析しています...",
-    loading_step2: "🧠 AIが重要なポイントを抽出中...",
-    loading_step3: "✨ 美しいレイアウトを生成中...",
-    export_current: "📷 現在のカードを出力",
-    export_all: "✦ 全カードを出力 (PNG)",
-    modal_title: "Cardify AI VIPを解除",
-    modal_desc: "1日3回の制限を解除し、無制限生成と高画質PNG出力を解放。",
-    plan_pro_badge: "⚡ 一番人気",
-    plan_pro_title: "Pro 月額プラン",
-    plan_pro_period: "/月",
-    plan_pro_f1: "✦ ナレッジカードパック無制限生成",
-    plan_pro_f2: "✦ 全4種類のデザインテーマが使い放題",
-    plan_pro_f3: "✦ 2倍高画質PNG無損出力をサポート",
-    plan_pro_f4: "✦ 超高速 Gemini 2.0 AI 解析エンジン",
-    plan_pro_btn: "⚡ Proに登録 ($9.90/月)",
-    plan_lt_badge: "🔥 先着50名限定買い切り",
-    plan_lt_title: "ライフタイムパス",
-    plan_lt_period: "一括払い (買い切り)",
-    plan_lt_f1: "✦ <strong>永久無制限生成</strong> (追加料金なし)",
-    plan_lt_f2: "✦ 今後追加されるすべての新機能を解放",
-    plan_lt_f3: "✦ 商用利用ライセンス付き (Commercial)",
-    plan_lt_f4: "✦ VIP優先サポート＆優先サーバー",
-    plan_lt_btn: "💎 永久ライセンス購入 ($39.90)",
-    activation_title: "🔑 ライセンスキーをお持ちの方はこちらで有効化",
-    activation_ph: "ライセンスキーを入力 (例: CARDIFY-VIP-XXXX)",
-    activation_btn: "キーを有効化",
-    personal_key_summary: "自分の Gemini API Key を使用する (無料ルート)",
-    personal_key_ph: "Gemini API Key を入力",
-    save_key_btn: "キーを保存",
-    quota_left: "✦ 本日残り {left} 回無料",
-    quota_empty: "🔒 本日の上限に達しました",
-    quota_unlimited: "🔓 无制限 (My API Key)",
-    quota_vip: "🔓 VIP有効 (无制限)",
-    footer_made: "Made with ✦ by",
-    footer_powered: "Powered by Gemini",
-    footer_pricing: "料金プラン"
-  },
-  ko: {
-    nav_pro: "⚡ Pro 구독 ($9.9/월)",
-    nav_lifetime: "💎 평생 이용권 ($39.9)",
-    hero_eyebrow: "✦ AI 기반 지식 카드 생성기",
-    hero_title: "긴 텍스트를<br/>아름다운 카드로 변환",
-    hero_desc: "PDF나 기사를 붙여넣으세요. 10초 만에 SNS 공유용 지식 카드 팩이 완성됩니다.",
-    stat_time: "생성 시간",
-    stat_themes: "비주얼 테마",
-    stat_export: "원클릭 고화질 저장",
-    input_label: "✦ 텍스트 붙여넣기",
-    input_placeholder: "아티클, 논문, 보고서 등을 여기에 입력하세요...\n\n예: 연례 보고서 요약, 블로그 포스트, 회의록...",
-    longtext_tip: "💡 팁: 긴 책이나 보고서는 챕터별로 나누어 붙여넣으면 최고의 연재 카드가 생성됩니다!",
-    unit_chars: " 자",
-    style_label: "✦ 스타일",
-    opt_default: "✨ 일반 지식 카드 (기본)",
-    opt_xiaohongshu: "📕 트렌디 SNS 스타일 (명언 & 가이드)",
-    opt_twitter: "🐦 Twitter / LinkedIn 비즈니스 인사이트",
-    opt_outline: "📺 비디오 / 글 핵심 요약 아웃라인",
-    btn_generate: "카드 팩 생성하기",
-    btn_generating: "⚡ 카드 생성 중...",
-    loading_title: "지식 카드를 생성하는 중입니다...",
-    loading_step1: "📖 텍스트를 분석하고 있습니다...",
-    loading_step2: "🧠 AI가 핵심 인사이트를 추출 중입니다...",
-    loading_step3: "✨ 아름다운 카드 레이아웃을 만드는 중...",
-    export_current: "📷 현재 카드 저장",
-    export_all: "✦ 전체 카드 저장 (PNG)",
-    modal_title: "Cardify AI VIP 잠금 해제",
-    modal_desc: "일일 제한 없이 무제한 생성 및 2K HD 출력을 이용하세요.",
-    plan_pro_badge: "⚡ 가장 인기 있는 플랜",
-    plan_pro_title: "Pro 월간 구독",
-    plan_pro_period: "/월",
-    plan_pro_f1: "✦ 지식 카드 팩 무제한 생성",
-    plan_pro_f2: "✦ 4가지 비주얼 테마 모두 이용 가능",
-    plan_pro_f3: "✦ 2배 고화질 PNG 무손실 저장",
-    plan_pro_f4: "✦ 초고속 Gemini 2.0 AI 파싱",
-    plan_pro_btn: "⚡ Pro 구독하기 ($9.90/월)",
-    plan_lt_badge: "🔥 선착순 50명 한정",
-    plan_lt_title: "평생 라이선스",
-    plan_lt_period: "일시불 (평생 소장)",
-    plan_lt_f1: "✦ <strong>평생 무제한</strong> 생성 (추가 비용 없음)",
-    plan_lt_f2: "✦ 모든 현재 및 향후 기능 업데이트 포함",
-    plan_lt_f3: "✦ 상업적 이용 라이선스 (Commercial)",
-    plan_lt_f4: "✦ VIP 전용 우선 지원 채널",
-    plan_lt_btn: "💎 평생 이용권 구매 ($39.90)",
-    activation_title: "🔑 라이선스 키가 있으신가요? 여기서 활성화하세요",
-    activation_ph: "라이선스 키를 입력하세요 (예: CARDIFY-VIP-XXXX)",
-    activation_btn: "키 활성화",
-    personal_key_summary: "또는 개인 Gemini API Key 사용 (무료 채널)",
-    personal_key_ph: "Gemini API Key 입력",
-    save_key_btn: "키 저장",
-    quota_left: "✦ 오늘 무료 {left}회 남음",
-    quota_empty: "🔒 오늘 무료 한도 소진",
-    quota_unlimited: "🔓 무제한 (개인 Key)",
-    quota_vip: "🔓 VIP 활성화됨 (무제한)",
-    footer_made: "Made with ✦ by",
-    footer_powered: "Powered by Gemini",
-    footer_pricing: "요금제"
-  },
-  fr: {
-    nav_pro: "⚡ Passer à Pro ($9.9/mois)",
-    nav_lifetime: "💎 Accès à vie ($39.9)",
-    hero_eyebrow: "✦ CARTES DE CONNAISSANCES PAR IA",
-    hero_title: "Transformez vos textes en<br/>sublimes cartes",
-    hero_desc: "Collez un PDF ou un article. Obtenez des cartes visuelles à partager en 10 secondes.",
-    stat_time: "Temps de génération",
-    stat_themes: "Thèmes visuels",
-    stat_export: "Export rapide",
-    input_label: "✦ Collez votre contenu",
-    input_placeholder: "Collez votre article, étude ou texte ici...\n\nExemple: Extraits de rapport annuel, articles de blog...",
-    longtext_tip: "💡 Conseil : Pour les livres/rapports longs, collez chapitre par chapitre pour un pack de cartes en série parfait !",
-    unit_chars: " caract.",
-    style_label: "✦ Style",
-    opt_default: "✨ Cartes générales (Défaut)",
-    opt_xiaohongshu: "📕 Post viral (Citations et guide)",
-    opt_twitter: "🐦 Twitter / LinkedIn Insights (Chiffres-clés)",
-    opt_outline: "📺 Plan rapide de vidéo ou d'article",
-    btn_generate: "Générer les cartes",
-    btn_generating: "⚡ Génération en cours...",
-    loading_title: "Création de vos cartes de connaissances...",
-    loading_step1: "📖 Lecture et analyse du contenu...",
-    loading_step2: "🧠 Extraction des informations clés par IA...",
-    loading_step3: "✨ Génération des visuels...",
-    export_current: "📷 Exporter la carte actuelle",
-    export_all: "✦ Exporter tout en PNG",
-    modal_title: "Débloquez Cardify AI VIP",
-    modal_desc: "Génération illimitée et export HD 2x sans limite quotidienne.",
-    plan_pro_badge: "⚡ Le plus populaire",
-    plan_pro_title: "Pro Mensuel",
-    plan_pro_period: "/mois",
-    plan_pro_f1: "✦ Génération illimitée de cartes",
-    plan_pro_f2: "✦ Accès aux 4 thèmes visuels",
-    plan_pro_f3: "✦ Export PNG 2x HD sans perte",
-    plan_pro_f4: "✦ Vitesse de traitement Gemini 2.0",
-    plan_pro_btn: "⚡ S'abonner Pro ($9.90/mois)",
-    plan_lt_badge: "🔥 Limité à 50 places",
-    plan_lt_title: "Licence à vie",
-    plan_lt_period: "Paiement unique",
-    plan_lt_f1: "✦ Génération <strong>Illimitée à vie</strong>",
-    plan_lt_f2: "✦ Accès à toutes les futures fonctionnalités",
-    plan_lt_f3: "✦ Licence d'utilisation commerciale",
-    plan_lt_f4: "✦ Canal de support VIP prioritaire",
-    plan_lt_btn: "💎 Obtenir la licence à vie ($39.90)",
-    activation_title: "🔑 Vous avez une clé de licence ? Activez-la ici",
-    activation_ph: "Collez votre clé de licence (ex: CARDIFY-VIP-XXXX)",
-    activation_btn: "Activer la clé",
-    personal_key_summary: "Ou utilisez votre propre clé API Gemini (Gratuit)",
-    personal_key_ph: "Collez votre clé API Gemini",
-    save_key_btn: "Sauvegarder",
-    quota_left: "✦ {left} générations gratuites aujourd'hui",
-    quota_empty: "🔒 Limite quotidienne atteinte",
-    quota_unlimited: "🔓 Illimité (Clé personnelle)",
-    quota_vip: "🔓 VIP Actif (Illimité)",
-    footer_made: "Créé avec ✦ par",
-    footer_powered: "Propulsé par Gemini",
-    footer_pricing: "Tarifs"
-  },
-  de: {
-    nav_pro: "⚡ Pro Upgrade ($9.9/Monat)",
-    nav_lifetime: "💎 Lifetime-Zugang ($39.9)",
-    hero_eyebrow: "✦ KI-WISSENSKARTEN-GENERATOR",
-    hero_title: "Verwandle Inhalte in<br/>ästhetische Karten",
-    hero_desc: "Füge einen Artikel oder PDF ein. Erhalte teilbare Wissenskarten in 10 Sekunden.",
-    stat_time: "Generierungszeit",
-    stat_themes: "Visuelle Themes",
-    stat_export: "1-Klick Export",
-    input_label: "✦ Inhalt einfügen",
-    input_placeholder: "Füge hier deinen Artikel oder Text ein...\n\nBeispiel: Auszüge aus Jahresberichten, Blogposts...",
-    longtext_tip: "💡 Tipp: Bei langen Büchern/Berichten füge den Text kapitelweise ein, um die besten Serien-Karten zu erhalten!",
-    unit_chars: " Zeichen",
-    style_label: "✦ Stil",
-    opt_default: "✨ Allgemeine Wissenskarten (Standard)",
-    opt_xiaohongshu: "📕 Viraler Social Post (Zitate & Anleitung)",
-    opt_twitter: "🐦 Twitter / LinkedIn Insights (Daten & Zahlen)",
-    opt_outline: "📺 Schnelles Video/Artikel Outline",
-    btn_generate: "Karten generieren",
-    btn_generating: "⚡ Generiere Karten...",
-    loading_title: "Erstelle deine Wissenskarten...",
-    loading_step1: "📖 Lese und analysiere Inhalt...",
-    loading_step2: "🧠 Extrahiere KI-Erkenntnisse...",
-    loading_step3: "✨ Erstelle visuelle Layouts...",
-    export_current: "📷 Aktuelle Karte exportieren",
-    export_all: "✦ Alle Karten exportieren (PNG)",
-    modal_title: "Cardify AI VIP freischalten",
-    modal_desc: "Keine Tageslimits und unbegrenzter 2K HD Export.",
-    plan_pro_badge: "⚡ Beliebteste Wahl",
-    plan_pro_title: "Pro Monatlich",
-    plan_pro_period: "/Monat",
-    plan_pro_f1: "✦ Unbegrenzte Wissenskarten-Generierung",
-    plan_pro_f2: "✦ Zugriff auf alle 4 visuellen Themes",
-    plan_pro_f3: "✦ 2x HD verlustfreier PNG-Export",
-    plan_pro_f4: "✦ Ultra-schnelle Gemini 2.0 KI-Geschwindigkeit",
-    plan_pro_btn: "⚡ Pro abonnieren ($9.90/Monat)",
-    plan_lt_badge: "🔥 Limitierte 50 Plätze",
-    plan_lt_title: "Lifetime-Pass",
-    plan_lt_period: "Einmalzahlung",
-    plan_lt_f1: "✦ <strong>Lebenslang unbegrenzt</strong> (Kein Abo)",
-    plan_lt_f2: "✦ Alle zukünftigen Updates enthalten",
-    plan_lt_f3: "✦ Volle kommerzielle Nutzungslizenz",
-    plan_lt_f4: "✦ Priorisierter VIP-Support-Kanal",
-    plan_lt_btn: "💎 Lifetime sichern ($39.90)",
-    activation_title: "🔑 Lizenzschlüssel vorhanden? Hier aktivieren",
-    activation_ph: "Lizenzschlüssel einfügen (z.B. CARDIFY-VIP-XXXX)",
-    activation_btn: "Schlüssel aktivieren",
-    personal_key_summary: "Oder eigenen Gemini API Key nutzen (Kostenlos)",
-    personal_key_ph: "Eigenen Gemini API Key einfügen",
-    save_key_btn: "Schlüssel speichern",
-    quota_left: "✦ {left} freie Generierungen heute",
-    quota_empty: "🔒 Tageslimit erreicht",
-    quota_unlimited: "🔓 Unbegrenzt (Eigener Key)",
-    quota_vip: "🔓 VIP Aktiviert (Unbegrenzt)",
-    footer_made: "Erstellt mit ✦ von",
-    footer_powered: "Powered by Gemini",
-    footer_pricing: "Preise"
-  }
-};
-
-// currentLang initialized globally at top of script
-
-function applyLanguage(lang) {
-  setCurrentLang(lang);
-  localStorage.setItem('cardify_language', lang);
-  const dict = I18N[lang] || I18N.en;
-
-  // Set selector value
-  const sel = document.getElementById('lang-select');
-  if (sel) sel.value = lang;
-
-  // Update elements with data-i18n
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    if (dict[key]) el.innerHTML = dict[key];
-  });
-
-  // Update placeholders
-  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
-    const key = el.getAttribute('data-i18n-ph');
-    if (dict[key]) el.placeholder = dict[key];
-  });
-
-  // Update btn text
-  const genBtn = document.getElementById('generate-btn');
-  if (genBtn && !genBtn.disabled) {
-    genBtn.innerHTML = `<span class="btn-icon">✦</span> ${dict.btn_generate || 'Generate Cards'}`;
-  }
-
-  // Update export button labels (i18n fix: no more hardcoded Chinese)
-  const exportCurrentLabel = document.getElementById('export-current-label');
-  if (exportCurrentLabel) exportCurrentLabel.textContent = dict.export_current || '📷 Export Current Card';
-  const exportAllLabel = document.getElementById('export-all-label');
-  if (exportAllLabel) exportAllLabel.textContent = dict.export_all || '✦ Export All Cards (PNG)';
-
-  // Update char count unit
-  updateCharCount();
-
-  updateQuotaBadge();
-}
-
-// Update char count dynamically according to lang
-function updateCharCount() {
-  const textarea = document.getElementById('content-input');
-  const charCount = document.getElementById('char-count');
-  if (!textarea || !charCount) return;
-  const dict = I18N[currentLang] || I18N.en;
-  const unit = dict.unit_chars || ' chars';
-  charCount.textContent = textarea.value.length.toLocaleString() + unit;
-}
-
-// Event listener for lang select
-document.getElementById('lang-select')?.addEventListener('change', (e) => {
-  applyLanguage(e.target.value);
-});
-const DAILY_LIMIT = 20;
-const QUOTA_KEY = 'cardify_quota';
-
-function getQuota() {
-  try {
-    const today = todayStr();
-    const storedDate = localStorage.getItem('cardify_free_usage_date');
-    if (storedDate !== today) {
-      localStorage.setItem('cardify_free_usage_date', today);
-      localStorage.setItem('cardify_free_usage_count', '0');
-    }
-    const raw = localStorage.getItem(QUOTA_KEY);
-    if (!raw) return { date: today, count: parseInt(localStorage.getItem('cardify_free_usage_count') || '0', 10) };
-    const data = JSON.parse(raw);
-    if (data.date !== today) return { date: today, count: 0 };
-    return data;
-  } catch { return { date: todayStr(), count: 0 }; }
-}
-
-function saveQuota(q) {
-  localStorage.setItem(QUOTA_KEY, JSON.stringify(q));
-  localStorage.setItem('cardify_free_usage_date', q.date || todayStr());
-  localStorage.setItem('cardify_free_usage_count', String(q.count || 0));
-}
-
-function todayStr() {
-  return new Date().toISOString().slice(0, 10);
-}
-
-function getUserApiKey() {
-  return localStorage.getItem('cardify_user_api_key') || '';
-}
-
-function saveUserApiKey(key) {
-  if (key) localStorage.setItem('cardify_user_api_key', key);
-  else localStorage.removeItem('cardify_user_api_key');
-}
-
-function getLicenseKey() {
-  return localStorage.getItem('cardify_license_key') || '';
-}
-
-function saveLicenseKey(key) {
-  if (key) localStorage.setItem('cardify_license_key', key);
-  else localStorage.removeItem('cardify_license_key');
-}
-
-function hasUnlimitedAccess() {
-  return !!(getLicenseKey() || getUserApiKey());
-}
-
-function updateQuotaBadge() {
-  const badge = document.getElementById('quota-badge');
-  const licenseKey = getLicenseKey();
-  const userApiKey = getUserApiKey();
-  const dict = I18N[currentLang] || I18N.en;
-
-  if (licenseKey) {
-    badge.textContent = dict.quota_vip || '🔓 VIP Active (Unlimited)';
-    badge.className = 'quota-badge vip';
-  } else if (userApiKey) {
-    badge.textContent = dict.quota_unlimited || '🔓 Unlimited (Personal Key)';
-    badge.className = 'quota-badge unlimited';
-  } else {
-    const q = getQuota();
-    const left = Math.max(0, DAILY_LIMIT - q.count);
-    if (left > 0) {
-      badge.textContent = (dict.quota_left || '✦ {left} left').replace('{left}', left);
-    } else {
-      badge.textContent = dict.quota_empty || '🔒 Limit reached';
-    }
-    badge.className = 'quota-badge';
-    if (left === 0) badge.style.cursor = 'pointer';
-  }
-}
-
-// Apply initial language on load
-applyLanguage(currentLang);
-
-// ── Modal logic ──
-function showLimitModal() {
-  const savedKey = getUserApiKey();
-  if (savedKey) {
-    document.getElementById('modal-api-key-input').value = savedKey;
-    const detailsEl = document.getElementById('personal-key-details');
-    if (detailsEl) detailsEl.open = true;
-  }
-  const savedLicense = getLicenseKey();
-  if (savedLicense) document.getElementById('license-key-input').value = savedLicense;
-
-  const noticeEl = document.getElementById('key-priority-notice');
-  if (noticeEl) {
-    noticeEl.style.display = savedKey ? 'block' : 'none';
-  }
-  document.getElementById('limit-modal').classList.add('show');
-}
-function hideLimitModal() {
-  document.getElementById('limit-modal').classList.remove('show');
-}
-document.getElementById('modal-close-btn').addEventListener('click', hideLimitModal);
-document.getElementById('limit-modal').addEventListener('click', e => {
-  if (e.target === document.getElementById('limit-modal')) hideLimitModal();
-});
-
-// Header upgrade buttons open VIP Modal
-document.getElementById('nav-pro-btn')?.addEventListener('click', showLimitModal);
-document.getElementById('nav-lifetime-btn')?.addEventListener('click', showLimitModal);
-document.getElementById('quota-badge')?.addEventListener('click', () => {
-  if (!hasUnlimitedAccess()) showLimitModal();
-});
-
-// Activate License Key
-document.getElementById('activate-license-btn').addEventListener('click', () => {
-  const dict = I18N[currentLang] || I18N.en;
-  const key = document.getElementById('license-key-input').value.trim();
-  if (!key || key.length < 5) {
-    showToast(dict.toast_key_invalid || '⚠️ Please enter a valid License Key', 'error');
-    return;
-  }
-  saveLicenseKey(key);
-  hideLimitModal();
-  updateQuotaBadge();
-  showToast(dict.toast_key_activated || '🎉 VIP activated! Unlimited generation unlocked!', 'success', 4000);
-});
-
-// Save Gemini API Key
-document.getElementById('modal-save-key-btn').addEventListener('click', () => {
-  const dict = I18N[currentLang] || I18N.en;
-  const key = document.getElementById('modal-api-key-input').value.trim();
-  if (!key || key.length < 10) {
-    showToast(dict.toast_api_invalid || '⚠️ Please enter a valid Gemini API Key', 'error');
-    return;
-  }
-  saveUserApiKey(key);
-  hideLimitModal();
-  updateQuotaBadge();
-  showToast(dict.toast_api_saved || '🔓 Personal Key saved. Unlimited generation unlocked!', 'success');
-});
-
-// ── Theme selector ──
-document.querySelectorAll('.theme-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    setSelectedTheme(btn.dataset.theme || 'dark');
-  });
-});
-
-// ── Char count ──
-const textarea = document.getElementById('content-input');
-const charCount = document.getElementById('char-count');
-textarea.addEventListener('input', updateCharCount);
-
-// ── Generate ──
-async function doGenerate() {
-  const textarea = document.getElementById('content-input');
-  const text = textarea ? textarea.value.trim() : '';
-  const styleSelectEl = document.getElementById('style-select');
-  const selectedStyle = styleSelectEl ? styleSelectEl.value : 'default';
-  const themeToUse = typeof selectedTheme !== 'undefined' ? (selectedTheme || 'dark') : 'dark';
-  const langToUse = typeof currentLang !== 'undefined' ? (currentLang || 'en') : 'en';
-  const userApiKey = getUserApiKey() || '';
-  const licenseKey = getLicenseKey() || '';
-
-  if (!text) {
-    if (textarea) {
-      textarea.focus();
-      textarea.style.borderColor = 'rgba(252,92,156,0.6)';
-      setTimeout(() => textarea.style.borderColor = '', 1500);
-    }
-    return;
-  }
-
-  // ── Quota check ──
-  if (!hasUnlimitedAccess()) {
-    const q = getQuota();
-    if (q.count >= DAILY_LIMIT) {
-      showLimitModal();
-      return;
-    }
-    // Increment count
-    q.count++;
-    saveQuota(q);
-    updateQuotaBadge();
-  }
-
-  // Show loading
-  document.getElementById('cards-section').classList.remove('visible');
-  document.getElementById('loading-state').classList.add('visible');
-  const genBtn = document.getElementById('generate-btn');
-  const dict = I18N[currentLang] || I18N.en;
-  genBtn.disabled = true;
-  genBtn.innerHTML = `<span class="btn-spinner" style="display:inline-block"></span> ${dict.btn_generating || '⚡ Generating...'}`;
-
-  let cardData = null;
-
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 30000);
-
-    const licenseKey = getLicenseKey();
-    const payload = {
-      text,
-      theme: selectedTheme || 'dark',
-      style: selectedStyle,
-      lang: currentLang
+    // Watermark translation strings
+    const WATERMARK_STRINGS = {
+      en: 'Generated by Cardify.ai',
+      zh: 'Cardify.ai 强力驱动',
+      es: 'Generado por Cardify.ai',
+      pt: 'Gerado por Cardify.ai',
+      ru: 'Создано в Cardify.ai',
+      ja: 'Cardify.ai 生成',
+      ko: 'Cardify.ai 생성',
+      fr: 'Généré par Cardify.ai',
+      de: 'Erstellt mit Cardify.ai'
     };
-    if (userApiKey) payload.userApiKey = userApiKey;
-    if (licenseKey) payload.licenseKey = licenseKey;
 
-    const resp = await fetch('/api/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      signal: controller.signal,
-      body: JSON.stringify(payload)
+    // Initialize Page
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+
+      // Configure PDF.js worker
+      if (window.pdfjsLib) {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      }
+
+      // Swiper Initialization
+      swiperInstance = new Swiper('.cardSwiper', {
+        effect: 'cards',
+        grabCursor: true,
+        pagination: { el: '.swiper-pagination', clickable: true },
+      });
+
+      // Fetch IP Quota
+      fetchQuota();
     });
-    clearTimeout(timeout);
 
-    if (!resp.ok) {
-      const errBody = await resp.json().catch(() => ({}));
-      const errCode = errBody.error || '';
+    function showToast(msg, isError = false) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      const toastIcon = document.getElementById('toastIcon');
+      
+      toastMsg.innerText = msg;
+      toastIcon.setAttribute('data-lucide', isError ? 'alert-triangle' : 'check-circle-2');
+      toastIcon.className = `w-4 h-4 flex-shrink-0 ${isError ? 'text-red-400' : 'text-emerald-400'}`;
+      lucide.createIcons();
 
-      // Map backend error codes to user-friendly i18n messages
-      if (resp.status === 429 || errCode === 'DAILY_LIMIT_EXCEEDED') {
-        showLimitModal();
-        throw new Error(errBody.message || dict.quota_empty || 'Daily limit reached');
-      }
-      if (errCode === 'QUOTA_EXHAUSTED') {
-        throw new Error('Gemini quota exhausted. Try again later or use your own API Key.');
-      }
-      if (errCode === 'API_KEY_INVALID') {
-        // Show detail from backend — tells user the key format is wrong
-        const detail = errBody.detail || 'Key rejected by Gemini. Keys must start with "AIza" from https://aistudio.google.com/apikey';
-        showLimitModal();  // prompt user to enter correct key
-        throw new Error('⚠️ API Key Invalid: ' + detail);
-      }
-      if (errCode === 'AI_RESPONSE_FORMAT_ERROR') {
-        throw new Error('AI returned unreadable response. Please try again.');
-      }
-      if (errCode === 'GENERATION_FAILED') {
-        // Show the actual backend detail message for easy debugging
-        const detail = errBody.detail || 'AI generation failed.';
-        throw new Error('❌ Generation Failed: ' + detail);
-      }
-      throw new Error((errBody.detail || errCode) || `HTTP ${resp.status}`);
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 4000);
     }
 
-    cardData = await resp.json();
-
-  } catch (err) {
-    console.warn('API call failed, falling back to demo data:', err.message);
-    const isChinese = /[\u4e00-\u9fa5]/.test(text);
-    cardData = isChinese
-      ? JSON.parse(JSON.stringify(DEMO_RESPONSES.zh))
-      : JSON.parse(JSON.stringify(DEMO_RESPONSES.en));
-    const toastMsg = err.name === 'AbortError'
-      ? (dict.toast_timeout || '⏱️ Request timed out. Showing demo cards.')
-      : `${dict.toast_api_error || '⚠️ API error'}: ${err.message || '?'}`;
-    showToast(toastMsg, 'error', 6000);
-  }
-
-  cardData.theme_color = selectedTheme || 'dark';
-  renderCards(cardData);
-
-  document.getElementById('loading-state').classList.remove('visible');
-  document.getElementById('cards-section').classList.add('visible');
-  genBtn.disabled = false;
-  genBtn.innerHTML = `<span class="btn-icon">✦</span> ${dict.btn_generate || 'Generate Cards'}`;
-}
-
-document.getElementById('generate-btn').addEventListener('click', doGenerate);
-
-// ── Reset ──
-document.getElementById('reset-btn').addEventListener('click', () => {
-  document.getElementById('cards-section').classList.remove('visible');
-  textarea.value = '';
-  charCount.textContent = '0 chars';
-});
-
-// ══════════════════════════════════════════════════════════
-// EXPORT ENGINE (html2canvas DPR=2)
-// ══════════════════════════════════════════════════════════
-
-function showToast(msg, type = 'info', duration = 3000) {
-  const t = document.getElementById('toast');
-  t.textContent = '';
-  t.className = '';
-  t.textContent = msg;
-  if (type === 'success') t.classList.add('toast-success');
-  if (type === 'error') t.classList.add('toast-error');
-  t.classList.add('show');
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.classList.remove('show'), duration);
-}
-
-async function captureCard(cardEl, filename) {
-  // Lock dimensions so html2canvas captures exactly the card size
-  const W = 380, H = 560;
-  const clone = cardEl.cloneNode(true);
-  clone.style.cssText = `
-    position: fixed; left: -9999px; top: -9999px;
-    width: ${W}px; height: ${H}px;
-    border-radius: 28px; overflow: hidden;
-    font-family: 'Inter', sans-serif;
-  `;
-  // For glass theme: give clone a solid background so backdrop-filter renders
-  const isGlass = clone.classList.contains('theme-glass');
-  if (isGlass) {
-    clone.style.background = 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)';
-    clone.style.backdropFilter = 'none';
-  }
-  document.body.appendChild(clone);
-
-  try {
-    const canvas = await html2canvas(clone, {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor: null,
-      logging: false,
-      width: W,
-      height: H,
-    });
-    const url = canvas.toDataURL('image/png');
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    return true;
-  } finally {
-    document.body.removeChild(clone);
-  }
-}
-
-function setExportLoading(btn, loading) {
-  btn.disabled = loading;
-  btn.classList.toggle('loading', loading);
-}
-
-// ── Export current card ──
-document.getElementById('export-current-btn').addEventListener('click', async () => {
-  if (!swiper) return;
-  const btn = document.getElementById('export-current-btn');
-  const activeSlide = document.querySelector('.swiper-slide-active .kcard');
-  if (!activeSlide) { showToast('⚠️ No active card found', 'error'); return; }
-
-  setExportLoading(btn, true);
-  showToast('📷 Capturing card...');
-  try {
-    const idx = swiper.activeIndex + 1;
-    await captureCard(activeSlide, `cardify-card-${idx}.png`);
-    showToast('✅ Card exported successfully!', 'success');
-  } catch(e) {
-    showToast('❌ Export failed. Try again.', 'error');
-    console.error(e);
-  } finally {
-    setExportLoading(btn, false);
-  }
-});
-
-// ── Export all cards ──
-document.getElementById('export-all-btn').addEventListener('click', async () => {
-  if (!swiper) return;
-  const btn = document.getElementById('export-all-btn');
-  const cards = document.querySelectorAll('#swiper-wrapper .kcard');
-  if (!cards.length) return;
-
-  setExportLoading(btn, true);
-  let success = 0;
-  for (let i = 0; i < cards.length; i++) {
-    showToast(`✦ Exporting card ${i+1} of ${cards.length}...`);
-    try {
-      await captureCard(cards[i], `cardify-card-${i+1}-of-${cards.length}.png`);
-      success++;
-      await new Promise(r => setTimeout(r, 400)); // stagger downloads
-    } catch(e) {
-      console.error('Card export error:', e);
+    function updateCharCount() {
+      const text = document.getElementById('inputText').value;
+      document.getElementById('charCount').innerText = `${text.length} / 15,000`;
     }
-  }
-  setExportLoading(btn, false);
-  if (success === cards.length) {
-    showToast(`🎉 All ${success} cards exported!`, 'success', 4000);
-  } else {
-    showToast(`⚠️ Exported ${success}/${cards.length} cards`, 'error', 4000);
-  }
-});
 
-// ══════════════════════════════════════════════════════════
-// RENDER CARDS
-// ══════════════════════════════════════════════════════════
-function renderCards(data) {
-  const wrapper = document.getElementById('swiper-wrapper');
-  wrapper.innerHTML = '';
+    function handleLangChange(lang) {
+      selectedLang = lang;
+      updateWatermarkText();
+    }
 
-  document.getElementById('cards-meta').textContent =
-    `${data.total_cards} cards · ${data.theme_color} theme`;
+    function updateWatermarkText() {
+      const text = WATERMARK_STRINGS[selectedLang] || WATERMARK_STRINGS.en;
+      document.getElementById('cardWatermark1').innerText = text;
+      document.getElementById('cardWatermark2').innerText = text;
+      document.getElementById('cardWatermark3').innerText = text;
+    }
 
-  data.cards.forEach((card, idx) => {
-    const slide = document.createElement('div');
-    slide.className = 'swiper-slide';
-    const showWm = data.hasWatermark !== false && data.channel === 'free_tier';
-    slide.innerHTML = buildCard(card, idx + 1, data.total_cards, data.theme_color, showWm);
-    wrapper.appendChild(slide);
-  });
+    function toggleApiKeyInput() {
+      const container = document.getElementById('apiKeyContainer');
+      container.classList.toggle('hidden');
+    }
 
-  // Init or reinit swiper
-  if (swiper) { swiper.destroy(true, true); }
-  swiper = new Swiper('#card-swiper', {
-    slidesPerView: 'auto',
-    centeredSlides: true,
-    spaceBetween: 24,
-    grabCursor: true,
-    pagination: { el: '.swiper-pagination', clickable: true },
-    navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
-    keyboard: { enabled: true },
-  });
-}
+    async function fetchQuota() {
+      try {
+        const res = await fetch('/api/generate');
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('quotaText').innerText = `✦ ${data.remaining} Free Left`;
+        }
+      } catch (e) {
+        console.warn('Quota fetch failed:', e);
+      }
+    }
 
-function buildCard(card, num, total, theme, showWatermark = true) {
-  // i18n-aware type labels and watermark — no more hardcoded strings!
-  const dict = I18N[currentLang] || I18N.en;
-  const typeLabel = {
-    header: dict.card_type_header || '⭐ Key Insights',
-    metrics: dict.card_type_metrics || '📊 Data & Metrics',
-    action: dict.card_type_action || '⚡ Action Plan'
-  };
-  const watermarkText = dict.card_watermark || '✦ Cardify AI';
-  const themeClass = `theme-${theme}`;
-
-  let body = '';
-
-  if (card.type === 'header') {
-    const takeaways = (card.key_takeaways || []).map(t => `
-      <div class="takeaway">
-        <div class="takeaway-dot"></div>
-        <span>${t}</span>
-      </div>`).join('');
-
-    body = `
-      <div class="key-takeaways">${takeaways}</div>
-      ${card.gold_quote ? `
-      <div class="gold-quote-wrap" style="margin-top: auto;">
-        <div class="gold-quote">"${card.gold_quote}"</div>
-      </div>` : ''}
-    `;
-  } else if (card.type === 'metrics') {
-    const metrics = (card.metrics || []).map(m => `
-      <div class="metric-item">
-        <div class="metric-row">
-          <span class="metric-label">${m.label}</span>
-          <span class="metric-value">${m.value}</span>
-        </div>
-        ${m.desc ? `<div class="metric-desc">${m.desc}</div>` : ''}
-      </div>`).join('');
-    body = `<div class="metrics-grid">${metrics}</div>`;
-  } else if (card.type === 'action') {
-    const steps = (card.steps || []).map((s, i) => `
-      <div class="step-item">
-        <div class="step-num">${i + 1}</div>
-        <div class="step-text">${s}</div>
-      </div>`).join('');
-    body = `<div class="steps-list">${steps}</div>`;
-  }
-
-  return `
-    <div class="kcard ${themeClass}">
-      <div class="kcard-num">${num} / ${total}</div>
-      <div class="kcard-type-badge">${typeLabel[card.type] || card.type}</div>
-      <h2>${card.title}</h2>
-      ${card.subtitle ? `<div class="subtitle">${card.subtitle}</div>` : ''}
-      ${body}
-      ${showWatermark ? `<div class="kcard-watermark">${watermarkText}</div>` : ''}
-    </div>
-  `;
-}
-
-// ══════════════════════════════════════════════════════════
-// PDF UPLOAD & PARSE ENGINE (pdfjs-dist via CDN)
-// ══════════════════════════════════════════════════════════
-(async function initPdfUpload() {
-  // Dynamically import pdf.js as ES module
-  let pdfjsLib = null;
-  try {
-    // Try loading pdfjs as module — works in modern browsers
-    const mod = await import('https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.min.mjs');
-    pdfjsLib = mod;
-    pdfjsLib.GlobalWorkerOptions.workerSrc =
-      'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs';
-  } catch(e) {
-    console.warn('pdfjs-dist could not be loaded:', e);
-    return;
-  }
-
-  const zone = document.getElementById('pdf-upload-zone');
-  const fileInput = document.getElementById('pdf-file-input');
-  const statusBox = document.getElementById('pdf-upload-status');
-  const statusText = document.getElementById('pdf-status-text');
-  const contentTextarea = document.getElementById('content-input');
-  if (!zone || !fileInput || !contentTextarea) return;
-
-  async function parsePdf(file) {
-    const dict = I18N[currentLang] || I18N.en;
-    statusBox.classList.add('visible');
-    statusText.textContent = dict.pdf_parsing || '📄 Parsing PDF...';
-    statusBox.style.color = '#7c5cfc';
-    statusBox.style.background = 'rgba(124,92,252,0.1)';
-    statusBox.style.borderColor = 'rgba(124,92,252,0.3)';
-
-    try {
-      const arrayBuffer = await file.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-      let fullText = '';
-      const MAX_CHARS = 15000;
-
-      for (let p = 1; p <= pdf.numPages; p++) {
-        if (fullText.length >= MAX_CHARS) break;
-        const page = await pdf.getPage(p);
-        const textContent = await page.getTextContent();
-        const pageText = textContent.items.map(item => item.str).join(' ');
-        fullText += pageText + '\n';
+    // PDF Extraction Handler
+    async function handlePdfUpload(event) {
+      const file = event.target.files[0];
+      if (!file || file.type !== 'application/pdf') {
+        showToast('Please select a valid PDF file.', true);
+        return;
       }
 
-      fullText = fullText.trim().slice(0, MAX_CHARS);
-      contentTextarea.value = fullText;
-      updateCharCount();
+      showToast('Reading & extracting PDF text...');
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        let fullText = '';
 
-      // Success state
-      const successMsg = (dict.pdf_success || 'PDF extracted! ({count} chars)').replace('{count}', fullText.length.toLocaleString());
-      statusText.textContent = successMsg;
-      statusBox.style.color = '#4ade80';
-      statusBox.style.background = 'rgba(34,197,94,0.1)';
-      statusBox.style.borderColor = 'rgba(34,197,94,0.3)';
-      showToast('📄 ' + successMsg, 'success', 4000);
-    } catch(err) {
-      console.error('PDF parse error:', err);
-      const dict2 = I18N[currentLang] || I18N.en;
-      statusText.textContent = dict2.pdf_error || 'Failed to extract PDF. Please paste text manually.';
-      statusBox.style.color = '#f87171';
-      statusBox.style.background = 'rgba(239,68,68,0.1)';
-      statusBox.style.borderColor = 'rgba(239,68,68,0.3)';
+        for (let i = 1; i <= Math.min(pdf.numPages, 10); i++) {
+          const page = await pdf.getPage(i);
+          const content = await page.getTextContent();
+          const pageStrings = content.items.map(item => item.str);
+          fullText += pageStrings.join(' ') + '\n\n';
+        }
+
+        document.getElementById('inputText').value = fullText.trim();
+        updateCharCount();
+        showToast(`Extracted ${pdf.numPages} pages from PDF!`);
+      } catch (e) {
+        console.error(e);
+        showToast('Failed to parse PDF file.', true);
+      }
     }
-  }
 
-  // Click to open file picker
-  zone.addEventListener('click', () => fileInput.click());
-  zone.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') fileInput.click(); });
-  fileInput.addEventListener('change', e => {
-    if (e.target.files && e.target.files[0]) parsePdf(e.target.files[0]);
-    fileInput.value = '';
-  });
+    // Core Generation API Call
+    async function generateContent() {
+      const text = document.getElementById('inputText').value.trim();
+      if (!text || text.length < 10) {
+        showToast('Please enter at least 10 characters of content.', true);
+        return;
+      }
 
-  // Drag & drop
-  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
-  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
-  zone.addEventListener('drop', e => {
-    e.preventDefault();
-    zone.classList.remove('dragover');
-    const file = e.dataTransfer.files[0];
-    if (file && file.type === 'application/pdf') {
-      parsePdf(file);
-    } else {
-      showToast('⚠️ Please drop a valid PDF file.', 'error');
+      const style = document.getElementById('styleSelect').value;
+      const customKey = document.getElementById('userApiKey').value.trim();
+
+      const btn = document.getElementById('generateBtn');
+      btn.disabled = true;
+      btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Processing Multi-Platform Suite...`;
+      lucide.createIcons();
+
+      try {
+        const res = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            input_text: text,
+            target_style: style,
+            target_lang: selectedLang,
+            userApiKey: customKey,
+            licenseKey: licenseKey
+          })
+        });
+
+        const json = await res.json();
+
+        if (!res.ok) {
+          if (res.status === 429) {
+            openUpgradeModal();
+          }
+          throw new Error(json.message || json.error || 'Generation failed');
+        }
+
+        currentPostsData = json.data;
+        renderGeneratedResults(json.data);
+        showToast('✨ Multi-platform posts & cards created!');
+        fetchQuota();
+
+      } catch (e) {
+        console.error(e);
+        showToast(e.message || 'API call failed.', true);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i data-lucide="wand-2" class="w-4 h-4"></i> <span>一键重构全平台贴文 (Generate All Posts & Cards)</span>`;
+        lucide.createIcons();
+      }
     }
-  });
-})();
-</script>
+
+    // Render Posts & Cards
+    function renderGeneratedResults(data) {
+      document.getElementById('outputContainer').classList.remove('hidden');
+      switchTab('twitter');
+
+      // Update Visual Cards
+      if (data.visual_card_data) {
+        const vc = data.visual_card_data;
+        if (vc.title) document.getElementById('previewTitle').innerText = vc.title;
+        if (vc.subtitle) document.getElementById('previewSubtitle').innerText = `[ ${vc.subtitle} ]`;
+        if (vc.gold_quote) document.getElementById('previewGoldQuote').innerText = `"${vc.gold_quote}"`;
+
+        // Render Metrics
+        if (Array.isArray(vc.metrics) && vc.metrics.length > 0) {
+          const metricsHtml = vc.metrics.map(m => `
+            <div class="bg-gray-900/80 border border-gray-800 rounded-xl p-3 text-center">
+              <div class="text-xl font-extrabold text-purple-400 font-outfit">${m.value}</div>
+              <div class="text-[10px] text-gray-400 mt-0.5">${m.label}</div>
+            </div>
+          `).join('');
+          document.getElementById('previewMetrics').innerHTML = metricsHtml;
+        }
+
+        // Render Action Steps
+        if (Array.isArray(vc.action_steps) && vc.action_steps.length > 0) {
+          const stepsHtml = vc.action_steps.map((step, idx) => `
+            <div class="flex items-start gap-2 text-xs text-gray-300">
+              <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] flex items-center justify-center font-bold flex-shrink-0 mt-0.5">${idx+1}</span>
+              <span>${step}</span>
+            </div>
+          `).join('');
+          document.getElementById('previewSteps').innerHTML = stepsHtml;
+        }
+      }
+      updateWatermarkText();
+    }
+
+    function switchTab(tab) {
+      activeTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.className = 'tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-gray-200 flex items-center gap-1.5';
+      });
+      const activeBtn = document.getElementById(`tab-${tab}`);
+      if (activeBtn) {
+        activeBtn.className = 'tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-purple-400 bg-purple-500/10 border border-purple-500/30 flex items-center gap-1.5';
+      }
+
+      const area = document.getElementById('tabContentArea');
+      if (!currentPostsData) {
+        area.innerText = 'No content generated yet.';
+        return;
+      }
+
+      if (tab === 'twitter') {
+        area.innerText = Array.isArray(currentPostsData.twitter_thread) ? currentPostsData.twitter_thread.join('\n\n---\n\n') : '';
+      } else if (tab === 'linkedin') {
+        area.innerText = currentPostsData.linkedin_post || '';
+      } else if (tab === 'xiaohongshu') {
+        const xhs = currentPostsData.xiaohongshu_post || {};
+        area.innerText = `【${xhs.title || ''}】\n\n${xhs.content || ''}`;
+      } else if (tab === 'instagram') {
+        area.innerText = currentPostsData.instagram_caption || '';
+      }
+    }
+
+    function copyCurrentTabContent() {
+      const area = document.getElementById('tabContentArea');
+      if (!area.innerText) return;
+      navigator.clipboard.writeText(area.innerText);
+      const copyText = document.getElementById('copyBtnText');
+      copyText.innerText = 'Copied!';
+      setTimeout(() => copyText.innerText = 'Copy Post', 2000);
+      showToast('Copied post text to clipboard!');
+    }
+
+    // Export HTML2Canvas Cards
+    async function exportCurrentCard() {
+      const activeIndex = swiperInstance.activeIndex || 0;
+      const targetCard = document.getElementById(`card-${activeIndex + 1}`) || document.getElementById('card-1');
+      
+      showToast('Rendering HD image...');
+      const canvas = await html2canvas(targetCard, { scale: 2, useCORS: true, backgroundColor: null });
+      const link = document.createElement('a');
+      link.download = `cardify-card-${activeIndex + 1}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      showToast('Card exported!');
+    }
+
+    async function exportAllCards() {
+      showToast('Exporting card package...');
+      for (let i = 1; i <= 3; i++) {
+        const card = document.getElementById(`card-${i}`);
+        if (card) {
+          const canvas = await html2canvas(card, { scale: 2, useCORS: true, backgroundColor: null });
+          const link = document.createElement('a');
+          link.download = `cardify-card-pack-${i}.png`;
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+        }
+      }
+      showToast('All 3 cards exported!');
+    }
+
+    // Modal Control
+    function openUpgradeModal() { document.getElementById('upgradeModal').classList.remove('hidden'); }
+    function closeUpgradeModal() { document.getElementById('upgradeModal').classList.add('hidden'); }
+    function activateLicense() {
+      const val = document.getElementById('licenseKeyInput').value.trim();
+      if (val.length >= 5) {
+        licenseKey = val;
+        localStorage.setItem('cardify_license_key', val);
+        closeUpgradeModal();
+        showToast('License Key Activated! VIP unlocked.');
+        fetchQuota();
+      } else {
+        showToast('Invalid License Key format.', true);
+      }
+    }
+  </script>
 </body>
 </html>
