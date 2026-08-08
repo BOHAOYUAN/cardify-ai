@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cardify.ai 2.5 — Dynamic Platform Matrix & Viral Preset Studio</title>
-  <meta name="description" content="Turn any article or PDF into viral Xiaohongshu Carousel slides, LinkedIn posts, Twitter threads, Instagram Carousels, and YouTube Shorts scripts.">
+  <title>Cardify.ai 2.6 — Tiered Response & Smart Cache Studio</title>
+  <meta name="description" content="Turn any article or PDF into viral Xiaohongshu Carousel slides, LinkedIn posts, Twitter threads, Instagram Carousels, and YouTube Shorts scripts with instant smart cache & zero-latency styling.">
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -107,7 +107,7 @@
         <div>
           <span class="text-xl font-extrabold font-outfit tracking-tight text-white flex items-center gap-2">
             Cardify<span class="text-purple-400">.ai</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v2.5 Matrix</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v2.6 Smart Cache</span>
           </span>
         </div>
       </div>
@@ -194,15 +194,18 @@
 
         <!-- Dynamic Platform Matrix Selector (Languages-dependent) -->
         <div>
-          <label class="block text-xs font-medium text-gray-400 mb-2" id="txtPlatformMatrixLabel">🎯 目标平台矩阵 (Dynamic Platform Matrix)</label>
+          <label class="block text-xs font-medium text-gray-400 mb-2" id="txtPlatformMatrixLabel">🎯 动态目标平台矩阵 (Dynamic Platform Matrix)</label>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="platformMatrixContainer">
             <!-- Dynamically populated based on selected Language -->
           </div>
         </div>
 
-        <!-- Preset Scene Templates Selection -->
+        <!-- Preset Scene Templates Selection (Level 1: Pure CSS Theme Switch, 0 Cost) -->
         <div>
-          <label class="block text-xs font-medium text-gray-400 mb-2" id="txtPresetLabel">爆款视觉风格预设</label>
+          <div class="flex items-center justify-between mb-2">
+            <label class="block text-xs font-medium text-gray-400" id="txtPresetLabel">爆款视觉风格预设 (纯前端即时换色/换主题)</label>
+            <span class="text-[10px] text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded-md font-mono border border-emerald-800/40">⚡ 0 API Cost</span>
+          </div>
           <div class="grid grid-cols-3 gap-2">
             
             <button onclick="selectPresetTheme('xhs')" id="preset-xhs" class="preset-btn p-3 rounded-xl border border-rose-500/40 bg-rose-950/20 hover:bg-rose-900/30 text-left transition-all flex flex-col gap-1">
@@ -246,11 +249,18 @@
           </div>
         </div>
 
-        <!-- GENERATE BUTTON -->
-        <button id="generateBtn" onclick="generateContent()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-sm flex items-center justify-center gap-2 glow-purple transition-all active:scale-[0.99]">
-          <i data-lucide="wand-2" class="w-4 h-4"></i>
-          <span id="generateBtnText">一键生成爆款连载卡包与贴文</span>
-        </button>
+        <!-- GENERATE & REGENERATE BUTTONS -->
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
+          <button id="generateBtn" onclick="generateContent(false)" class="sm:col-span-9 py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-sm flex items-center justify-center gap-2 glow-purple transition-all active:scale-[0.99]">
+            <i data-lucide="wand-2" class="w-4 h-4"></i>
+            <span id="generateBtnText">一键生成爆款连载卡包与贴文</span>
+          </button>
+          
+          <button onclick="generateContent(true)" title="Force regenerate AI content bypassing cache" class="sm:col-span-3 py-3.5 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-purple-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+            <span id="txtRegenerateBtn">⚡️ 换一换</span>
+          </button>
+        </div>
 
       </div>
 
@@ -371,7 +381,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
-  <!-- ================= CORE APPLICATION LOGIC & DYNAMIC MATRIX ================= -->
+  <!-- ================= CORE APPLICATION LOGIC & SMART CACHE ================= -->
   <script>
     let currentMode = 'carousel'; // 'single' | 'carousel'
     let currentPreset = 'cyber'; // 'cyber' | 'xhs' | 'linkedin'
@@ -382,6 +392,9 @@
     let licenseKey = localStorage.getItem('cardify_license_key') || '';
     let currentResponseData = null;
     let swiperInstance = null;
+
+    // Smart Memory Cache Store (Key: ${platform}_${mode}_${lang}, Value: JSON response)
+    const platformCacheStore = {};
 
     // Dynamic Platform Matrix Definitions
     const DYNAMIC_PLATFORMS = {
@@ -404,7 +417,7 @@
       zh: [
         { id: 'viral_title', label: '🔥 爆款吸睛标题', hook: '请生成极具情绪吸引力与数字痛点的爆款标题' },
         { id: 'tech_breakdown', label: '📊 极客干货拆解', hook: '硬核干货拆解，提取具象 ROI 数据与突破点' },
-        { id: 'executive_quote', label: '💼 职场干货金句', label: '💼 职场干货金句', hook: '高管视角，输出极简专业与行业洞察金句' },
+        { id: 'executive_quote', label: '💼 职场干货金句', hook: '高管视角，输出极简专业与行业洞察金句' },
         { id: 'story_twist', label: '🎬 故事翻转 Hook', hook: '引人入胜的故事翻转视角，建立强烈好奇心' }
       ],
       en: [
@@ -426,7 +439,7 @@
         platformMatrixLabel: '🎯 Dynamic Platform Matrix',
         inputPlaceholder: "Paste your long article, product overview, blog draft, or drop a PDF file here... e.g. '3 Rules for Indie Hackers to reach $10k ARR in 30 Days' or 'How to write viral content in 5 minutes'...",
         uploadPdf: 'Upload PDF',
-        presetLabel: 'Preset Visual Theme',
+        presetLabel: 'Preset Visual Theme (Pure CSS Theme Switch, 0 Cost)',
         presetXhs: '📕 Xiaohongshu Viral',
         presetXhsDesc: 'Vibrant & Pain Points',
         presetLinkedin: '💼 LinkedIn Executive',
@@ -436,6 +449,7 @@
         keyLabel: 'Bypass limits with custom Groq / Gemini Key',
         generateBtnSingle: 'Generate Single Card & Post',
         generateBtnCarousel: 'Generate Carousel Pack & Post',
+        regenerateBtn: '⚡️ Regenerate',
         copyBtn: 'Copy Post',
         studioTitle: 'Visual Studio Engine',
         modeBadgeSingle: 'Single Card',
@@ -493,7 +507,7 @@
         platformMatrixLabel: '🎯 动态目标平台矩阵',
         inputPlaceholder: "粘贴你的文章、草稿或拖入 PDF 文件...例如：'独立开发者 30 天做成 1 万刀 ARR 的 3 个法则' 或 '如何用 ChatGPT 5 分钟写出爆款小红书文案'...",
         uploadPdf: '上传 PDF',
-        presetLabel: '爆款视觉风格预设',
+        presetLabel: '爆款视觉风格预设 (纯前端即时换色/换主题)',
         presetXhs: '📕 小红书爆款风',
         presetXhsDesc: '粉红明亮 + 抓人痛点',
         presetLinkedin: '💼 LinkedIn 商务高管',
@@ -503,6 +517,7 @@
         keyLabel: '使用自定义 Groq / Gemini Key 突破限制',
         generateBtnSingle: '一键生成单图精炼卡片与贴文',
         generateBtnCarousel: '一键生成爆款连载卡包与贴文',
+        regenerateBtn: '⚡️ 换一换',
         copyBtn: '一键复制贴文',
         studioTitle: '视觉卡片渲染引擎',
         modeBadgeSingle: '单图卡片模式',
@@ -576,6 +591,12 @@
 
     function handleLangChange(lang) {
       selectedLang = lang;
+      const langKey = lang === 'zh' ? 'zh' : 'en';
+      const matrix = DYNAMIC_PLATFORMS[langKey];
+      if (matrix && matrix.length > 0) {
+        selectedPlatform = matrix[0].id;
+        currentPreset = matrix[0].preset;
+      }
       applyTranslations();
     }
 
@@ -616,17 +637,23 @@
       }
     }
 
+    // Level 3 Platform Selection & Cache Lookup
     function selectPlatform(id, preset, ratio) {
       selectedPlatform = id;
-      selectPresetTheme(preset);
-      document.querySelectorAll('.platform-btn').forEach(btn => {
-        btn.className = 'platform-btn p-2.5 rounded-xl border border-gray-800 bg-gray-900/60 text-gray-400 hover:text-gray-200 text-xs text-left transition-all flex flex-col justify-between min-h-[58px]';
-      });
-      const activeBtn = document.getElementById(`platform-btn-${id}`);
-      if (activeBtn) activeBtn.className = 'platform-btn p-2.5 rounded-xl border border-purple-500 bg-purple-950/40 text-purple-300 ring-2 ring-purple-500/30 font-bold text-xs text-left transition-all flex flex-col justify-between min-h-[58px]';
+      selectPresetTheme(preset); // Level 1 Theme switch (Pure CSS, 0 cost)
 
       const aspectBadge = document.getElementById('aspectBadge');
       if (aspectBadge) aspectBadge.innerText = `📐 ${ratio} Ratio`;
+
+      // Smart Memory Cache Lookup: Check if result for this platform/mode/lang exists
+      const cacheKey = `${selectedPlatform}_${currentMode}_${selectedLang}`;
+      if (platformCacheStore[cacheKey]) {
+        currentResponseData = platformCacheStore[cacheKey];
+        renderGeneratedResults(currentResponseData);
+        showToast(`⚡ Loaded cached AI output for ${id} (0ms, 0 API Cost)`);
+      } else {
+        switchTab(selectedPlatform);
+      }
     }
 
     function selectHookTag(id, hookText) {
@@ -637,6 +664,24 @@
         showToast(`Injected Viral Hook: ${hookText}`);
       }
       renderDynamicMatrix();
+    }
+
+    // Level 1 Visual Theme Switch (Pure CSS, Instant 0ms, Zero API Cost)
+    function selectPresetTheme(theme) {
+      currentPreset = theme;
+      document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.classList.remove('ring-2', 'ring-purple-500/50', 'ring-rose-500/50', 'ring-sky-500/50', 'active');
+      });
+      const activeBtn = document.getElementById(`preset-${theme}`);
+      if (activeBtn) activeBtn.classList.add('ring-2', 'ring-purple-500/50', 'active');
+
+      // Update slide elements CSS class in-place without re-requesting AI
+      for (let i = 1; i <= 10; i++) {
+        const card = document.getElementById(`card-${i}`);
+        if (card) {
+          card.className = `theme-${theme} rounded-2xl p-6 min-h-[430px] flex flex-col justify-between relative overflow-hidden transition-all duration-300`;
+        }
+      }
     }
 
     function applyTranslations() {
@@ -668,8 +713,9 @@
       document.getElementById('txtPresetCyberDesc').innerText = dict.presetCyberDesc;
       document.getElementById('keyLabel').innerText = dict.keyLabel;
 
-      // Generate Button
+      // Buttons
       document.getElementById('generateBtnText').innerText = (currentMode === 'single') ? dict.generateBtnSingle : dict.generateBtnCarousel;
+      document.getElementById('txtRegenerateBtn').innerText = dict.regenerateBtn;
 
       // Tabs & Copy
       document.getElementById('copyBtnText').innerText = dict.copyBtn;
@@ -714,19 +760,20 @@
         btnSingle.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-400 hover:text-white';
       }
 
+      // Check cache for new mode
+      const cacheKey = `${selectedPlatform}_${currentMode}_${selectedLang}`;
+      if (platformCacheStore[cacheKey]) {
+        currentResponseData = platformCacheStore[cacheKey];
+        renderGeneratedResults(currentResponseData);
+      } else if (currentResponseData && currentResponseData.slides) {
+        if (mode === 'single') {
+          renderSlides([currentResponseData.slides[0]]);
+        } else {
+          renderSlides(currentResponseData.slides);
+        }
+      }
+
       applyTranslations();
-    }
-
-    function selectPresetTheme(theme) {
-      currentPreset = theme;
-      document.querySelectorAll('.preset-btn').forEach(btn => {
-        btn.classList.remove('ring-2', 'ring-purple-500/50', 'ring-rose-500/50', 'ring-sky-500/50', 'active');
-      });
-      const activeBtn = document.getElementById(`preset-${theme}`);
-      if (activeBtn) activeBtn.classList.add('ring-2', 'ring-purple-500/50', 'active');
-
-      const slidesToRender = currentResponseData?.slides || (I18N_DICT[selectedLang] || I18N_DICT.en).defaultCarouselSlides;
-      renderSlides(slidesToRender);
     }
 
     function showToast(msg, isError = false) {
@@ -794,17 +841,28 @@
       }
     }
 
-    async function generateContent() {
+    // Core Generation with Smart Cache & Force Regenerate Option
+    async function generateContent(forceRegenerate = false) {
       const text = document.getElementById('inputText').value.trim();
       if (!text || text.length < 10) {
         showToast('Please enter at least 10 characters of content.', true);
         return;
       }
 
+      const cacheKey = `${selectedPlatform}_${currentMode}_${selectedLang}`;
+
+      // Check Smart Cache if not force regenerating
+      if (!forceRegenerate && platformCacheStore[cacheKey]) {
+        currentResponseData = platformCacheStore[cacheKey];
+        renderGeneratedResults(currentResponseData);
+        showToast(`⚡ Loaded cached AI output (0ms, 0 API Cost)`);
+        return;
+      }
+
       const customKey = document.getElementById('userApiKey').value.trim();
       const btn = document.getElementById('generateBtn');
       btn.disabled = true;
-      btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Processing ${currentMode === 'single' ? 'Single Card' : 'Carousel Slides'}...`;
+      btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Generating ${selectedPlatform} Viral Pack...`;
       lucide.createIcons();
 
       try {
@@ -831,8 +889,12 @@
         }
 
         currentResponseData = json.data;
+        
+        // Save to Smart Memory Cache
+        platformCacheStore[cacheKey] = json.data;
+
         renderGeneratedResults(json.data);
-        showToast(`✨ Generated ${json.data.slides?.length || 1} ${currentMode === 'single' ? 'Card' : 'Carousel Slides'}!`);
+        showToast(`✨ Generated Fresh Output for ${selectedPlatform}!`);
         fetchQuota();
 
       } catch (e) {
