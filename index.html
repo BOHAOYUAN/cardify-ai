@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cardify.ai 2.3 — International Master Viral Content & Visual Card Engine</title>
+  <title>Cardify.ai 2.4 — Master Social Carousel & Visual Card Engine</title>
   <meta name="description" content="Turn any article or PDF into viral Xiaohongshu Carousel slides, LinkedIn posts, Twitter threads, and single-summary visual cards in 9 languages.">
   
   <!-- Tailwind CSS CDN -->
@@ -107,7 +107,7 @@
         <div>
           <span class="text-xl font-extrabold font-outfit tracking-tight text-white flex items-center gap-2">
             Cardify<span class="text-purple-400">.ai</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v2.3 i18n</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v2.4 Carousel</span>
           </span>
         </div>
       </div>
@@ -171,7 +171,7 @@
         <!-- Textarea -->
         <div class="relative">
           <textarea id="inputText" rows="6" oninput="updateCharCount()" 
-            placeholder="Paste your long article, product overview, blog draft, or drop a PDF file here..."
+            placeholder="Paste your long article, product overview, blog draft, or drop a PDF file here... e.g. '3 Rules for Indie Hackers to reach $10k ARR in 30 Days' or 'How to write viral content in 5 minutes'..."
             class="w-full bg-gray-950/80 border border-gray-800 rounded-xl p-4 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all resize-none"></textarea>
           
           <!-- PDF Upload Overlay Button -->
@@ -291,31 +291,7 @@
         <div class="w-full overflow-hidden py-2">
           <div class="swiper cardSwiper w-full max-w-[340px] sm:max-w-[380px] mx-auto">
             <div class="swiper-wrapper" id="swiperWrapper">
-              
-              <!-- Placeholder Slide -->
-              <div class="swiper-slide">
-                <div id="card-1" class="theme-cyber rounded-2xl p-6 min-h-[430px] flex flex-col justify-between relative overflow-hidden transition-all duration-300">
-                  <div>
-                    <div class="text-[10px] font-bold uppercase tracking-widest opacity-75 mb-2" id="placeholderSubtitle">🔥 INDIE HACKER BLUEPRINT</div>
-                    <h3 class="text-lg font-extrabold font-outfit leading-snug mb-3 text-white" id="placeholderTitle">3 Rules for Indie Hackers to Reach $10k ARR in 30 Days</h3>
-                    
-                    <div class="bg-gray-900/80 border border-gray-800 rounded-xl p-3 text-center mb-3">
-                      <div class="text-xl font-extrabold text-purple-400 font-outfit">$10K+</div>
-                      <div class="text-[10px] opacity-75 mt-0.5" id="placeholderMetricLabel">Monthly Recurring Revenue (MRR)</div>
-                    </div>
-
-                    <div class="bg-purple-950/40 border border-purple-500/20 rounded-xl p-3 mb-3">
-                      <p class="text-xs italic leading-relaxed text-purple-200" id="placeholderQuote">"Users don't buy features—they buy social currency and monetization velocity!"</p>
-                    </div>
-                  </div>
-
-                  <div class="pt-3 border-t border-gray-800/60 flex items-center justify-between">
-                    <span class="text-[11px] font-bold font-mono text-purple-400">⚡️ Cardify.ai</span>
-                    <span class="text-[10px] opacity-60">1 / 1 Slide</span>
-                  </div>
-                </div>
-              </div>
-
+              <!-- Swiper Slides dynamically rendered by renderDefaultPlaceholderSlides() or renderSlides() -->
             </div>
             <div class="swiper-pagination mt-4"></div>
           </div>
@@ -436,10 +412,39 @@
         modalLicLabel: 'Have a Pro License Key?',
         modalActivate: 'Activate',
         modalBuy: 'Buy Pro License ($9.9/mo)',
-        placeholderSubtitle: '🔥 INDIE HACKER BLUEPRINT',
-        placeholderTitle: '3 Rules for Indie Hackers to Reach $10k ARR in 30 Days',
-        placeholderMetricLabel: 'Monthly Recurring Revenue (MRR)',
-        placeholderQuote: '"Users don\'t buy features—they buy social currency and monetization velocity!"'
+        // Default 3-Slide Carousel Pack in English
+        defaultCarouselSlides: [
+          {
+            subtitle: '🔥 INDIE HACKER BLUEPRINT',
+            title: '3 Rules for Indie Hackers to Reach $10k ARR in 30 Days',
+            key_metric: { value: '$10K+', label: 'Monthly Recurring Revenue (MRR)' },
+            bullet_points: [
+              { point_title: 'Hook Immediate Attention', point_desc: 'Users don\'t buy raw features—they buy social currency and monetization speed.' }
+            ],
+            takeaway_quote: 'Deliver high-impact visual carousels that users love to screenshot & share.'
+          },
+          {
+            subtitle: '📊 PROVEN DATA & IMPACT',
+            title: 'Viral Organic Reach & Conversion',
+            key_metric: { value: '350%', label: 'Social Engagement Lift' },
+            bullet_points: [
+              { point_title: 'Validate Demand First', point_desc: 'Pick validated tracks with existing $10k+ MRR competitors.' },
+              { point_title: 'Fix 1-Star Review Pain Points', point_desc: 'Turn competitor complaints into your killer feature.' }
+            ],
+            takeaway_quote: 'Carousel slides outperform single-card posts by 4x on LinkedIn & Instagram.'
+          },
+          {
+            subtitle: '🛠 ACTION PLAYBOOK & CTA',
+            title: '3 Steps to Scale Your Product Today',
+            key_metric: null,
+            bullet_points: [
+              { point_title: '1. Repurpose Content', point_desc: 'Convert articles into multi-slide visual story packs.' },
+              { point_title: '2. Multi-Platform Distribution', point_desc: 'Post carousels across Reddit, LinkedIn, Instagram, Xiaohongshu.' },
+              { point_title: '3. Built-in Viral Loop', point_desc: 'Let clean card watermarks drive organic traffic back to your app.' }
+            ],
+            takeaway_quote: '📌 Save this post for later & Follow for more growth hacks!'
+          }
+        ]
       },
       zh: {
         quotaText: '✦ 剩余 3 次免费',
@@ -477,10 +482,39 @@
         modalLicLabel: '已有 Pro 激活码？',
         modalActivate: '立即激活',
         modalBuy: '购买 Pro 授权 ($9.9/月)',
-        placeholderSubtitle: '🔥 独立开发者爆款法则',
-        placeholderTitle: '独立开发者 30 天做成 1 万刀 ARR 的 3 个法则',
-        placeholderMetricLabel: '月经常性收入 (MRR)',
-        placeholderQuote: '"用户不是为了功能买单，而是为了社交货币与变现效率买单！"'
+        // Default 3-Slide Carousel Pack in Chinese
+        defaultCarouselSlides: [
+          {
+            subtitle: '🔥 独立开发者爆款法则',
+            title: '独立开发者 30 天做成 1 万刀 ARR 的 3 个法则',
+            key_metric: { value: '$10K+', label: '月经常性收入 (MRR)' },
+            bullet_points: [
+              { point_title: '抓人情绪痛点', point_desc: '用户不是为了功能买单，而是为了社交货币与变现效率买单！' }
+            ],
+            takeaway_quote: '爆款切片卡包能够带来传统单图 4 倍以上的点赞与收藏。'
+          },
+          {
+            subtitle: '📊 核心数据与突破点',
+            title: '增长数据与社群传播力',
+            key_metric: { value: '350%', label: '社交裂变增幅' },
+            bullet_points: [
+              { point_title: '锁定验证赛道', point_desc: '选择海外月入 $10k+ 已验证的高需求竞品。' },
+              { point_title: '击中差评痛点', point_desc: '翻看竞品差评，直接把他们的短板背刺修改成你的主打卖点。' }
+            ],
+            takeaway_quote: '连载滑动卡片在小红书、LinkedIn 与 Instagram 拥有极强黏性。'
+          },
+          {
+            subtitle: '🛠 实操指南 & 引导',
+            title: '今日落地 3 大步骤',
+            key_metric: null,
+            bullet_points: [
+              { point_title: '1. 重构源内容', point_desc: '把干文/PDF一键重构为多平台视觉切片卡包。' },
+              { point_title: '2. 多平台发布', point_desc: '同步分发至小红书、LinkedIn、Instagram 与 Reddit。' },
+              { point_title: '3. 自带裂变水印', point_desc: '高清卡片底部保留品牌标记，让每一位用户帮你免费宣传。' }
+            ],
+            takeaway_quote: '📌 建议点赞收藏备用，关注获取更多独立开发干货！'
+          }
+        ]
       }
     };
 
@@ -559,20 +593,13 @@
       document.getElementById('txtModalActivate').innerText = dict.modalActivate;
       document.getElementById('txtModalBuy').innerText = dict.modalBuy;
 
-      // Placeholder Slide (if no API data currently loaded)
+      // Render Default Carousel/Single Slides if no AI data is loaded yet
       if (!currentResponseData) {
-        const pSubtitle = document.getElementById('placeholderSubtitle');
-        const pTitle = document.getElementById('placeholderTitle');
-        const pMetricLabel = document.getElementById('placeholderMetricLabel');
-        const pQuote = document.getElementById('placeholderQuote');
-
-        if (pSubtitle) pSubtitle.innerText = dict.placeholderSubtitle;
-        if (pTitle) pTitle.innerText = dict.placeholderTitle;
-        if (pMetricLabel) pMetricLabel.innerText = dict.placeholderMetricLabel;
-        if (pQuote) pQuote.innerText = dict.placeholderQuote;
-
-        const exportAllBtn = document.getElementById('exportAllBtnText');
-        if (exportAllBtn) exportAllBtn.innerText = (currentMode === 'single') ? dict.exportAllBtnSingle : dict.exportAllBtnCarousel;
+        if (currentMode === 'single') {
+          renderSlides([dict.defaultCarouselSlides[0]], '⚡️ Cardify.ai');
+        } else {
+          renderSlides(dict.defaultCarouselSlides, '⚡️ Cardify.ai');
+        }
       }
 
       lucide.createIcons();
@@ -602,9 +629,8 @@
       const activeBtn = document.getElementById(`preset-${theme}`);
       if (activeBtn) activeBtn.classList.add('ring-2', 'ring-purple-500/50', 'active');
 
-      if (currentResponseData) {
-        renderSlides(currentResponseData.slides || []);
-      }
+      const slidesToRender = currentResponseData?.slides || (I18N_DICT[selectedLang] || I18N_DICT.en).defaultCarouselSlides;
+      renderSlides(slidesToRender);
     }
 
     function showToast(msg, isError = false) {
@@ -846,7 +872,7 @@
     }
 
     async function exportAllCards() {
-      const slidesCount = currentResponseData?.slides?.length || 1;
+      const slidesCount = (currentResponseData?.slides?.length) || (I18N_DICT[selectedLang] || I18N_DICT.en).defaultCarouselSlides.length;
       showToast(`Exporting ${slidesCount} card slides...`);
       for (let i = 1; i <= slidesCount; i++) {
         const card = document.getElementById(`card-${i}`);

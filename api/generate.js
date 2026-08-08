@@ -1,5 +1,5 @@
-// /api/generate.js — Cardify AI v2.2 Master Engine
-// Multi-Provider Failover & Unified Master Prompt Architecture
+// /api/generate.js — Cardify AI v2.4 Master Carousel Engine
+// Multi-Provider Failover & Rich Carousel Storytelling System
 
 const rateLimitStore = new Map();
 const DAILY_FREE_LIMIT = 3; // 3 free runs per IP per day for free tier
@@ -45,12 +45,15 @@ const LANG_NAMES = {
 };
 
 const UNIFIED_MASTER_PROMPT = `You are a World-Class Visual Content Architect and Viral Growth Hacker.
-Your mission is to analyze raw input text and transform it into high-converting, structured content for visual social media cards (Twitter/X, LinkedIn, Xiaohongshu).
+Your mission is to analyze raw input text and transform it into high-converting, structured content for visual social media Carousel cards (Twitter/X, LinkedIn, Xiaohongshu, Instagram, Reddit).
 
-### EXECUTION MODE
-You MUST dynamically select the format based on the user's explicit preference OR content length:
-1. "single": Output 1 highly concentrated visual card.
-2. "carousel": Split content into a 3 to 5 slide sequence for carousel posts.
+### EXECUTION MODE & CAROUSEL CARDS LAW
+- If mode is "single": Output 1 highly concentrated, high-density summary card.
+- If mode is "carousel": You MUST output a 3 to 5 SLIDE SEQUENCE (never output just 1 slide for carousel!).
+  * Slide 1 (Hook): Scroll-stopping title, punchy context, screenshot-worthy golden quote.
+  * Slide 2 (Data & Impact): Key metrics (e.g., $10K+, 350%, 10x) and core insights breakdown.
+  * Slide 3 (Action Playbook): Step 1, Step 2, Step 3 clear actionable playbook.
+  * Slide 4/5 (Optional Conclusion & CTA): Gold quote summary and Call to Action.
 
 ### STRICT OUTPUT RULES
 1. Output MUST be ONLY valid JSON.
@@ -66,24 +69,24 @@ You MUST dynamically select the format based on the user's explicit preference O
   "slides": [
     {
       "slide_index": 1,
-      "slide_type": "string ('single_summary' | 'hook' | 'content' | 'action')",
+      "slide_type": "string ('hook' | 'content' | 'action')",
       "title": "string (High-converting, scroll-stopping title)",
-      "subtitle": "string (Punchy hook or context summary)",
+      "subtitle": "string (Punchy hook or section header)",
       "key_metric": {
-        "value": "string (Optional bold number, e.g., '10x', '$500', '85%')",
+        "value": "string (Optional bold number, e.g., '10x', '$10K+', '350%')",
         "label": "string (Short description of the impact)"
       },
       "bullet_points": [
         {
           "point_title": "string (Bold keyphrase)",
-          "point_desc": "string (Actionable takeaway, 1 sentence)"
+          "point_desc": "string (Actionable takeaway, 1 clear sentence)"
         }
       ],
       "takeaway_quote": "string (Shareable gold nugget sentence)"
     }
   ],
   "tags": ["string (3 viral hashtags without #)"],
-  "footer_text": "string (Brand or category callout in Target Language)",
+  "footer_text": "string (Brand callout, e.g., '⚡️ Cardify.ai')",
   "twitter_thread": [
     "1/ Hook Tweet stopping the scroll with high impact statement.",
     "2/ Core insight or key argument detailed breakdown.",
@@ -103,7 +106,7 @@ You MUST dynamically select the format based on the user's explicit preference O
   * 'en-US': ALL fields must be in fluent, polished, native English.
 - Quality Standard:
   * Re-frame, polish, and elevate raw text into "Social Currency".
-  * For Slide 1 (Hook/Single): The title MUST be a top-1% creator style headline that hooks immediate attention.`;
+  * For Carousel mode: Ensure 3 to 5 rich slides are generated so users can swipe for full value!`;
 
 function extractJSON(raw) {
   if (!raw || typeof raw !== 'string') throw new Error('AI returned an empty response.');
