@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cardify.ai 2.2 — Master Social Carousel & Visual Card Engine</title>
-  <meta name="description" content="Turn any article or PDF into viral Xiaohongshu Carousel slides, LinkedIn posts, Twitter threads, and single-summary visual cards.">
+  <title>Cardify.ai 2.3 — International Master Viral Content & Visual Card Engine</title>
+  <meta name="description" content="Turn any article or PDF into viral Xiaohongshu Carousel slides, LinkedIn posts, Twitter threads, and single-summary visual cards in 9 languages.">
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -107,7 +107,7 @@
         <div>
           <span class="text-xl font-extrabold font-outfit tracking-tight text-white flex items-center gap-2">
             Cardify<span class="text-purple-400">.ai</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v2.2 Master Engine</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v2.3 i18n</span>
           </span>
         </div>
       </div>
@@ -118,8 +118,8 @@
         <!-- Language Selector -->
         <div class="relative">
           <select id="langSelect" onchange="handleLangChange(this.value)" class="bg-gray-900/90 text-gray-200 text-xs font-medium px-3 py-2 rounded-lg border border-gray-700/80 focus:outline-none focus:border-purple-500 transition-all cursor-pointer">
+            <option value="en" selected>🇺🇸 English (en-US)</option>
             <option value="zh">🇨🇳 简体中文 (zh-CN)</option>
-            <option value="en">🇺🇸 English (en-US)</option>
             <option value="es">🇪🇸 Español</option>
             <option value="pt">🇵🇹 Português</option>
             <option value="ru">🇷🇺 Русский</option>
@@ -137,9 +137,9 @@
         </div>
 
         <!-- Upgrade Pro Button -->
-        <button onclick="openUpgradeModal()" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold text-xs transition-all shadow-md hover:shadow-purple-500/25 active:scale-95">
+        <button onclick="openUpgradeModal()" id="btnUpgradeHeader" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold text-xs transition-all shadow-md hover:shadow-purple-500/25 active:scale-95">
           <i data-lucide="crown" class="w-4 h-4 text-amber-300"></i>
-          <span>Upgrade Pro ($9.9/mo)</span>
+          <span id="txtUpgradeHeader">Upgrade Pro ($9.9/mo)</span>
         </button>
 
       </div>
@@ -159,10 +159,10 @@
         <div class="flex items-center justify-between border-b border-gray-800 pb-3">
           <div class="flex items-center gap-2 bg-gray-950 p-1 rounded-xl border border-gray-800">
             <button onclick="setMode('single')" id="mode-single" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-400 hover:text-white flex items-center gap-1.5">
-              <span>🎴 单图卡片 (Single Card)</span>
+              <span id="txtModeSingle">🎴 Single Card</span>
             </button>
             <button onclick="setMode('carousel')" id="mode-carousel" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-purple-300 bg-purple-600/30 border border-purple-500/40 flex items-center gap-1.5 shadow-sm">
-              <span>📚 连载切片 (Carousel Pack)</span>
+              <span id="txtModeCarousel">📚 Carousel Pack</span>
             </button>
           </div>
           <span class="text-xs text-gray-400" id="charCount">0 / 15,000</span>
@@ -171,7 +171,7 @@
         <!-- Textarea -->
         <div class="relative">
           <textarea id="inputText" rows="6" oninput="updateCharCount()" 
-            placeholder="粘贴你的文章、草稿或拖入 PDF 文件...例如：'独立开发者 30 天做成 1 万刀 ARR 的 3 个法则' 或 '如何用 ChatGPT 5 分钟写出爆款小红书文案'..."
+            placeholder="Paste your long article, product overview, blog draft, or drop a PDF file here..."
             class="w-full bg-gray-950/80 border border-gray-800 rounded-xl p-4 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all resize-none"></textarea>
           
           <!-- PDF Upload Overlay Button -->
@@ -179,35 +179,35 @@
             <input type="file" id="pdfFileInput" accept="application/pdf" class="hidden" onchange="handlePdfUpload(event)">
             <button onclick="document.getElementById('pdfFileInput').click()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-gray-800/90 hover:bg-gray-700 text-xs text-gray-300 border border-gray-700 transition-all">
               <i data-lucide="upload" class="w-3.5 h-3.5 text-purple-400"></i>
-              <span>Upload PDF</span>
+              <span id="txtUploadPdf">Upload PDF</span>
             </button>
           </div>
         </div>
 
         <!-- Preset Scene Templates Selection -->
         <div>
-          <label class="block text-xs font-medium text-gray-400 mb-2">爆款视觉风格预设 (Preset Visual Theme)</label>
+          <label class="block text-xs font-medium text-gray-400 mb-2" id="txtPresetLabel">Preset Visual Theme</label>
           <div class="grid grid-cols-3 gap-2">
             
             <button onclick="selectPresetTheme('xhs')" id="preset-xhs" class="preset-btn p-3 rounded-xl border border-rose-500/40 bg-rose-950/20 hover:bg-rose-900/30 text-left transition-all flex flex-col gap-1">
               <div class="text-xs font-bold text-rose-300 flex items-center gap-1">
-                <span>📕 小红书爆款风</span>
+                <span id="txtPresetXhs">📕 Xiaohongshu Viral</span>
               </div>
-              <span class="text-[10px] text-rose-200/70">粉红明亮 + 抓人痛点</span>
+              <span class="text-[10px] text-rose-200/70" id="txtPresetXhsDesc">Vibrant & Pain Points</span>
             </button>
 
             <button onclick="selectPresetTheme('linkedin')" id="preset-linkedin" class="preset-btn p-3 rounded-xl border border-sky-500/30 bg-sky-950/20 hover:bg-sky-900/30 text-left transition-all flex flex-col gap-1">
               <div class="text-xs font-bold text-sky-300 flex items-center gap-1">
-                <span>💼 LinkedIn 商务高管</span>
+                <span id="txtPresetLinkedin">💼 LinkedIn Executive</span>
               </div>
-              <span class="text-[10px] text-sky-200/70">极简蓝白 + 强调 ROI</span>
+              <span class="text-[10px] text-sky-200/70" id="txtPresetLinkedinDesc">Clean & Data ROI</span>
             </button>
 
             <button onclick="selectPresetTheme('cyber')" id="preset-cyber" class="preset-btn active p-3 rounded-xl border border-purple-500/50 bg-purple-950/40 text-left transition-all flex flex-col gap-1 ring-2 ring-purple-500/50">
               <div class="text-xs font-bold text-purple-300 flex items-center gap-1">
-                <span>🚀 Twitter 极客风</span>
+                <span id="txtPresetCyber">🚀 Twitter Tech</span>
               </div>
-              <span class="text-[10px] text-purple-200/70">暗黑玻璃 + 爆款钩子</span>
+              <span class="text-[10px] text-purple-200/70" id="txtPresetCyberDesc">Dark Glass & Viral Hook</span>
             </button>
 
           </div>
@@ -233,7 +233,7 @@
         <!-- GENERATE BUTTON -->
         <button id="generateBtn" onclick="generateContent()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-sm flex items-center justify-center gap-2 glow-purple transition-all active:scale-[0.99]">
           <i data-lucide="wand-2" class="w-4 h-4"></i>
-          <span id="generateBtnText">一键生成爆款连载卡包与贴文 (Generate Carousel Pack)</span>
+          <span id="generateBtnText">Generate Carousel Pack & Post</span>
         </button>
 
       </div>
@@ -245,16 +245,16 @@
         <div class="flex items-center justify-between border-b border-gray-800 pb-3 overflow-x-auto">
           <div class="flex items-center gap-2">
             <button onclick="switchTab('xiaohongshu')" id="tab-xiaohongshu" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/30 flex items-center gap-1.5">
-              <span>📕 小红书文案</span>
+              <span id="txtTabXhs">📕 Xiaohongshu</span>
             </button>
             <button onclick="switchTab('twitter')" id="tab-twitter" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-gray-200 flex items-center gap-1.5">
-              <span>🐦 Twitter Thread</span>
+              <span id="txtTabTwitter">🐦 Twitter Thread</span>
             </button>
             <button onclick="switchTab('linkedin')" id="tab-linkedin" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-gray-200 flex items-center gap-1.5">
-              <span>💼 LinkedIn 长文</span>
+              <span id="txtTabLinkedin">💼 LinkedIn Post</span>
             </button>
             <button onclick="switchTab('instagram')" id="tab-instagram" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-gray-200 flex items-center gap-1.5">
-              <span>📸 Instagram Caption</span>
+              <span id="txtTabInstagram">📸 Instagram Caption</span>
             </button>
           </div>
 
@@ -280,7 +280,7 @@
       <div class="glass-panel rounded-2xl p-5 border border-gray-800 flex flex-col gap-4">
         
         <div class="flex items-center justify-between">
-          <h2 class="text-sm font-semibold text-gray-200 flex items-center gap-2">
+          <h2 class="text-sm font-semibold text-gray-200 flex items-center gap-2" id="txtStudioTitle">
             <i data-lucide="layers" class="w-4 h-4 text-purple-400"></i>
             Visual Studio Engine
           </h2>
@@ -292,19 +292,24 @@
           <div class="swiper cardSwiper w-full max-w-[340px] sm:max-w-[380px] mx-auto">
             <div class="swiper-wrapper" id="swiperWrapper">
               
-              <!-- Default Slide 1 -->
+              <!-- Placeholder Slide -->
               <div class="swiper-slide">
                 <div id="card-1" class="theme-cyber rounded-2xl p-6 min-h-[430px] flex flex-col justify-between relative overflow-hidden transition-all duration-300">
                   <div>
-                    <div class="text-[10px] font-bold uppercase tracking-widest opacity-75 mb-2">🔥 独立开发者爆款法则</div>
-                    <h3 class="text-xl font-extrabold font-outfit leading-snug mb-4">独立开发者 30 天做成 1 万刀 ARR 的 3 个法则</h3>
+                    <div class="text-[10px] font-bold uppercase tracking-widest opacity-75 mb-2" id="placeholderSubtitle">🔥 INDIE HACKER BLUEPRINT</div>
+                    <h3 class="text-lg font-extrabold font-outfit leading-snug mb-3 text-white" id="placeholderTitle">3 Rules for Indie Hackers to Reach $10k ARR in 30 Days</h3>
                     
-                    <div class="bg-purple-950/40 border border-purple-500/20 rounded-xl p-4 mb-4">
-                      <p class="text-xs italic leading-relaxed">"用户不是为了功能买单，而是为了社交货币与变现效率买单！"</p>
+                    <div class="bg-gray-900/80 border border-gray-800 rounded-xl p-3 text-center mb-3">
+                      <div class="text-xl font-extrabold text-purple-400 font-outfit">$10K+</div>
+                      <div class="text-[10px] opacity-75 mt-0.5" id="placeholderMetricLabel">Monthly Recurring Revenue (MRR)</div>
+                    </div>
+
+                    <div class="bg-purple-950/40 border border-purple-500/20 rounded-xl p-3 mb-3">
+                      <p class="text-xs italic leading-relaxed text-purple-200" id="placeholderQuote">"Users don't buy features—they buy social currency and monetization velocity!"</p>
                     </div>
                   </div>
 
-                  <div class="pt-4 border-t border-gray-800/60 flex items-center justify-between">
+                  <div class="pt-3 border-t border-gray-800/60 flex items-center justify-between">
                     <span class="text-[11px] font-bold font-mono text-purple-400">⚡️ Cardify.ai</span>
                     <span class="text-[10px] opacity-60">1 / 1 Slide</span>
                   </div>
@@ -320,11 +325,11 @@
         <div class="grid grid-cols-2 gap-3 mt-2">
           <button onclick="exportCurrentCard()" class="py-2.5 px-3 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs font-semibold text-gray-200 flex items-center justify-center gap-1.5 transition-all">
             <i data-lucide="image" class="w-3.5 h-3.5 text-purple-400"></i>
-            <span id="exportCurrentBtnText">导出当前 Card (PNG)</span>
+            <span id="exportCurrentBtnText">Export Slide (PNG)</span>
           </button>
           <button onclick="exportAllCards()" id="exportAllBtn" class="py-2.5 px-3 rounded-xl bg-purple-900/50 hover:bg-purple-800/50 border border-purple-700/50 text-xs font-semibold text-purple-200 flex items-center justify-center gap-1.5 transition-all">
             <i data-lucide="layers" class="w-3.5 h-3.5 text-purple-300"></i>
-            <span id="exportAllBtnText">导出全套卡片包</span>
+            <span id="exportAllBtnText">Export All Slides (PNG)</span>
           </button>
         </div>
 
@@ -345,27 +350,27 @@
         <div class="w-12 h-12 rounded-2xl bg-purple-600/30 border border-purple-500/50 flex items-center justify-center">
           <i data-lucide="crown" class="w-6 h-6 text-amber-300"></i>
         </div>
-        <h3 class="text-xl font-bold text-white font-outfit">Upgrade to Cardify Pro</h3>
-        <p class="text-xs text-gray-400">Unlock unlimited AI generations, custom watermarks, and high-converting viral templates.</p>
+        <h3 class="text-xl font-bold text-white font-outfit" id="txtModalTitle">Upgrade to Cardify Pro</h3>
+        <p class="text-xs text-gray-400" id="txtModalDesc">Unlock unlimited AI generations, custom watermarks, and high-converting viral templates.</p>
       </div>
 
       <div class="bg-gray-950 p-4 rounded-xl border border-gray-800 flex flex-col gap-2.5 text-xs text-gray-300">
-        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span>Unlimited Single & Carousel Cards</span></div>
-        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span>Unlock Xiaohongshu & LinkedIn Premium Styles</span></div>
-        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span>Priority Groq Llama-3 70B & Gemini Flash</span></div>
+        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span id="txtModalFeat1">Unlimited Single & Carousel Cards</span></div>
+        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span id="txtModalFeat2">Unlock Xiaohongshu & LinkedIn Premium Styles</span></div>
+        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span id="txtModalFeat3">Priority Groq Llama-3 70B & Gemini Flash</span></div>
       </div>
 
       <!-- License Key Activation -->
       <div class="flex flex-col gap-2">
-        <label class="text-xs font-medium text-gray-400">Have a Pro License Key?</label>
+        <label class="text-xs font-medium text-gray-400" id="txtModalLicLabel">Have a Pro License Key?</label>
         <div class="flex gap-2">
           <input type="text" id="licenseKeyInput" placeholder="CARDIFY-PRO-XXXX-XXXX" class="flex-1 bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-xs text-white uppercase font-mono">
-          <button onclick="activateLicense()" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded-lg text-xs font-bold text-white">Activate</button>
+          <button onclick="activateLicense()" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded-lg text-xs font-bold text-white" id="txtModalActivate">Activate</button>
         </div>
       </div>
 
       <!-- Buy Link -->
-      <a href="https://dodopayments.com" target="_blank" class="w-full py-3 text-center rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-bold text-sm transition-all">
+      <a href="https://dodopayments.com" target="_blank" class="w-full py-3 text-center rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-bold text-sm transition-all" id="txtModalBuy">
         Buy Pro License ($9.9/mo)
       </a>
     </div>
@@ -382,16 +387,102 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
-  <!-- ================= CORE APPLICATION LOGIC ================= -->
+  <!-- ================= CORE APPLICATION LOGIC & I18N ================= -->
   <script>
     let currentMode = 'carousel'; // 'single' | 'carousel'
     let currentPreset = 'cyber'; // 'cyber' | 'xhs' | 'linkedin'
-    let selectedLang = 'zh';
+    let selectedLang = 'en'; // default en
     let userApiKey = '';
     let licenseKey = localStorage.getItem('cardify_license_key') || '';
     let currentResponseData = null;
     let activeTab = 'xiaohongshu';
     let swiperInstance = null;
+
+    // Full Internationalization Dictionary
+    const I18N_DICT = {
+      en: {
+        quotaText: '✦ 3 Free Left',
+        upgradeHeader: 'Upgrade Pro ($9.9/mo)',
+        modeSingle: '🎴 Single Card',
+        modeCarousel: '📚 Carousel Pack',
+        inputPlaceholder: "Paste your long article, product overview, blog draft, or drop a PDF file here... e.g. '3 Rules for Indie Hackers to reach $10k ARR in 30 Days' or 'How to write viral content in 5 minutes'...",
+        uploadPdf: 'Upload PDF',
+        presetLabel: 'Preset Visual Theme',
+        presetXhs: '📕 Xiaohongshu Viral',
+        presetXhsDesc: 'Vibrant & Pain Points',
+        presetLinkedin: '💼 LinkedIn Executive',
+        presetLinkedinDesc: 'Clean & Data ROI',
+        presetCyber: '🚀 Twitter Tech',
+        presetCyberDesc: 'Dark Glass & Viral Hook',
+        keyLabel: 'Bypass limits with custom Groq / Gemini Key',
+        generateBtnSingle: 'Generate Single Card & Post',
+        generateBtnCarousel: 'Generate Carousel Pack & Post',
+        tabXhs: '📕 Xiaohongshu',
+        tabTwitter: '🐦 Twitter Thread',
+        tabLinkedin: '💼 LinkedIn Post',
+        tabInstagram: '📸 Instagram Caption',
+        copyBtn: 'Copy Post',
+        studioTitle: 'Visual Studio Engine',
+        modeBadgeSingle: 'Single Card',
+        modeBadgeCarousel: 'Carousel Pack',
+        exportCurrentBtn: 'Export Current Card (PNG)',
+        exportAllBtnSingle: 'Export Card (PNG)',
+        exportAllBtnCarousel: 'Export All Slides (PNG)',
+        modalTitle: 'Upgrade to Cardify Pro',
+        modalDesc: 'Unlock unlimited AI generations, custom watermarks, and high-converting viral templates.',
+        modalFeat1: 'Unlimited Single & Carousel Cards',
+        modalFeat2: 'Unlock Xiaohongshu & LinkedIn Premium Styles',
+        modalFeat3: 'Priority Groq Llama-3 70B & Gemini Flash',
+        modalLicLabel: 'Have a Pro License Key?',
+        modalActivate: 'Activate',
+        modalBuy: 'Buy Pro License ($9.9/mo)',
+        placeholderSubtitle: '🔥 INDIE HACKER BLUEPRINT',
+        placeholderTitle: '3 Rules for Indie Hackers to Reach $10k ARR in 30 Days',
+        placeholderMetricLabel: 'Monthly Recurring Revenue (MRR)',
+        placeholderQuote: '"Users don\'t buy features—they buy social currency and monetization velocity!"'
+      },
+      zh: {
+        quotaText: '✦ 剩余 3 次免费',
+        upgradeHeader: '升级 Pro 版 ($9.9/月)',
+        modeSingle: '🎴 单图卡片',
+        modeCarousel: '📚 连载切片',
+        inputPlaceholder: "粘贴你的文章、草稿或拖入 PDF 文件...例如：'独立开发者 30 天做成 1 万刀 ARR 的 3 个法则' 或 '如何用 ChatGPT 5 分钟写出爆款小红书文案'...",
+        uploadPdf: '上传 PDF',
+        presetLabel: '爆款视觉风格预设',
+        presetXhs: '📕 小红书爆款风',
+        presetXhsDesc: '粉红明亮 + 抓人痛点',
+        presetLinkedin: '💼 LinkedIn 商务高管',
+        presetLinkedinDesc: '极简蓝白 + 强调 ROI',
+        presetCyber: '🚀 Twitter 极客风',
+        presetCyberDesc: '暗黑玻璃 + 爆款钩子',
+        keyLabel: '使用自定义 Groq / Gemini Key 突破限制',
+        generateBtnSingle: '一键生成单图精炼卡片与贴文',
+        generateBtnCarousel: '一键生成爆款连载卡包与贴文',
+        tabXhs: '📕 小红书文案',
+        tabTwitter: '🐦 Twitter Thread',
+        tabLinkedin: '💼 LinkedIn 长文',
+        tabInstagram: '📸 Instagram Caption',
+        copyBtn: '一键复制贴文',
+        studioTitle: '视觉卡片渲染引擎',
+        modeBadgeSingle: '单图卡片模式',
+        modeBadgeCarousel: '连载切片卡包',
+        exportCurrentBtn: '导出当前卡片 (PNG)',
+        exportAllBtnSingle: '导出当前卡片',
+        exportAllBtnCarousel: '一键导出全套连载卡包',
+        modalTitle: '升级到 Cardify Pro',
+        modalDesc: '解锁无限次 AI 生成、自定义水印以及所有爆款高转化模板。',
+        modalFeat1: '无限生成单图与连载切片卡包',
+        modalFeat2: '解锁小红书与 LinkedIn 高级风格',
+        modalFeat3: '优先 Groq Llama-3 70B & Gemini Flash',
+        modalLicLabel: '已有 Pro 激活码？',
+        modalActivate: '立即激活',
+        modalBuy: '购买 Pro 授权 ($9.9/月)',
+        placeholderSubtitle: '🔥 独立开发者爆款法则',
+        placeholderTitle: '独立开发者 30 天做成 1 万刀 ARR 的 3 个法则',
+        placeholderMetricLabel: '月经常性收入 (MRR)',
+        placeholderQuote: '"用户不是为了功能买单，而是为了社交货币与变现效率买单！"'
+      }
+    };
 
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
@@ -402,6 +493,7 @@
 
       initSwiper();
       fetchQuota();
+      applyTranslations();
     });
 
     function initSwiper() {
@@ -413,24 +505,93 @@
       });
     }
 
+    function handleLangChange(lang) {
+      selectedLang = lang;
+      applyTranslations();
+    }
+
+    function applyTranslations() {
+      const lang = selectedLang;
+      const dict = I18N_DICT[lang] || I18N_DICT.en;
+
+      // Header
+      document.getElementById('quotaText').innerText = dict.quotaText;
+      document.getElementById('txtUpgradeHeader').innerText = dict.upgradeHeader;
+
+      // Mode Buttons
+      document.getElementById('txtModeSingle').innerText = dict.modeSingle;
+      document.getElementById('txtModeCarousel').innerText = dict.modeCarousel;
+
+      // Input & Presets
+      document.getElementById('inputText').placeholder = dict.inputPlaceholder;
+      document.getElementById('txtUploadPdf').innerText = dict.uploadPdf;
+      document.getElementById('txtPresetLabel').innerText = dict.presetLabel;
+      document.getElementById('txtPresetXhs').innerText = dict.presetXhs;
+      document.getElementById('txtPresetXhsDesc').innerText = dict.presetXhsDesc;
+      document.getElementById('txtPresetLinkedin').innerText = dict.presetLinkedin;
+      document.getElementById('txtPresetLinkedinDesc').innerText = dict.presetLinkedinDesc;
+      document.getElementById('txtPresetCyber').innerText = dict.presetCyber;
+      document.getElementById('txtPresetCyberDesc').innerText = dict.presetCyberDesc;
+      document.getElementById('keyLabel').innerText = dict.keyLabel;
+
+      // Generate Button
+      document.getElementById('generateBtnText').innerText = (currentMode === 'single') ? dict.generateBtnSingle : dict.generateBtnCarousel;
+
+      // Tabs
+      document.getElementById('txtTabXhs').innerText = dict.tabXhs;
+      document.getElementById('txtTabTwitter').innerText = dict.tabTwitter;
+      document.getElementById('txtTabLinkedin').innerText = dict.tabLinkedin;
+      document.getElementById('txtTabInstagram').innerText = dict.tabInstagram;
+      document.getElementById('copyBtnText').innerText = dict.copyBtn;
+
+      // Right Studio Panel
+      document.getElementById('txtStudioTitle').innerHTML = `<i data-lucide="layers" class="w-4 h-4 text-purple-400"></i> ${dict.studioTitle}`;
+      document.getElementById('modeBadge').innerText = (currentMode === 'single') ? dict.modeBadgeSingle : dict.modeBadgeCarousel;
+      document.getElementById('exportCurrentBtnText').innerText = dict.exportCurrentBtn;
+
+      // Modal
+      document.getElementById('txtModalTitle').innerText = dict.modalTitle;
+      document.getElementById('txtModalDesc').innerText = dict.modalDesc;
+      document.getElementById('txtModalFeat1').innerText = dict.modalFeat1;
+      document.getElementById('txtModalFeat2').innerText = dict.modalFeat2;
+      document.getElementById('txtModalFeat3').innerText = dict.modalFeat3;
+      document.getElementById('txtModalLicLabel').innerText = dict.modalLicLabel;
+      document.getElementById('txtModalActivate').innerText = dict.modalActivate;
+      document.getElementById('txtModalBuy').innerText = dict.modalBuy;
+
+      // Placeholder Slide (if no API data currently loaded)
+      if (!currentResponseData) {
+        const pSubtitle = document.getElementById('placeholderSubtitle');
+        const pTitle = document.getElementById('placeholderTitle');
+        const pMetricLabel = document.getElementById('placeholderMetricLabel');
+        const pQuote = document.getElementById('placeholderQuote');
+
+        if (pSubtitle) pSubtitle.innerText = dict.placeholderSubtitle;
+        if (pTitle) pTitle.innerText = dict.placeholderTitle;
+        if (pMetricLabel) pMetricLabel.innerText = dict.placeholderMetricLabel;
+        if (pQuote) pQuote.innerText = dict.placeholderQuote;
+
+        const exportAllBtn = document.getElementById('exportAllBtnText');
+        if (exportAllBtn) exportAllBtn.innerText = (currentMode === 'single') ? dict.exportAllBtnSingle : dict.exportAllBtnCarousel;
+      }
+
+      lucide.createIcons();
+    }
+
     function setMode(mode) {
       currentMode = mode;
       const btnSingle = document.getElementById('mode-single');
       const btnCarousel = document.getElementById('mode-carousel');
-      const modeBadge = document.getElementById('mode-badge');
-      const btnText = document.getElementById('generateBtnText');
 
       if (mode === 'single') {
         btnSingle.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-purple-300 bg-purple-600/30 border border-purple-500/40 shadow-sm';
         btnCarousel.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-400 hover:text-white';
-        if (modeBadge) modeBadge.innerText = 'Single Card Mode';
-        btnText.innerText = '一键生成单图精炼卡片与贴文 (Generate Single Card)';
       } else {
         btnCarousel.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-purple-300 bg-purple-600/30 border border-purple-500/40 shadow-sm';
         btnSingle.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-400 hover:text-white';
-        if (modeBadge) modeBadge.innerText = 'Carousel Pack Mode';
-        btnText.innerText = '一键生成爆款连载卡包与贴文 (Generate Carousel Pack)';
       }
+
+      applyTranslations();
     }
 
     function selectPresetTheme(theme) {
@@ -463,10 +624,6 @@
     function updateCharCount() {
       const text = document.getElementById('inputText').value;
       document.getElementById('charCount').innerText = `${text.length} / 15,000`;
-    }
-
-    function handleLangChange(lang) {
-      selectedLang = lang;
     }
 
     function toggleApiKeyInput() {
@@ -559,12 +716,7 @@
         showToast(e.message || 'API call failed.', true);
       } finally {
         btn.disabled = false;
-        const btnText = document.getElementById('generateBtnText');
-        if (btnText) {
-          btnText.innerText = currentMode === 'single' ? '一键生成单图精炼卡片与贴文 (Generate Single Card)' : '一键生成爆款连载卡包与贴文 (Generate Carousel Pack)';
-        }
-        btn.innerHTML = `<i data-lucide="wand-2" class="w-4 h-4"></i> <span id="generateBtnText">${btnText ? btnText.innerText : 'Generate'}</span>`;
-        lucide.createIcons();
+        applyTranslations();
       }
     }
 
@@ -616,7 +768,7 @@
         slideDiv.innerHTML = `
           <div id="card-${idx + 1}" class="theme-${currentPreset} rounded-2xl p-6 min-h-[430px] flex flex-col justify-between relative overflow-hidden transition-all duration-300">
             <div>
-              <div class="text-[10px] font-bold uppercase tracking-widest opacity-75 mb-2">${slide.subtitle || '🔥 核心洞察'}</div>
+              <div class="text-[10px] font-bold uppercase tracking-widest opacity-75 mb-2">${slide.subtitle || '🔥 HIGHLIGHTS'}</div>
               <h3 class="text-lg font-extrabold font-outfit leading-snug mb-3 text-white">${slide.title || ''}</h3>
               ${metricHtml}
               ${bulletsHtml}
@@ -636,8 +788,9 @@
 
       // Update Export Button Text
       const exportAllBtn = document.getElementById('exportAllBtnText');
+      const dict = I18N_DICT[selectedLang] || I18N_DICT.en;
       if (exportAllBtn) {
-        exportAllBtn.innerText = slides.length === 1 ? '导出当前卡片' : `一键导出全套 ${slides.length} 张卡片包`;
+        exportAllBtn.innerText = slides.length === 1 ? dict.exportAllBtnSingle : dict.exportAllBtnCarousel;
       }
     }
 
@@ -675,7 +828,7 @@
       navigator.clipboard.writeText(area.innerText);
       const copyText = document.getElementById('copyBtnText');
       copyText.innerText = 'Copied!';
-      setTimeout(() => copyText.innerText = 'Copy Post', 2000);
+      setTimeout(() => copyText.innerText = I18N_DICT[selectedLang]?.copyBtn || 'Copy Post', 2000);
       showToast('Copied post text to clipboard!');
     }
 
