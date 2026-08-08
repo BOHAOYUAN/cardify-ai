@@ -1,4 +1,4 @@
-// /api/generate.js — Cardify AI v2.0 Backend Engine
+// /api/generate.js — Cardify AI v2.1 Growth Engine
 // Multi-Provider Failover & Three-Tier Auth / Rate-Limiter Engine
 
 const rateLimitStore = new Map();
@@ -33,8 +33,8 @@ function getIpRemaining(ip) {
 }
 
 const LANG_NAMES = {
-  en: 'English',
-  zh: 'Simplified Chinese (简体中文)',
+  en: 'English (en-US)',
+  zh: 'Simplified Chinese (zh-CN)',
   es: 'Spanish (Español)',
   pt: 'Portuguese (Português)',
   ru: 'Russian (Русский)',
@@ -44,14 +44,37 @@ const LANG_NAMES = {
   de: 'German (Deutsch)'
 };
 
-const SYSTEM_PROMPT_TEMPLATE = `You are Cardify AI — the world's most elite multi-platform content strategist and viral visual card designer.
-Transform the input text into a high-converting, fully customized multi-platform content suite AND a viral visual summary card dataset.
+const VIRAL_SYSTEM_PROMPT = `You are a World-Class Viral Content Architect and Growth Hacker.
+Your mission is to process raw user input and transform it into highly-engaging, structured content specifically tailored for visual social media Carousel cards (e.g., Carousel posts on Twitter/X, LinkedIn, Xiaohongshu).
 
-CRITICAL FORMAT REQUIREMENT:
-You MUST respond with strictly valid RAW JSON. Absolutely NO markdown code block tags (\`\`\`json or \`\`\`), NO conversational preamble, NO trailing explanations.
+### CORE OBJECTIVE
+Do NOT just summarize. Re-frame, polish, and elevate the raw content into "Social Currency"—content that makes the reader look smart, informed, or motivated when sharing it.
 
-REQUIRED JSON SCHEMA:
+### OUTPUT REQUIREMENTS
+- STRICTLY output raw JSON ONLY.
+- NO markdown formatting (do NOT use \`\`\`json or \`\`\`).
+- Language MUST match the requested target language 100% with no mixed languages.
+
+### JSON SCHEMA
 {
+  "language": "string",
+  "card_type": "Carousel Slide",
+  "hook_headline": "string (A high-converting, scroll-stopping title. Max 10 words / 15 chars)",
+  "sub_hook": "string (A compelling statement explaining WHY this matters)",
+  "data_callouts": [
+    {
+      "metric": "string (Bold key figure, e.g., '$10K+', '85%', '3 Steps')",
+      "label": "string (Short description of the impact)"
+    }
+  ],
+  "core_insights": [
+    {
+      "title": "string (Punchy, bold action phrase)",
+      "description": "string (Clear, high-value explanation)"
+    }
+  ],
+  "takeaway_quote": "string (A powerful, shareable one-liner gold nugget)",
+  "call_to_action": "string (e.g., 'Save this for later', 'Follow for more')",
   "twitter_thread": [
     "1/ Hook Tweet stopping the scroll with high impact statement.",
     "2/ Core insight or key argument detailed breakdown.",
@@ -62,22 +85,13 @@ REQUIRED JSON SCHEMA:
     "title": "💥爆款标题（情绪调动+Emoji+干货）",
     "content": "✨引言共鸣痛点\\n\\n🔥核心干货拆解：\\n1️⃣ 第一点...\\n2️⃣ 第二点...\\n\\n💡总结建议\\n\\n#干货分享 #知识卡片 #AI工具"
   },
-  "instagram_caption": "Visual-first scroll-stopping caption summarizing main value proposition.\\n\\nSwipe through cards for step-by-step breakdown! 👉\\n\\n#growth #productivity #business",
-  "visual_card_data": {
-    "title": "Punchy Main Title (Max 8 Words)",
-    "subtitle": "Clear Subtitle or Series Chapter Tag",
-    "gold_quote": "The single most retweetable quote or core takeaway line.",
-    "metrics": [
-      { "label": "Impact Factor", "value": "10x" },
-      { "label": "Success Rate", "value": "98%" }
-    ],
-    "action_steps": [
-      "Step 1: Execute initial priority action",
-      "Step 2: Optimize workflow bottlenecks",
-      "Step 3: Scale proven system"
-    ]
-  }
-}`;
+  "instagram_caption": "Visual-first scroll-stopping caption summarizing main value proposition.\\n\\nSwipe through cards for step-by-step breakdown! 👉\\n\\n#growth #productivity #business"
+}
+
+### CRITICAL RULES
+1. The \`hook_headline\` must sound like a top 1% creator's viral post, not a generic textbook header.
+2. The \`takeaway_quote\` should be punchy enough to be screenshotted and shared on its own.
+3. Ensure all numbers or key concepts are front-loaded for immediate visual impact.`;
 
 function extractJSON(raw) {
   if (!raw || typeof raw !== 'string') throw new Error('AI returned an empty response.');
@@ -196,18 +210,13 @@ export default async function handler(req, res) {
   let activeKey = null;
   let keyUsedType = 'free';
 
-  // Level 1: User-supplied API Key
   if (typeof userApiKey === 'string' && userApiKey.trim().length > 10) {
     activeKey = userApiKey.trim();
     keyUsedType = 'user';
-  } 
-  // Level 2: VIP License Key
-  else if (typeof licenseKey === 'string' && licenseKey.trim().length >= 5) {
+  } else if (typeof licenseKey === 'string' && licenseKey.trim().length >= 5) {
     activeKey = process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY || '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';
     keyUsedType = 'official_vip';
-  } 
-  // Level 3: Free Tier with Rate Limiting
-  else {
+  } else {
     const limitCheck = checkDailyIpLimit(ip);
     if (!limitCheck.allowed) {
       return res.status(429).json({
@@ -220,10 +229,10 @@ export default async function handler(req, res) {
     keyUsedType = 'free';
   }
 
-  const languageName = LANG_NAMES[target_lang] || 'English';
-  const sysInstruction = `${SYSTEM_PROMPT_TEMPLATE}\n\nSTRICT RULES:\n1. MUST write ALL content strictly in ${languageName}.\n2. Style Preference: ${target_style || 'General'}.\n3. Return strictly valid JSON object matching the required schema.`;
+  const languageName = LANG_NAMES[target_lang] || 'English (en-US)';
+  const sysInstruction = `${VIRAL_SYSTEM_PROMPT}\n\nSTRICT CONSTRAINTS:\n1. Target Language MUST be ${languageName}. Write ALL JSON fields strictly in this language.\n2. Target Style Profile: ${target_style || 'Xiaohongshu / Social Viral'}.\n3. Return ONLY raw valid JSON matching the schema.`;
 
-  const userPrompt = `Content to transform:\n${input_text.trim()}`;
+  const userPrompt = `Source content to transform into viral Carousel cards & post suite:\n\n${input_text.trim()}`;
 
   try {
     const rawAiOutput = await executeLLMCall(activeKey, sysInstruction, userPrompt);
@@ -239,7 +248,7 @@ export default async function handler(req, res) {
     console.error('[Cardify AI Backend Error]', err);
     return res.status(500).json({
       error: 'AI_GENERATION_FAILED',
-      message: err.message || 'Failed to generate multi-platform content suite.',
+      message: err.message || 'Failed to generate viral content suite.',
       key_used: keyUsedType
     });
   }

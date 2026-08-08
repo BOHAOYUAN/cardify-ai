@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cardify.ai 2.0 — Multi-Platform AI Content & Viral Card Studio</title>
-  <meta name="description" content="Turn any article or PDF into viral Xiaohongshu guides, Twitter threads, LinkedIn posts, and stunning visual knowledge cards in 10 seconds.">
+  <title>Cardify.ai 2.1 — Viral Social Carousel & AI Content Studio</title>
+  <meta name="description" content="Transform raw text or PDFs into viral Xiaohongshu Carousel slides, LinkedIn thought leadership, Twitter threads, and high-converting visual cards.">
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -48,17 +48,31 @@
     
     /* Glassmorphism utility */
     .glass-panel {
-      background: rgba(17, 24, 39, 0.7);
+      background: rgba(17, 24, 39, 0.75);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
     
-    .glass-card {
-      background: linear-gradient(135deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(139, 92, 246, 0.25);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    /* Card Styles for Presets */
+    .theme-cyber {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.98) 100%);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .theme-xhs {
+      background: linear-gradient(135deg, #fff5f7 0%, #fff0f3 100%);
+      color: #1f2937 !important;
+      border: 1px solid #fecdd3;
+      box-shadow: 0 20px 40px rgba(244, 63, 94, 0.12);
+    }
+
+    .theme-linkedin {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      color: #0f172a !important;
+      border: 1px solid #cbd5e1;
+      box-shadow: 0 20px 40px rgba(14, 165, 233, 0.12);
     }
 
     .glow-purple {
@@ -69,7 +83,6 @@
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
     ::-webkit-scrollbar-thumb { background: rgba(139, 92, 246, 0.3); border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(139, 92, 246, 0.6); }
 
     .swiper-pagination-bullet-active {
       background: #8b5cf6 !important;
@@ -93,7 +106,7 @@
         <div>
           <span class="text-xl font-extrabold font-outfit tracking-tight text-white flex items-center gap-2">
             Cardify<span class="text-purple-400">.ai</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">v2.0 PRO</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-pink-500/20 to-purple-500/20 text-pink-300 border border-pink-500/30">v2.1 Viral Carousel</span>
           </span>
         </div>
       </div>
@@ -104,8 +117,8 @@
         <!-- Language Selector -->
         <div class="relative">
           <select id="langSelect" onchange="handleLangChange(this.value)" class="bg-gray-900/90 text-gray-200 text-xs font-medium px-3 py-2 rounded-lg border border-gray-700/80 focus:outline-none focus:border-purple-500 transition-all cursor-pointer">
-            <option value="en">🇺🇸 English</option>
-            <option value="zh">🇨🇳 简体中文</option>
+            <option value="zh">🇨🇳 简体中文 (zh-CN)</option>
+            <option value="en">🇺🇸 English (en-US)</option>
             <option value="es">🇪🇸 Español</option>
             <option value="pt">🇵🇹 Português</option>
             <option value="ru">🇷🇺 Русский</option>
@@ -132,7 +145,7 @@
     </div>
   </header>
 
-  <!-- ================= MAIN WORKSPACE (DUAL PANELS) ================= -->
+  <!-- ================= MAIN WORKSPACE ================= -->
   <main class="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
 
     <!-- ================= LEFT PANEL: CONTROL & GENERATION (7 cols) ================= -->
@@ -143,7 +156,7 @@
         
         <div class="flex items-center justify-between">
           <label class="text-sm font-semibold text-gray-200 flex items-center gap-2">
-            <i data-lucide="file-text" class="w-4 h-4 text-purple-400"></i>
+            <i data-lucide="sparkles" class="w-4 h-4 text-purple-400"></i>
             Source Content (Text or PDF)
           </label>
           <span class="text-xs text-gray-400" id="charCount">0 / 15,000</span>
@@ -152,7 +165,7 @@
         <!-- Textarea -->
         <div class="relative">
           <textarea id="inputText" rows="6" oninput="updateCharCount()" 
-            placeholder="Paste your long article, product overview, blog draft, or drop a PDF file here..."
+            placeholder="粘贴你的文章、长图文草稿或拖入 PDF 文件...例如：'独立开发者 30 天做成 1 万刀 ARR 的 3 个法则' 或 '如何用 ChatGPT 5 分钟写出爆款小红书文案'..."
             class="w-full bg-gray-950/80 border border-gray-800 rounded-xl p-4 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all resize-none"></textarea>
           
           <!-- PDF Upload Overlay Button -->
@@ -165,45 +178,56 @@
           </div>
         </div>
 
-        <!-- Style & Custom Key Bar -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          
-          <!-- Style Choice -->
-          <div>
-            <label class="block text-xs font-medium text-gray-400 mb-1.5">Target Tone & Niche</label>
-            <select id="styleSelect" class="w-full bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-xs text-gray-200 focus:border-purple-500 focus:outline-none">
-              <option value="xiaohongshu">📕 小红书爆款 (Xiaohongshu Viral)</option>
-              <option value="twitter">🐦 Twitter & LinkedIn 商业洞察 (Business Insight)</option>
-              <option value="outline">📺 视频大纲 / 脚本 (Video Outline)</option>
-              <option value="default">🌐 通用精炼 (General Concise)</option>
-            </select>
-          </div>
-
-          <!-- Custom API Key Accordion Trigger -->
-          <div>
-            <label class="block text-xs font-medium text-gray-400 mb-1.5">Custom API Key (Optional)</label>
-            <button onclick="toggleApiKeyInput()" class="w-full flex items-center justify-between bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-xs text-gray-400 hover:text-gray-200 transition-all">
-              <span id="keyStatusText" class="flex items-center gap-1.5">
-                <i data-lucide="key" class="w-3.5 h-3.5 text-emerald-400"></i>
-                <span id="keyLabel">Bypass limits with custom Key</span>
-              </span>
-              <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+        <!-- Preset Scene Templates Selection -->
+        <div>
+          <label class="block text-xs font-medium text-gray-400 mb-2">爆款场景预设 (Preset Viral Profile)</label>
+          <div class="grid grid-cols-3 gap-2">
+            
+            <button onclick="selectPresetTheme('xhs')" id="preset-xhs" class="preset-btn p-3 rounded-xl border border-rose-500/40 bg-rose-950/20 hover:bg-rose-900/30 text-left transition-all flex flex-col gap-1">
+              <div class="text-xs font-bold text-rose-300 flex items-center gap-1">
+                <span>📕 小红书爆款风</span>
+              </div>
+              <span class="text-[10px] text-rose-200/70">粉绿明亮 + 抓人痛点</span>
             </button>
-          </div>
 
+            <button onclick="selectPresetTheme('linkedin')" id="preset-linkedin" class="preset-btn p-3 rounded-xl border border-sky-500/30 bg-sky-950/20 hover:bg-sky-900/30 text-left transition-all flex flex-col gap-1">
+              <div class="text-xs font-bold text-sky-300 flex items-center gap-1">
+                <span>💼 LinkedIn 商务高管</span>
+              </div>
+              <span class="text-[10px] text-sky-200/70">极简蓝白 + 强调 ROI</span>
+            </button>
+
+            <button onclick="selectPresetTheme('cyber')" id="preset-cyber" class="preset-btn active p-3 rounded-xl border border-purple-500/50 bg-purple-950/40 text-left transition-all flex flex-col gap-1 ring-2 ring-purple-500/50">
+              <div class="text-xs font-bold text-purple-300 flex items-center gap-1">
+                <span>🚀 Twitter 极客风</span>
+              </div>
+              <span class="text-[10px] text-purple-200/70">暗黑玻璃 + 爆款钩子</span>
+            </button>
+
+          </div>
         </div>
 
-        <!-- Collapsible API Key Box -->
-        <div id="apiKeyContainer" class="hidden p-3 rounded-lg bg-gray-950 border border-purple-900/40">
-          <input type="password" id="userApiKey" placeholder="Enter your Groq (gsk_...) or Gemini (AIza...) API Key"
-            class="w-full bg-gray-900 border border-gray-800 rounded-md px-3 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-purple-500">
-          <p class="text-[10px] text-gray-500 mt-1">Your key is processed solely in memory for the request and never stored.</p>
+        <!-- Custom Key Accordion -->
+        <div class="pt-1">
+          <button onclick="toggleApiKeyInput()" class="w-full flex items-center justify-between bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-xs text-gray-400 hover:text-gray-200 transition-all">
+            <span id="keyStatusText" class="flex items-center gap-1.5">
+              <i data-lucide="key" class="w-3.5 h-3.5 text-emerald-400"></i>
+              <span id="keyLabel">Bypass limits with custom Groq / Gemini Key</span>
+            </span>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+          </button>
+          
+          <div id="apiKeyContainer" class="hidden mt-2 p-3 rounded-lg bg-gray-950 border border-purple-900/40">
+            <input type="password" id="userApiKey" placeholder="Enter your Groq (gsk_...) or Gemini (AIza...) API Key"
+              class="w-full bg-gray-900 border border-gray-800 rounded-md px-3 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-purple-500">
+            <p class="text-[10px] text-gray-500 mt-1">Your key is processed solely in memory for the request and never stored.</p>
+          </div>
         </div>
 
         <!-- GENERATE BUTTON -->
-        <button id="generateBtn" onclick="generateContent()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-sm flex items-center justify-center gap-2 glow-purple transition-all active:scale-[0.99]">
+        <button id="generateBtn" onclick="generateContent()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:from-pink-500 hover:to-indigo-500 text-white font-bold text-sm flex items-center justify-center gap-2 glow-purple transition-all active:scale-[0.99]">
           <i data-lucide="wand-2" class="w-4 h-4"></i>
-          <span>一键重构全平台贴文 (Generate All Posts & Cards)</span>
+          <span>一键生成爆款连载卡包与贴文 (Generate Viral Carousel Suite)</span>
         </button>
 
       </div>
@@ -214,17 +238,17 @@
         <!-- Platform Tabs Header -->
         <div class="flex items-center justify-between border-b border-gray-800 pb-3 overflow-x-auto">
           <div class="flex items-center gap-2">
-            <button onclick="switchTab('twitter')" id="tab-twitter" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-purple-400 bg-purple-500/10 border border-purple-500/30 flex items-center gap-1.5">
+            <button onclick="switchTab('xiaohongshu')" id="tab-xiaohongshu" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/30 flex items-center gap-1.5">
+              <span>📕 小红书连载文案</span>
+            </button>
+            <button onclick="switchTab('twitter')" id="tab-twitter" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-gray-200 flex items-center gap-1.5">
               <span>🐦 Twitter Thread</span>
             </button>
             <button onclick="switchTab('linkedin')" id="tab-linkedin" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-gray-200 flex items-center gap-1.5">
-              <span>💼 LinkedIn</span>
-            </button>
-            <button onclick="switchTab('xiaohongshu')" id="tab-xiaohongshu" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-gray-200 flex items-center gap-1.5">
-              <span>📕 小红书</span>
+              <span>💼 LinkedIn 深度长文</span>
             </button>
             <button onclick="switchTab('instagram')" id="tab-instagram" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-gray-200 flex items-center gap-1.5">
-              <span>📸 Instagram</span>
+              <span>📸 Instagram Caption</span>
             </button>
           </div>
 
@@ -244,17 +268,17 @@
 
     </section>
 
-    <!-- ================= RIGHT PANEL: VISUAL CARD CENTER (5 cols) ================= -->
+    <!-- ================= RIGHT PANEL: VISUAL CAROUSEL STUDIO (5 cols) ================= -->
     <section class="lg:col-span-5 flex flex-col gap-5">
       
       <div class="glass-panel rounded-2xl p-5 border border-gray-800 flex flex-col gap-4">
         
         <div class="flex items-center justify-between">
           <h2 class="text-sm font-semibold text-gray-200 flex items-center gap-2">
-            <i data-lucide="sparkle" class="w-4 h-4 text-purple-400"></i>
-            Visual Card Studio (Cardify Engine)
+            <i data-lucide="layers" class="w-4 h-4 text-purple-400"></i>
+            Viral Carousel Studio (爆款连载卡片)
           </h2>
-          <span class="text-[10px] bg-purple-900/40 text-purple-300 border border-purple-700/40 px-2 py-0.5 rounded-full font-mono">Live Preview</span>
+          <span class="text-[10px] bg-purple-900/40 text-purple-300 border border-purple-700/40 px-2 py-0.5 rounded-full font-mono">3~5 Slide Pack</span>
         </div>
 
         <!-- SWIPER CAROUSEL -->
@@ -262,80 +286,78 @@
           <div class="swiper cardSwiper w-full max-w-[340px] sm:max-w-[380px] mx-auto">
             <div class="swiper-wrapper" id="swiperWrapper">
               
-              <!-- Placeholder Slide 1 -->
+              <!-- Slide 1: Cover Hook -->
               <div class="swiper-slide">
-                <div id="card-1" class="glass-card rounded-2xl p-6 min-h-[420px] flex flex-col justify-between relative overflow-hidden">
-                  <div class="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl pointer-events-none"></div>
-                  
+                <div id="card-1" class="theme-cyber rounded-2xl p-6 min-h-[430px] flex flex-col justify-between relative overflow-hidden transition-all duration-300">
                   <div>
-                    <div class="text-[11px] font-bold text-purple-400 uppercase tracking-widest mb-2" id="previewSubtitle">[ Cardify AI ]</div>
-                    <h3 class="text-xl font-extrabold text-white font-outfit leading-snug mb-4" id="previewTitle">Your Viral Content Headline Appears Here</h3>
+                    <div class="text-[10px] font-bold uppercase tracking-widest opacity-75 mb-2" id="previewSubHook">🔥 独立开发者爆款法则</div>
+                    <h3 class="text-xl font-extrabold font-outfit leading-snug mb-4" id="previewHeadline">独立开发者 30 天做成 1 万刀 ARR 的 3 个法则</h3>
                     
                     <div class="bg-purple-950/40 border border-purple-500/20 rounded-xl p-4 mb-4">
-                      <p class="text-xs text-purple-200 italic leading-relaxed" id="previewGoldQuote">"The single most retweetable quote from your source text will be highlighted right here."</p>
+                      <p class="text-xs italic leading-relaxed" id="previewGoldQuote">"用户不是为了功能买单，而是为了社交货币与变现效率买单！"</p>
                     </div>
                   </div>
 
-                  <!-- Footer Watermark -->
+                  <!-- Footer Viral Tag -->
                   <div class="pt-4 border-t border-gray-800/60 flex items-center justify-between">
-                    <span class="text-[10px] text-gray-400 font-mono" id="cardWatermark1">Generated by Cardify.ai</span>
-                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i>
+                    <span class="text-[11px] font-bold font-mono text-purple-400" id="cardWatermark1">⚡️ Cardify.ai</span>
+                    <span class="text-[10px] opacity-60">1 / 3 Slide</span>
                   </div>
                 </div>
               </div>
 
-              <!-- Placeholder Slide 2 -->
+              <!-- Slide 2: Core Data & Insights -->
               <div class="swiper-slide">
-                <div id="card-2" class="glass-card rounded-2xl p-6 min-h-[420px] flex flex-col justify-between relative overflow-hidden">
+                <div id="card-2" class="theme-cyber rounded-2xl p-6 min-h-[430px] flex flex-col justify-between relative overflow-hidden transition-all duration-300">
                   <div>
-                    <div class="text-[11px] font-bold text-indigo-400 uppercase tracking-widest mb-2">Key Metrics & Data</div>
-                    <h3 class="text-lg font-bold text-white font-outfit mb-4">Core Numbers</h3>
+                    <div class="text-[10px] font-bold uppercase tracking-widest opacity-75 mb-2">📊 核心数据与突破点</div>
+                    <h3 class="text-base font-bold font-outfit mb-4">数据表现 & 关键指标</h3>
                     
                     <div class="grid grid-cols-2 gap-3 mb-4" id="previewMetrics">
                       <div class="bg-gray-900/80 border border-gray-800 rounded-xl p-3 text-center">
-                        <div class="text-xl font-extrabold text-purple-400 font-outfit">10x</div>
-                        <div class="text-[10px] text-gray-400 mt-0.5">Speedup</div>
+                        <div class="text-xl font-extrabold text-purple-400 font-outfit">$10K+</div>
+                        <div class="text-[10px] opacity-75 mt-0.5">月经常性收入 (MRR)</div>
                       </div>
                       <div class="bg-gray-900/80 border border-gray-800 rounded-xl p-3 text-center">
-                        <div class="text-xl font-extrabold text-indigo-400 font-outfit">100%</div>
-                        <div class="text-[10px] text-gray-400 mt-0.5">Automated</div>
+                        <div class="text-xl font-extrabold text-indigo-400 font-outfit">350%</div>
+                        <div class="text-[10px] opacity-75 mt-0.5">社交传播增幅</div>
                       </div>
                     </div>
                   </div>
 
                   <div class="pt-4 border-t border-gray-800/60 flex items-center justify-between">
-                    <span class="text-[10px] text-gray-400 font-mono" id="cardWatermark2">Generated by Cardify.ai</span>
-                    <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 text-indigo-400"></i>
+                    <span class="text-[11px] font-bold font-mono text-purple-400" id="cardWatermark2">⚡️ Cardify.ai</span>
+                    <span class="text-[10px] opacity-60">2 / 3 Slide</span>
                   </div>
                 </div>
               </div>
 
-              <!-- Placeholder Slide 3 -->
+              <!-- Slide 3: Actionable Playbook & CTA -->
               <div class="swiper-slide">
-                <div id="card-3" class="glass-card rounded-2xl p-6 min-h-[420px] flex flex-col justify-between relative overflow-hidden">
+                <div id="card-3" class="theme-cyber rounded-2xl p-6 min-h-[430px] flex flex-col justify-between relative overflow-hidden transition-all duration-300">
                   <div>
-                    <div class="text-[11px] font-bold text-emerald-400 uppercase tracking-widest mb-2">Action Plan</div>
-                    <h3 class="text-lg font-bold text-white font-outfit mb-4">Execution Steps</h3>
+                    <div class="text-[10px] font-bold uppercase tracking-widest opacity-75 mb-2">🛠 行动指南 & 转化</div>
+                    <h3 class="text-base font-bold font-outfit mb-3">实操步骤</h3>
                     
-                    <div class="flex flex-col gap-2.5 mb-4" id="previewSteps">
-                      <div class="flex items-start gap-2 text-xs text-gray-300">
-                        <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] flex items-center justify-center font-bold">1</span>
-                        <span>Paste your source content or PDF</span>
+                    <div class="flex flex-col gap-2.5 mb-4" id="previewInsights">
+                      <div class="flex items-start gap-2 text-xs opacity-90">
+                        <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] flex items-center justify-center font-bold flex-shrink-0 mt-0.5">1</span>
+                        <span>锁定海外月入 $10k+ 验证赛道</span>
                       </div>
-                      <div class="flex items-start gap-2 text-xs text-gray-300">
-                        <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] flex items-center justify-center font-bold">2</span>
-                        <span>Click Generate for multi-platform suite</span>
+                      <div class="flex items-start gap-2 text-xs opacity-90">
+                        <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] flex items-center justify-center font-bold flex-shrink-0 mt-0.5">2</span>
+                        <span>翻看差评一键二改痛点</span>
                       </div>
-                      <div class="flex items-start gap-2 text-xs text-gray-300">
-                        <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] flex items-center justify-center font-bold">3</span>
-                        <span>Export HD cards & copy posts</span>
+                      <div class="flex items-start gap-2 text-xs opacity-90">
+                        <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] flex items-center justify-center font-bold flex-shrink-0 mt-0.5">3</span>
+                        <span>缝合爆款文案与连载卡片流</span>
                       </div>
                     </div>
                   </div>
 
                   <div class="pt-4 border-t border-gray-800/60 flex items-center justify-between">
-                    <span class="text-[10px] text-gray-400 font-mono" id="cardWatermark3">Generated by Cardify.ai</span>
-                    <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i>
+                    <span class="text-[11px] font-bold font-mono text-purple-400" id="cardWatermark3">⚡️ Cardify.ai</span>
+                    <span class="text-[10px] font-semibold text-emerald-400" id="previewCta">📌 收藏备用，关注获取更多</span>
                   </div>
                 </div>
               </div>
@@ -349,11 +371,11 @@
         <div class="grid grid-cols-2 gap-3 mt-2">
           <button onclick="exportCurrentCard()" class="py-2.5 px-3 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs font-semibold text-gray-200 flex items-center justify-center gap-1.5 transition-all">
             <i data-lucide="image" class="w-3.5 h-3.5 text-purple-400"></i>
-            <span>Export Current (PNG)</span>
+            <span>导出当前 Slide (PNG)</span>
           </button>
           <button onclick="exportAllCards()" class="py-2.5 px-3 rounded-xl bg-purple-900/50 hover:bg-purple-800/50 border border-purple-700/50 text-xs font-semibold text-purple-200 flex items-center justify-center gap-1.5 transition-all">
             <i data-lucide="layers" class="w-3.5 h-3.5 text-purple-300"></i>
-            <span>Export All Cards</span>
+            <span>一键导出全套连载卡</span>
           </button>
         </div>
 
@@ -375,13 +397,13 @@
           <i data-lucide="crown" class="w-6 h-6 text-amber-300"></i>
         </div>
         <h3 class="text-xl font-bold text-white font-outfit">Upgrade to Cardify Pro</h3>
-        <p class="text-xs text-gray-400">Unlock unlimited AI generations, remove card watermarks, and access premium card themes.</p>
+        <p class="text-xs text-gray-400">Unlock unlimited AI Carousel generations, custom watermarks, and high-converting viral templates.</p>
       </div>
 
       <div class="bg-gray-950 p-4 rounded-xl border border-gray-800 flex flex-col gap-2.5 text-xs text-gray-300">
-        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span>Unlimited Multi-Platform Content Generations</span></div>
-        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span>No Watermarks on Visual Card Exports</span></div>
-        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span>Priority Groq Llama-3 70B & Gemini Flash</span></div>
+        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span>Unlimited Viral Carousel Card Packs</span></div>
+        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span>Unlock Xiaohongshu & LinkedIn Premium Styles</span></div>
+        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span>Priority Groq Llama-3 70B & Gemini 1.5 Flash</span></div>
       </div>
 
       <!-- License Key Activation -->
@@ -413,48 +435,46 @@
 
   <!-- ================= CORE APPLICATION LOGIC ================= -->
   <script>
-    // Safe Initialization of all Required Global State Variables
-    let selectedTheme = 'dark';
-    let selectedStyle = 'xiaohongshu';
-    let selectedLang = 'en';
+    let currentPreset = 'cyber'; // cyber | xhs | linkedin
+    let selectedLang = 'zh';
     let userApiKey = '';
     let licenseKey = localStorage.getItem('cardify_license_key') || '';
     let currentPostsData = null;
-    let activeTab = 'twitter';
+    let activeTab = 'xiaohongshu';
     let swiperInstance = null;
 
-    // Watermark translation strings
-    const WATERMARK_STRINGS = {
-      en: 'Generated by Cardify.ai',
-      zh: 'Cardify.ai 强力驱动',
-      es: 'Generado por Cardify.ai',
-      pt: 'Gerado por Cardify.ai',
-      ru: 'Создано в Cardify.ai',
-      ja: 'Cardify.ai 生成',
-      ko: 'Cardify.ai 생성',
-      fr: 'Généré par Cardify.ai',
-      de: 'Erstellt mit Cardify.ai'
-    };
-
-    // Initialize Page
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
 
-      // Configure PDF.js worker
       if (window.pdfjsLib) {
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
       }
 
-      // Swiper Initialization
       swiperInstance = new Swiper('.cardSwiper', {
         effect: 'cards',
         grabCursor: true,
         pagination: { el: '.swiper-pagination', clickable: true },
       });
 
-      // Fetch IP Quota
       fetchQuota();
     });
+
+    function selectPresetTheme(theme) {
+      currentPreset = theme;
+      document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.classList.remove('ring-2', 'ring-purple-500/50', 'ring-rose-500/50', 'ring-sky-500/50', 'active');
+      });
+      const activeBtn = document.getElementById(`preset-${theme}`);
+      if (activeBtn) activeBtn.classList.add('ring-2', 'ring-purple-500/50', 'active');
+
+      // Update Card Visual Class
+      for (let i = 1; i <= 3; i++) {
+        const card = document.getElementById(`card-${i}`);
+        if (card) {
+          card.className = `theme-${theme} rounded-2xl p-6 min-h-[430px] flex flex-col justify-between relative overflow-hidden transition-all duration-300`;
+        }
+      }
+    }
 
     function showToast(msg, isError = false) {
       const toast = document.getElementById('toast');
@@ -477,14 +497,6 @@
 
     function handleLangChange(lang) {
       selectedLang = lang;
-      updateWatermarkText();
-    }
-
-    function updateWatermarkText() {
-      const text = WATERMARK_STRINGS[selectedLang] || WATERMARK_STRINGS.en;
-      document.getElementById('cardWatermark1').innerText = text;
-      document.getElementById('cardWatermark2').innerText = text;
-      document.getElementById('cardWatermark3').innerText = text;
     }
 
     function toggleApiKeyInput() {
@@ -504,7 +516,6 @@
       }
     }
 
-    // PDF Extraction Handler
     async function handlePdfUpload(event) {
       const file = event.target.files[0];
       if (!file || file.type !== 'application/pdf') {
@@ -534,7 +545,6 @@
       }
     }
 
-    // Core Generation API Call
     async function generateContent() {
       const text = document.getElementById('inputText').value.trim();
       if (!text || text.length < 10) {
@@ -542,12 +552,10 @@
         return;
       }
 
-      const style = document.getElementById('styleSelect').value;
       const customKey = document.getElementById('userApiKey').value.trim();
-
       const btn = document.getElementById('generateBtn');
       btn.disabled = true;
-      btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Processing Multi-Platform Suite...`;
+      btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Analyzing Viral Hook & Insights...`;
       lucide.createIcons();
 
       try {
@@ -556,7 +564,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             input_text: text,
-            target_style: style,
+            target_style: currentPreset,
             target_lang: selectedLang,
             userApiKey: customKey,
             licenseKey: licenseKey
@@ -566,15 +574,13 @@
         const json = await res.json();
 
         if (!res.ok) {
-          if (res.status === 429) {
-            openUpgradeModal();
-          }
+          if (res.status === 429) openUpgradeModal();
           throw new Error(json.message || json.error || 'Generation failed');
         }
 
         currentPostsData = json.data;
         renderGeneratedResults(json.data);
-        showToast('✨ Multi-platform posts & cards created!');
+        showToast('🔥 Viral Carousel & Post Suite Created!');
         fetchQuota();
 
       } catch (e) {
@@ -582,46 +588,44 @@
         showToast(e.message || 'API call failed.', true);
       } finally {
         btn.disabled = false;
-        btn.innerHTML = `<i data-lucide="wand-2" class="w-4 h-4"></i> <span>一键重构全平台贴文 (Generate All Posts & Cards)</span>`;
+        btn.innerHTML = `<i data-lucide="wand-2" class="w-4 h-4"></i> <span>一键生成爆款连载卡包与贴文 (Generate Viral Carousel Suite)</span>`;
         lucide.createIcons();
       }
     }
 
-    // Render Posts & Cards
     function renderGeneratedResults(data) {
       document.getElementById('outputContainer').classList.remove('hidden');
-      switchTab('twitter');
+      switchTab('xiaohongshu');
 
-      // Update Visual Cards
-      if (data.visual_card_data) {
-        const vc = data.visual_card_data;
-        if (vc.title) document.getElementById('previewTitle').innerText = vc.title;
-        if (vc.subtitle) document.getElementById('previewSubtitle').innerText = `[ ${vc.subtitle} ]`;
-        if (vc.gold_quote) document.getElementById('previewGoldQuote').innerText = `"${vc.gold_quote}"`;
+      // Update Carousel Visual Cards
+      if (data.hook_headline) document.getElementById('previewHeadline').innerText = data.hook_headline;
+      if (data.sub_hook) document.getElementById('previewSubHook').innerText = `🔥 ${data.sub_hook}`;
+      if (data.takeaway_quote) document.getElementById('previewGoldQuote').innerText = `"${data.takeaway_quote}"`;
+      if (data.call_to_action) document.getElementById('previewCta').innerText = `📌 ${data.call_to_action}`;
 
-        // Render Metrics
-        if (Array.isArray(vc.metrics) && vc.metrics.length > 0) {
-          const metricsHtml = vc.metrics.map(m => `
-            <div class="bg-gray-900/80 border border-gray-800 rounded-xl p-3 text-center">
-              <div class="text-xl font-extrabold text-purple-400 font-outfit">${m.value}</div>
-              <div class="text-[10px] text-gray-400 mt-0.5">${m.label}</div>
-            </div>
-          `).join('');
-          document.getElementById('previewMetrics').innerHTML = metricsHtml;
-        }
-
-        // Render Action Steps
-        if (Array.isArray(vc.action_steps) && vc.action_steps.length > 0) {
-          const stepsHtml = vc.action_steps.map((step, idx) => `
-            <div class="flex items-start gap-2 text-xs text-gray-300">
-              <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] flex items-center justify-center font-bold flex-shrink-0 mt-0.5">${idx+1}</span>
-              <span>${step}</span>
-            </div>
-          `).join('');
-          document.getElementById('previewSteps').innerHTML = stepsHtml;
-        }
+      // Render Metrics
+      if (Array.isArray(data.data_callouts) && data.data_callouts.length > 0) {
+        const metricsHtml = data.data_callouts.map(m => `
+          <div class="bg-gray-900/80 border border-gray-800 rounded-xl p-3 text-center">
+            <div class="text-xl font-extrabold text-purple-400 font-outfit">${m.metric}</div>
+            <div class="text-[10px] opacity-75 mt-0.5">${m.label}</div>
+          </div>
+        `).join('');
+        document.getElementById('previewMetrics').innerHTML = metricsHtml;
       }
-      updateWatermarkText();
+
+      // Render Insights
+      if (Array.isArray(data.core_insights) && data.core_insights.length > 0) {
+        const insightsHtml = data.core_insights.map((insight, idx) => `
+          <div class="flex items-start gap-2 text-xs opacity-90">
+            <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] flex items-center justify-center font-bold flex-shrink-0 mt-0.5">${idx+1}</span>
+            <div>
+              <strong class="text-white">${insight.title}:</strong> ${insight.description}
+            </div>
+          </div>
+        `).join('');
+        document.getElementById('previewInsights').innerHTML = insightsHtml;
+      }
     }
 
     function switchTab(tab) {
@@ -631,7 +635,7 @@
       });
       const activeBtn = document.getElementById(`tab-${tab}`);
       if (activeBtn) {
-        activeBtn.className = 'tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-purple-400 bg-purple-500/10 border border-purple-500/30 flex items-center gap-1.5';
+        activeBtn.className = 'tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/30 flex items-center gap-1.5';
       }
 
       const area = document.getElementById('tabContentArea');
@@ -640,13 +644,13 @@
         return;
       }
 
-      if (tab === 'twitter') {
+      if (tab === 'xiaohongshu') {
+        const xhs = currentPostsData.xiaohongshu_post || {};
+        area.innerText = `【${xhs.title || ''}】\n\n${xhs.content || ''}`;
+      } else if (tab === 'twitter') {
         area.innerText = Array.isArray(currentPostsData.twitter_thread) ? currentPostsData.twitter_thread.join('\n\n---\n\n') : '';
       } else if (tab === 'linkedin') {
         area.innerText = currentPostsData.linkedin_post || '';
-      } else if (tab === 'xiaohongshu') {
-        const xhs = currentPostsData.xiaohongshu_post || {};
-        area.innerText = `【${xhs.title || ''}】\n\n${xhs.content || ''}`;
       } else if (tab === 'instagram') {
         area.innerText = currentPostsData.instagram_caption || '';
       }
@@ -662,7 +666,6 @@
       showToast('Copied post text to clipboard!');
     }
 
-    // Export HTML2Canvas Cards
     async function exportCurrentCard() {
       const activeIndex = swiperInstance.activeIndex || 0;
       const targetCard = document.getElementById(`card-${activeIndex + 1}`) || document.getElementById('card-1');
@@ -670,28 +673,27 @@
       showToast('Rendering HD image...');
       const canvas = await html2canvas(targetCard, { scale: 2, useCORS: true, backgroundColor: null });
       const link = document.createElement('a');
-      link.download = `cardify-card-${activeIndex + 1}.png`;
+      link.download = `cardify-carousel-slide-${activeIndex + 1}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
-      showToast('Card exported!');
+      showToast('Slide exported!');
     }
 
     async function exportAllCards() {
-      showToast('Exporting card package...');
+      showToast('Exporting carousel package...');
       for (let i = 1; i <= 3; i++) {
         const card = document.getElementById(`card-${i}`);
         if (card) {
           const canvas = await html2canvas(card, { scale: 2, useCORS: true, backgroundColor: null });
           const link = document.createElement('a');
-          link.download = `cardify-card-pack-${i}.png`;
+          link.download = `cardify-carousel-pack-${i}.png`;
           link.href = canvas.toDataURL('image/png');
           link.click();
         }
       }
-      showToast('All 3 cards exported!');
+      showToast('All 3 Carousel Slides exported!');
     }
 
-    // Modal Control
     function openUpgradeModal() { document.getElementById('upgradeModal').classList.remove('hidden'); }
     function closeUpgradeModal() { document.getElementById('upgradeModal').classList.add('hidden'); }
     function activateLicense() {
