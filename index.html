@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cardify.ai 2.6 — Tiered Response & Smart Cache Studio</title>
-  <meta name="description" content="Turn any article or PDF into viral Xiaohongshu Carousel slides, LinkedIn posts, Twitter threads, Instagram Carousels, and YouTube Shorts scripts with instant smart cache & zero-latency styling.">
+  <title>Cardify.ai 2.7 — High-Contrast Multi-Platform Visual Studio</title>
+  <meta name="description" content="Turn any article or PDF into viral Xiaohongshu Carousel slides, LinkedIn posts, Twitter threads, Instagram Carousels, and YouTube Shorts scripts with high contrast styling & instant platform adaptation.">
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -53,28 +53,64 @@
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
-    
-    /* Card Styles for Presets */
+
+    /* ================= DYNAMIC HIGH-CONTRAST THEMES ================= */
+    /* 1. Cyber Dark Glass Theme */
     .theme-cyber {
-      background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.98) 0%, rgba(15, 23, 42, 0.99) 100%);
       border: 1px solid rgba(139, 92, 246, 0.35);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      color: #f3f4f6 !important;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      color: #f8fafc !important;
     }
+    .theme-cyber .card-subtitle { color: #c084fc !important; }
+    .theme-cyber .card-title { color: #ffffff !important; }
+    .theme-cyber .card-metric-box { background: rgba(15, 23, 42, 0.8) !important; border: 1px solid rgba(139, 92, 246, 0.25) !important; }
+    .theme-cyber .card-metric-value { color: #c084fc !important; }
+    .theme-cyber .card-metric-label { color: #94a3b8 !important; }
+    .theme-cyber .card-bullet-num { background: rgba(139, 92, 246, 0.2) !important; color: #c084fc !important; }
+    .theme-cyber .card-bullet-title { color: #ffffff !important; }
+    .theme-cyber .card-bullet-desc { color: #cbd5e1 !important; }
+    .theme-cyber .card-quote-box { background: rgba(88, 28, 135, 0.35) !important; border: 1px solid rgba(168, 85, 247, 0.3) !important; }
+    .theme-cyber .card-quote-text { color: #e9d5ff !important; }
+    .theme-cyber .card-footer-brand { color: #a78bfa !important; }
 
+    /* 2. Xiaohongshu Rose Theme (Light Pink High Contrast) */
     .theme-xhs {
-      background: linear-gradient(135deg, #fff5f7 0%, #fff0f3 100%);
+      background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%) !important;
+      border: 1px solid #fecdd3 !important;
+      box-shadow: 0 20px 40px rgba(244, 63, 94, 0.15) !important;
       color: #1f2937 !important;
-      border: 1px solid #fecdd3;
-      box-shadow: 0 20px 40px rgba(244, 63, 94, 0.12);
     }
+    .theme-xhs .card-subtitle { color: #e11d48 !important; font-weight: 700; }
+    .theme-xhs .card-title { color: #881337 !important; font-weight: 800; }
+    .theme-xhs .card-metric-box { background: #ffffff !important; border: 1px solid #fecdd3 !important; }
+    .theme-xhs .card-metric-value { color: #be123c !important; }
+    .theme-xhs .card-metric-label { color: #9f1239 !important; }
+    .theme-xhs .card-bullet-num { background: #ffe4e6 !important; color: #be123c !important; }
+    .theme-xhs .card-bullet-title { color: #881337 !important; font-weight: 700; }
+    .theme-xhs .card-bullet-desc { color: #4c0519 !important; }
+    .theme-xhs .card-quote-box { background: #fff0f3 !important; border: 1px solid #fda4af !important; }
+    .theme-xhs .card-quote-text { color: #9f1239 !important; }
+    .theme-xhs .card-footer-brand { color: #e11d48 !important; font-weight: 700; }
 
+    /* 3. LinkedIn Executive Theme (Sky Blue High Contrast) */
     .theme-linkedin {
-      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
+      border: 1px solid #cbd5e1 !important;
+      box-shadow: 0 20px 40px rgba(14, 165, 233, 0.15) !important;
       color: #0f172a !important;
-      border: 1px solid #cbd5e1;
-      box-shadow: 0 20px 40px rgba(14, 165, 233, 0.12);
     }
+    .theme-linkedin .card-subtitle { color: #0284c7 !important; font-weight: 700; }
+    .theme-linkedin .card-title { color: #0f172a !important; font-weight: 800; }
+    .theme-linkedin .card-metric-box { background: #ffffff !important; border: 1px solid #cbd5e1 !important; }
+    .theme-linkedin .card-metric-value { color: #0369a1 !important; }
+    .theme-linkedin .card-metric-label { color: #334155 !important; }
+    .theme-linkedin .card-bullet-num { background: #e0f2fe !important; color: #0284c7 !important; }
+    .theme-linkedin .card-bullet-title { color: #0f172a !important; font-weight: 700; }
+    .theme-linkedin .card-bullet-desc { color: #1e293b !important; }
+    .theme-linkedin .card-quote-box { background: #f0f9ff !important; border: 1px solid #7dd3fc !important; }
+    .theme-linkedin .card-quote-text { color: #075985 !important; }
+    .theme-linkedin .card-footer-brand { color: #0284c7 !important; font-weight: 700; }
 
     .glow-purple {
       box-shadow: 0 0 35px -5px rgba(139, 92, 246, 0.4);
@@ -107,7 +143,7 @@
         <div>
           <span class="text-xl font-extrabold font-outfit tracking-tight text-white flex items-center gap-2">
             Cardify<span class="text-purple-400">.ai</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v2.6 Smart Cache</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v2.7 Contrast</span>
           </span>
         </div>
       </div>
@@ -412,6 +448,27 @@
       ]
     };
 
+    // Dedicated Platform Default Placeholder Content
+    const PLATFORM_DEFAULT_SLIDES = {
+      xiaohongshu: [
+        { subtitle: '📕 小红书爆款指南', title: '避坑指南：独立开发者必看的 3 个涨粉变现法则', key_metric: { value: '10x', label: '笔记爆款率提升' }, bullet_points: [{ point_title: '建立情绪共鸣', point_desc: '小红书用户要的是解决痛点与可执行的干货清单！' }], takeaway_quote: '📌 建议点赞收藏，随时翻看避坑！' },
+        { subtitle: '📊 视觉对比', title: '卡片式排版 vs 普通长图文', key_metric: { value: '400%', label: '收藏与转发提升' }, bullet_points: [{ point_title: '粉绿高明度配色', point_desc: '利用视觉抓手在前 0.5 秒吸引注意力。' }], takeaway_quote: '高颜值视觉卡片是小红书涨粉最强法宝。' }
+      ],
+      linkedin: [
+        { subtitle: '💼 EXECUTIVE THOUGHT LEADERSHIP', title: 'The $10K ARR Playbook: B2B Growth & ROI Insights', key_metric: { value: '$10K+', label: 'Monthly Recurring Revenue' }, bullet_points: [{ point_title: 'Validate Enterprise Specs', point_desc: 'Target pre-validated B2B tracks with existing high willingness to pay.' }], takeaway_quote: 'Authority and ROI data drive decision-makers to convert.' },
+        { subtitle: '📊 DATA-DRIVEN BENCHMARKS', title: 'Proven B2B Content Performance', key_metric: { value: '350%', label: 'Organic Engagement Lift' }, bullet_points: [{ point_title: 'Fix Competitor Pain Points', point_desc: 'Turn 1-star G2/Capterra reviews into your core differentiator.' }], takeaway_quote: 'Structured thought-leadership posts position you as an industry authority.' }
+      ],
+      twitter: [
+        { subtitle: '🐦 VIRAL THREAD HOOK', title: 'How 1 Indie Hacker Reached $10k ARR in 30 Days (Step-by-Step)', key_metric: { value: '10x', label: 'Retweet Potential' }, bullet_points: [{ point_title: 'Front-load Hard Truths', point_desc: 'Stop the scroll with bold contrarian claims in <10 words.' }], takeaway_quote: 'Content that makes people look smart gets retweeted endlessly.' }
+      ],
+      instagram: [
+        { subtitle: '📸 INSTAGRAM CAROUSEL STORY', title: 'Swipe to Unlock 3 Growth Secrets 👉', key_metric: { value: '4x', label: 'Save-to-Bookmark Rate' }, bullet_points: [{ point_title: 'Visual Story Progression', point_desc: 'Each slide guides the reader seamless to the next.' }], takeaway_quote: 'Double tap if this resonated & Share with a builder!' }
+      ],
+      youtube_script: [
+        { subtitle: '📺 YOUTUBE SHORTS STORYBOARD', title: 'Scene 1: Hook (0:00 - 0:05)', key_metric: { value: '98%', label: 'Audience Retention' }, bullet_points: [{ point_title: 'Visual Hook Scene', point_desc: 'Show immediate problem before revealing solution.' }], takeaway_quote: 'Subscribe for part 2 & Drop your thoughts in the comments!' }
+      ]
+    };
+
     // One-Click Preset Hook Tags
     const HOOK_TAGS = {
       zh: [
@@ -637,7 +694,7 @@
       }
     }
 
-    // Level 3 Platform Selection & Cache Lookup
+    // Level 3 Platform Selection & Dedicated Content Switch / Cache Lookup
     function selectPlatform(id, preset, ratio) {
       selectedPlatform = id;
       selectPresetTheme(preset); // Level 1 Theme switch (Pure CSS, 0 cost)
@@ -645,13 +702,23 @@
       const aspectBadge = document.getElementById('aspectBadge');
       if (aspectBadge) aspectBadge.innerText = `📐 ${ratio} Ratio`;
 
-      // Smart Memory Cache Lookup: Check if result for this platform/mode/lang exists
+      const inputVal = document.getElementById('inputText').value.trim();
       const cacheKey = `${selectedPlatform}_${currentMode}_${selectedLang}`;
+
+      // Check Smart Memory Cache first
       if (platformCacheStore[cacheKey]) {
         currentResponseData = platformCacheStore[cacheKey];
         renderGeneratedResults(currentResponseData);
         showToast(`⚡ Loaded cached AI output for ${id} (0ms, 0 API Cost)`);
-      } else {
+      } 
+      // If user provided input text but hasn't generated for this platform, auto-generate for platform adaptation!
+      else if (inputVal.length >= 10) {
+        generateContent(false);
+      } 
+      // If input is empty, render dedicated default slides tailored to this specific platform!
+      else {
+        const platformDefaults = PLATFORM_DEFAULT_SLIDES[id] || (I18N_DICT[selectedLang] || I18N_DICT.en).defaultCarouselSlides;
+        renderSlides(platformDefaults, '⚡️ Cardify.ai');
         switchTab(selectedPlatform);
       }
     }
@@ -737,10 +804,11 @@
 
       // Render Default Carousel/Single Slides if no AI data is loaded yet
       if (!currentResponseData) {
+        const platformDefaults = PLATFORM_DEFAULT_SLIDES[selectedPlatform] || dict.defaultCarouselSlides;
         if (currentMode === 'single') {
-          renderSlides([dict.defaultCarouselSlides[0]], '⚡️ Cardify.ai');
+          renderSlides([platformDefaults[0]], '⚡️ Cardify.ai');
         } else {
-          renderSlides(dict.defaultCarouselSlides, '⚡️ Cardify.ai');
+          renderSlides(platformDefaults, '⚡️ Cardify.ai');
         }
       }
 
@@ -926,9 +994,9 @@
         slideDiv.className = 'swiper-slide';
 
         const metricHtml = (slide.key_metric && slide.key_metric.value) ? `
-          <div class="bg-gray-900/80 border border-gray-800 rounded-xl p-3 text-center mb-3">
-            <div class="text-xl font-extrabold text-purple-400 font-outfit">${slide.key_metric.value}</div>
-            <div class="text-[10px] opacity-75 mt-0.5">${slide.key_metric.label || ''}</div>
+          <div class="card-metric-box bg-gray-900/80 border border-gray-800 rounded-xl p-3 text-center mb-3">
+            <div class="card-metric-value text-xl font-extrabold text-purple-400 font-outfit">${slide.key_metric.value}</div>
+            <div class="card-metric-label text-[10px] opacity-75 mt-0.5">${slide.key_metric.label || ''}</div>
           </div>
         ` : '';
 
@@ -936,9 +1004,9 @@
           <div class="flex flex-col gap-2 mb-3">
             ${slide.bullet_points.map((b, i) => `
               <div class="flex items-start gap-2 text-xs opacity-90">
-                <span class="w-4 h-4 rounded-full bg-purple-500/20 text-purple-400 text-[10px] flex items-center justify-center font-bold flex-shrink-0 mt-0.5">${i+1}</span>
+                <span class="card-bullet-num w-4 h-4 rounded-full bg-purple-500/20 text-purple-400 text-[10px] flex items-center justify-center font-bold flex-shrink-0 mt-0.5">${i+1}</span>
                 <div>
-                  <strong class="text-white">${b.point_title || ''}:</strong> ${b.point_desc || ''}
+                  <strong class="card-bullet-title text-white">${b.point_title || ''}:</strong> <span class="card-bullet-desc">${b.point_desc || ''}</span>
                 </div>
               </div>
             `).join('')}
@@ -946,23 +1014,23 @@
         ` : '';
 
         const quoteHtml = slide.takeaway_quote ? `
-          <div class="bg-purple-950/40 border border-purple-500/20 rounded-xl p-3 mb-3">
-            <p class="text-xs italic leading-relaxed text-purple-200">"${slide.takeaway_quote}"</p>
+          <div class="card-quote-box bg-purple-950/40 border border-purple-500/20 rounded-xl p-3 mb-3">
+            <p class="card-quote-text text-xs italic leading-relaxed text-purple-200">"${slide.takeaway_quote}"</p>
           </div>
         ` : '';
 
         slideDiv.innerHTML = `
           <div id="card-${idx + 1}" class="theme-${currentPreset} rounded-2xl p-6 min-h-[430px] flex flex-col justify-between relative overflow-hidden transition-all duration-300">
             <div>
-              <div class="text-[10px] font-bold uppercase tracking-widest opacity-75 mb-2">${slide.subtitle || '🔥 HIGHLIGHTS'}</div>
-              <h3 class="text-lg font-extrabold font-outfit leading-snug mb-3 text-white">${slide.title || ''}</h3>
+              <div class="card-subtitle text-[10px] font-bold uppercase tracking-widest opacity-75 mb-2">${slide.subtitle || '🔥 HIGHLIGHTS'}</div>
+              <h3 class="card-title text-lg font-extrabold font-outfit leading-snug mb-3">${slide.title || ''}</h3>
               ${metricHtml}
               ${bulletsHtml}
               ${quoteHtml}
             </div>
 
             <div class="pt-3 border-t border-gray-800/60 flex items-center justify-between">
-              <span class="text-[11px] font-bold font-mono text-purple-400">${footerText || '⚡️ Cardify.ai'}</span>
+              <span class="card-footer-brand text-[11px] font-bold font-mono text-purple-400">${footerText || '⚡️ Cardify.ai'}</span>
               <span class="text-[10px] opacity-60">${idx + 1} / ${slides.length} Slide</span>
             </div>
           </div>
