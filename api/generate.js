@@ -1,5 +1,5 @@
-// /api/generate.js — Cardify AI v2.4 Master Carousel Engine
-// Multi-Provider Failover & Rich Carousel Storytelling System
+// /api/generate.js — Cardify AI v2.5 Dynamic Matrix Engine
+// Multi-Provider Failover & Platform Skill Injector Architecture
 
 const rateLimitStore = new Map();
 const DAILY_FREE_LIMIT = 3; // 3 free runs per IP per day for free tier
@@ -44,16 +44,38 @@ const LANG_NAMES = {
   de: 'de-DE'
 };
 
-const UNIFIED_MASTER_PROMPT = `You are a World-Class Visual Content Architect and Viral Growth Hacker.
-Your mission is to analyze raw input text and transform it into high-converting, structured content for visual social media Carousel cards (Twitter/X, LinkedIn, Xiaohongshu, Instagram, Reddit).
+const PLATFORM_INJECTORS = {
+  xiaohongshu: `### PLATFORM-SPECIFIC STYLE INJECTOR (Xiaohongshu)
+- Style: Highly engaging, emotional hooks, punchy contrast, high value-density.
+- Tone: Warm, actionable, empathetic, uses visual keywords & emojis.
+- Headline Rules: Must use curiosity gap or benefit-driven numbers (e.g., "建议收藏", "3个避坑指南").`,
 
-### EXECUTION MODE & CAROUSEL CARDS LAW
-- If mode is "single": Output 1 highly concentrated, high-density summary card.
-- If mode is "carousel": You MUST output a 3 to 5 SLIDE SEQUENCE (never output just 1 slide for carousel!).
-  * Slide 1 (Hook): Scroll-stopping title, punchy context, screenshot-worthy golden quote.
-  * Slide 2 (Data & Impact): Key metrics (e.g., $10K+, 350%, 10x) and core insights breakdown.
-  * Slide 3 (Action Playbook): Step 1, Step 2, Step 3 clear actionable playbook.
-  * Slide 4/5 (Optional Conclusion & CTA): Gold quote summary and Call to Action.
+  linkedin: `### PLATFORM-SPECIFIC STYLE INJECTOR (LinkedIn)
+- Style: Professional, concise, data-driven, thought leadership.
+- Tone: Authoritative, polished, action-oriented.
+- Headline Rules: Focus on ROI, career growth, or industry paradigm shift.`,
+
+  twitter: `### PLATFORM-SPECIFIC STYLE INJECTOR (Twitter/X)
+- Style: Punchy, contrarian claims, high-retweet potential.
+- Tone: Crisp, direct, razor-sharp insights.
+- Headline Rules: Must hook scrolling users immediately in <10 words.`,
+
+  instagram: `### PLATFORM-SPECIFIC STYLE INJECTOR (Instagram)
+- Style: Visual-first, slide-by-slide progression, high save-rate.
+- Tone: Aspirational, structured, inspiring.
+- Headline Rules: Visually arresting titles with strong value promise.`,
+
+  youtube_script: `### PLATFORM-SPECIFIC STYLE INJECTOR (YouTube/Shorts Script)
+- Style: Hook -> Problem -> Solution -> CTA storyboard format.
+- Output Focus: Split into 3-5 slides, each representing a visual scene hook + script takeaway.`
+};
+
+const BASE_MASTER_PROMPT = `You are a World-Class Visual Content Architect and Viral Growth Specialist.
+Your task is to take raw user text and output ONLY valid JSON according to the schema.
+
+### EXECUTION MODE
+- If mode is "single": Output 1 highly concentrated visual card.
+- If mode is "carousel": Output a 3 to 5 slide sequence for carousel posts.
 
 ### STRICT OUTPUT RULES
 1. Output MUST be ONLY valid JSON.
@@ -63,50 +85,35 @@ Your mission is to analyze raw input text and transform it into high-converting,
 
 ### JSON SCHEMA
 {
-  "language": "string (e.g., 'zh-CN' or 'en-US')",
+  "language": "string",
   "mode": "string ('single' | 'carousel')",
   "total_slides": 3,
   "slides": [
     {
       "slide_index": 1,
       "slide_type": "string ('hook' | 'content' | 'action')",
-      "title": "string (High-converting, scroll-stopping title)",
-      "subtitle": "string (Punchy hook or section header)",
+      "title": "string (Scroll-stopping headline for this platform)",
+      "subtitle": "string (Context or transition)",
       "key_metric": {
-        "value": "string (Optional bold number, e.g., '10x', '$10K+', '350%')",
+        "value": "string (Optional bold number, e.g., '10x', '$10K+', '85%')",
         "label": "string (Short description of the impact)"
       },
       "bullet_points": [
         {
-          "point_title": "string (Bold keyphrase)",
-          "point_desc": "string (Actionable takeaway, 1 clear sentence)"
+          "point_title": "string",
+          "point_desc": "string"
         }
       ],
       "takeaway_quote": "string (Shareable gold nugget sentence)"
     }
   ],
-  "tags": ["string (3 viral hashtags without #)"],
-  "footer_text": "string (Brand callout, e.g., '⚡️ Cardify.ai')",
-  "twitter_thread": [
-    "1/ Hook Tweet stopping the scroll with high impact statement.",
-    "2/ Core insight or key argument detailed breakdown.",
-    "3/ Actionable takeaway or call to action."
-  ],
-  "linkedin_post": "Engaging professional headline\\n\\nContext & Hard Truths:\\n- Key Point A\\n- Key Point B\\n\\nStrategic Action Item.\\n\\nWhat are your thoughts on this? Drop a comment below! 👇",
-  "xiaohongshu_post": {
-    "title": "💥爆款标题（情绪调动+Emoji+干货）",
-    "content": "✨引言共鸣痛点\\n\\n🔥核心干货拆解：\\n1️⃣ 第一点...\\n2️⃣ 第二点...\\n\\n💡总结建议\\n\\n#干货分享 #知识卡片 #AI工具"
-  },
-  "instagram_caption": "Visual-first scroll-stopping caption summarizing main value proposition.\\n\\nSwipe through cards for step-by-step breakdown! 👉\\n\\n#growth #productivity #business"
-}
-
-### CONTENT & LANGUAGE RULES
-- Target Language Constraints:
-  * 'zh-CN': ALL fields must be in natural, viral, high-converting Chinese.
-  * 'en-US': ALL fields must be in fluent, polished, native English.
-- Quality Standard:
-  * Re-frame, polish, and elevate raw text into "Social Currency".
-  * For Carousel mode: Ensure 3 to 5 rich slides are generated so users can swipe for full value!`;
+  "tags": ["string"],
+  "footer_text": "string",
+  "twitter_thread": ["Tweet 1", "Tweet 2", "Tweet 3"],
+  "linkedin_post": "Professional LinkedIn post...",
+  "xiaohongshu_post": { "title": "爆款标题", "content": "爆款内容" },
+  "instagram_caption": "Instagram caption..."
+}`;
 
 function extractJSON(raw) {
   if (!raw || typeof raw !== 'string') throw new Error('AI returned an empty response.');
@@ -215,7 +222,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'METHOD_NOT_ALLOWED' });
   }
 
-  const { input_text, target_style, target_lang, mode_preference, userApiKey, licenseKey } = req.body || {};
+  const { input_text, target_style, target_lang, mode_preference, platform, preset_hook, userApiKey, licenseKey } = req.body || {};
 
   if (!input_text || typeof input_text !== 'string' || input_text.trim().length < 10) {
     return res.status(400).json({ error: 'INPUT_TOO_SHORT', message: 'Input text must be at least 10 characters long.' });
@@ -246,11 +253,17 @@ export default async function handler(req, res) {
 
   const targetLangCode = LANG_NAMES[target_lang] || 'zh-CN';
   const modeVal = mode_preference === 'single' ? 'single' : 'carousel';
+  const platformKey = platform || 'xiaohongshu';
+  const platformInjector = PLATFORM_INJECTORS[platformKey] || PLATFORM_INJECTORS.xiaohongshu;
 
-  const userPrompt = `[Target Language]: ${targetLangCode}\n[Mode Preference]: ${modeVal}\n[Style Profile]: ${target_style || 'cyber'}\n[Raw Content]:\n${input_text.trim()}`;
+  const finalSystemPrompt = `${BASE_MASTER_PROMPT}\n\n[TARGET LANGUAGE]: ${targetLangCode}\n[TARGET PLATFORM]: ${platformKey}\n\n${platformInjector}`;
+
+  let userPrompt = `[Target Language]: ${targetLangCode}\n[Mode Preference]: ${modeVal}\n[Platform]: ${platformKey}\n[Style Profile]: ${target_style || 'cyber'}`;
+  if (preset_hook) userPrompt += `\n[Viral Hook Focus]: ${preset_hook}`;
+  userPrompt += `\n[Raw Content]:\n${input_text.trim()}`;
 
   try {
-    const rawAiOutput = await executeLLMCall(activeKey, UNIFIED_MASTER_PROMPT, userPrompt);
+    const rawAiOutput = await executeLLMCall(activeKey, finalSystemPrompt, userPrompt);
     const parsedData = extractJSON(rawAiOutput);
 
     return res.status(200).json({

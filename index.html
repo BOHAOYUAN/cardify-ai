@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cardify.ai 2.4 — Master Social Carousel & Visual Card Engine</title>
-  <meta name="description" content="Turn any article or PDF into viral Xiaohongshu Carousel slides, LinkedIn posts, Twitter threads, and single-summary visual cards in 9 languages.">
+  <title>Cardify.ai 2.5 — Dynamic Platform Matrix & Viral Preset Studio</title>
+  <meta name="description" content="Turn any article or PDF into viral Xiaohongshu Carousel slides, LinkedIn posts, Twitter threads, Instagram Carousels, and YouTube Shorts scripts.">
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -107,7 +107,7 @@
         <div>
           <span class="text-xl font-extrabold font-outfit tracking-tight text-white flex items-center gap-2">
             Cardify<span class="text-purple-400">.ai</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v2.4 Carousel</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v2.5 Matrix</span>
           </span>
         </div>
       </div>
@@ -118,8 +118,8 @@
         <!-- Language Selector -->
         <div class="relative">
           <select id="langSelect" onchange="handleLangChange(this.value)" class="bg-gray-900/90 text-gray-200 text-xs font-medium px-3 py-2 rounded-lg border border-gray-700/80 focus:outline-none focus:border-purple-500 transition-all cursor-pointer">
-            <option value="en" selected>🇺🇸 English (en-US)</option>
-            <option value="zh">🇨🇳 简体中文 (zh-CN)</option>
+            <option value="en">🇺🇸 English (en-US)</option>
+            <option value="zh" selected>🇨🇳 简体中文 (zh-CN)</option>
             <option value="es">🇪🇸 Español</option>
             <option value="pt">🇵🇹 Português</option>
             <option value="ru">🇷🇺 Русский</option>
@@ -152,26 +152,34 @@
     <!-- ================= LEFT PANEL: CONTROL & GENERATION (7 cols) ================= -->
     <section class="lg:col-span-7 flex flex-col gap-5">
       
-      <!-- Input Box + Mode Toggle + Drag Drop PDF -->
+      <!-- Input Box + Mode Toggle + One-Click Presets + Drag Drop PDF -->
       <div class="glass-panel rounded-2xl p-5 border border-gray-800 flex flex-col gap-4">
         
         <!-- Mode Toggle Switch: Single vs Carousel -->
         <div class="flex items-center justify-between border-b border-gray-800 pb-3">
           <div class="flex items-center gap-2 bg-gray-950 p-1 rounded-xl border border-gray-800">
             <button onclick="setMode('single')" id="mode-single" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-400 hover:text-white flex items-center gap-1.5">
-              <span id="txtModeSingle">🎴 Single Card</span>
+              <span id="txtModeSingle">🎴 单图卡片</span>
             </button>
             <button onclick="setMode('carousel')" id="mode-carousel" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-purple-300 bg-purple-600/30 border border-purple-500/40 flex items-center gap-1.5 shadow-sm">
-              <span id="txtModeCarousel">📚 Carousel Pack</span>
+              <span id="txtModeCarousel">📚 连载切片</span>
             </button>
           </div>
           <span class="text-xs text-gray-400" id="charCount">0 / 15,000</span>
         </div>
 
+        <!-- One-Click Preset Hooks (Quick Tags) -->
+        <div>
+          <label class="block text-xs font-medium text-gray-400 mb-1.5" id="txtHookTagsLabel">⚡ 一键爆款钩子套件 (One-Click Hook Tags)</label>
+          <div class="flex flex-wrap gap-2" id="hookTagsContainer">
+            <!-- Dynamically populated based on Language -->
+          </div>
+        </div>
+
         <!-- Textarea -->
         <div class="relative">
           <textarea id="inputText" rows="6" oninput="updateCharCount()" 
-            placeholder="Paste your long article, product overview, blog draft, or drop a PDF file here... e.g. '3 Rules for Indie Hackers to reach $10k ARR in 30 Days' or 'How to write viral content in 5 minutes'..."
+            placeholder="粘贴你的文章、草稿或拖入 PDF 文件...例如：'独立开发者 30 天做成 1 万刀 ARR 的 3 个法则' 或 '如何用 ChatGPT 5 分钟写出爆款小红书文案'..."
             class="w-full bg-gray-950/80 border border-gray-800 rounded-xl p-4 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all resize-none"></textarea>
           
           <!-- PDF Upload Overlay Button -->
@@ -179,35 +187,43 @@
             <input type="file" id="pdfFileInput" accept="application/pdf" class="hidden" onchange="handlePdfUpload(event)">
             <button onclick="document.getElementById('pdfFileInput').click()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-gray-800/90 hover:bg-gray-700 text-xs text-gray-300 border border-gray-700 transition-all">
               <i data-lucide="upload" class="w-3.5 h-3.5 text-purple-400"></i>
-              <span id="txtUploadPdf">Upload PDF</span>
+              <span id="txtUploadPdf">上传 PDF</span>
             </button>
+          </div>
+        </div>
+
+        <!-- Dynamic Platform Matrix Selector (Languages-dependent) -->
+        <div>
+          <label class="block text-xs font-medium text-gray-400 mb-2" id="txtPlatformMatrixLabel">🎯 目标平台矩阵 (Dynamic Platform Matrix)</label>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="platformMatrixContainer">
+            <!-- Dynamically populated based on selected Language -->
           </div>
         </div>
 
         <!-- Preset Scene Templates Selection -->
         <div>
-          <label class="block text-xs font-medium text-gray-400 mb-2" id="txtPresetLabel">Preset Visual Theme</label>
+          <label class="block text-xs font-medium text-gray-400 mb-2" id="txtPresetLabel">爆款视觉风格预设</label>
           <div class="grid grid-cols-3 gap-2">
             
             <button onclick="selectPresetTheme('xhs')" id="preset-xhs" class="preset-btn p-3 rounded-xl border border-rose-500/40 bg-rose-950/20 hover:bg-rose-900/30 text-left transition-all flex flex-col gap-1">
               <div class="text-xs font-bold text-rose-300 flex items-center gap-1">
-                <span id="txtPresetXhs">📕 Xiaohongshu Viral</span>
+                <span id="txtPresetXhs">📕 小红书爆款风</span>
               </div>
-              <span class="text-[10px] text-rose-200/70" id="txtPresetXhsDesc">Vibrant & Pain Points</span>
+              <span class="text-[10px] text-rose-200/70" id="txtPresetXhsDesc">粉红明亮 + 抓人痛点</span>
             </button>
 
             <button onclick="selectPresetTheme('linkedin')" id="preset-linkedin" class="preset-btn p-3 rounded-xl border border-sky-500/30 bg-sky-950/20 hover:bg-sky-900/30 text-left transition-all flex flex-col gap-1">
               <div class="text-xs font-bold text-sky-300 flex items-center gap-1">
-                <span id="txtPresetLinkedin">💼 LinkedIn Executive</span>
+                <span id="txtPresetLinkedin">💼 LinkedIn 商务高管</span>
               </div>
-              <span class="text-[10px] text-sky-200/70" id="txtPresetLinkedinDesc">Clean & Data ROI</span>
+              <span class="text-[10px] text-sky-200/70" id="txtPresetLinkedinDesc">极简蓝白 + 强调 ROI</span>
             </button>
 
             <button onclick="selectPresetTheme('cyber')" id="preset-cyber" class="preset-btn active p-3 rounded-xl border border-purple-500/50 bg-purple-950/40 text-left transition-all flex flex-col gap-1 ring-2 ring-purple-500/50">
               <div class="text-xs font-bold text-purple-300 flex items-center gap-1">
-                <span id="txtPresetCyber">🚀 Twitter Tech</span>
+                <span id="txtPresetCyber">🚀 Twitter 极客风</span>
               </div>
-              <span class="text-[10px] text-purple-200/70" id="txtPresetCyberDesc">Dark Glass & Viral Hook</span>
+              <span class="text-[10px] text-purple-200/70" id="txtPresetCyberDesc">暗黑玻璃 + 爆款钩子</span>
             </button>
 
           </div>
@@ -218,7 +234,7 @@
           <button onclick="toggleApiKeyInput()" class="w-full flex items-center justify-between bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-xs text-gray-400 hover:text-gray-200 transition-all">
             <span id="keyStatusText" class="flex items-center gap-1.5">
               <i data-lucide="key" class="w-3.5 h-3.5 text-emerald-400"></i>
-              <span id="keyLabel">Bypass limits with custom Groq / Gemini Key</span>
+              <span id="keyLabel">使用自定义 Groq / Gemini Key 突破限制</span>
             </span>
             <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
           </button>
@@ -233,7 +249,7 @@
         <!-- GENERATE BUTTON -->
         <button id="generateBtn" onclick="generateContent()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-sm flex items-center justify-center gap-2 glow-purple transition-all active:scale-[0.99]">
           <i data-lucide="wand-2" class="w-4 h-4"></i>
-          <span id="generateBtnText">Generate Carousel Pack & Post</span>
+          <span id="generateBtnText">一键生成爆款连载卡包与贴文</span>
         </button>
 
       </div>
@@ -243,25 +259,14 @@
         
         <!-- Platform Tabs Header -->
         <div class="flex items-center justify-between border-b border-gray-800 pb-3 overflow-x-auto">
-          <div class="flex items-center gap-2">
-            <button onclick="switchTab('xiaohongshu')" id="tab-xiaohongshu" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/30 flex items-center gap-1.5">
-              <span id="txtTabXhs">📕 Xiaohongshu</span>
-            </button>
-            <button onclick="switchTab('twitter')" id="tab-twitter" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-gray-200 flex items-center gap-1.5">
-              <span id="txtTabTwitter">🐦 Twitter Thread</span>
-            </button>
-            <button onclick="switchTab('linkedin')" id="tab-linkedin" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-gray-200 flex items-center gap-1.5">
-              <span id="txtTabLinkedin">💼 LinkedIn Post</span>
-            </button>
-            <button onclick="switchTab('instagram')" id="tab-instagram" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-gray-200 flex items-center gap-1.5">
-              <span id="txtTabInstagram">📸 Instagram Caption</span>
-            </button>
+          <div class="flex items-center gap-2" id="platformTabsHeader">
+            <!-- Dynamically populated based on Language matrix -->
           </div>
 
           <!-- Copy Button -->
           <button onclick="copyCurrentTabContent()" class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-xs font-medium text-gray-200 transition-all border border-gray-700">
             <i data-lucide="copy" class="w-3.5 h-3.5 text-purple-400"></i>
-            <span id="copyBtnText">Copy Post</span>
+            <span id="copyBtnText">一键复制贴文</span>
           </button>
         </div>
 
@@ -282,9 +287,12 @@
         <div class="flex items-center justify-between">
           <h2 class="text-sm font-semibold text-gray-200 flex items-center gap-2" id="txtStudioTitle">
             <i data-lucide="layers" class="w-4 h-4 text-purple-400"></i>
-            Visual Studio Engine
+            视觉卡片渲染引擎
           </h2>
-          <span id="modeBadge" class="text-[10px] bg-purple-900/40 text-purple-300 border border-purple-700/40 px-2 py-0.5 rounded-full font-mono">Carousel Pack</span>
+          <div class="flex items-center gap-2">
+            <span id="aspectBadge" class="text-[10px] bg-indigo-900/40 text-indigo-300 border border-indigo-700/40 px-2 py-0.5 rounded-full font-mono">📐 3:4 Ratio</span>
+            <span id="modeBadge" class="text-[10px] bg-purple-900/40 text-purple-300 border border-purple-700/40 px-2 py-0.5 rounded-full font-mono">连载切片卡包</span>
+          </div>
         </div>
 
         <!-- SWIPER CAROUSEL -->
@@ -301,11 +309,11 @@
         <div class="grid grid-cols-2 gap-3 mt-2">
           <button onclick="exportCurrentCard()" class="py-2.5 px-3 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs font-semibold text-gray-200 flex items-center justify-center gap-1.5 transition-all">
             <i data-lucide="image" class="w-3.5 h-3.5 text-purple-400"></i>
-            <span id="exportCurrentBtnText">Export Slide (PNG)</span>
+            <span id="exportCurrentBtnText">导出当前卡片 (PNG)</span>
           </button>
           <button onclick="exportAllCards()" id="exportAllBtn" class="py-2.5 px-3 rounded-xl bg-purple-900/50 hover:bg-purple-800/50 border border-purple-700/50 text-xs font-semibold text-purple-200 flex items-center justify-center gap-1.5 transition-all">
             <i data-lucide="layers" class="w-3.5 h-3.5 text-purple-300"></i>
-            <span id="exportAllBtnText">Export All Slides (PNG)</span>
+            <span id="exportAllBtnText">一键导出全套连载卡包</span>
           </button>
         </div>
 
@@ -363,16 +371,49 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
-  <!-- ================= CORE APPLICATION LOGIC & I18N ================= -->
+  <!-- ================= CORE APPLICATION LOGIC & DYNAMIC MATRIX ================= -->
   <script>
     let currentMode = 'carousel'; // 'single' | 'carousel'
     let currentPreset = 'cyber'; // 'cyber' | 'xhs' | 'linkedin'
-    let selectedLang = 'en'; // default en
+    let selectedLang = 'zh'; // default zh
+    let selectedPlatform = 'xiaohongshu';
+    let selectedHookTag = '';
     let userApiKey = '';
     let licenseKey = localStorage.getItem('cardify_license_key') || '';
     let currentResponseData = null;
-    let activeTab = 'xiaohongshu';
     let swiperInstance = null;
+
+    // Dynamic Platform Matrix Definitions
+    const DYNAMIC_PLATFORMS = {
+      zh: [
+        { id: 'xiaohongshu', name: '📕 小红书爆款', ratio: '3:4', preset: 'xhs' },
+        { id: 'wechat', name: '💬 微信公众号/朋友圈', ratio: '3:4', preset: 'xhs' },
+        { id: 'zhihu', name: '💡 知乎/即刻', ratio: '16:9', preset: 'cyber' },
+        { id: 'bilibili', name: '📺 B站/YouTube 脚本', ratio: '16:9', preset: 'cyber' }
+      ],
+      en: [
+        { id: 'twitter', name: '🐦 Twitter/X Thread', ratio: '16:9', preset: 'cyber' },
+        { id: 'linkedin', name: '💼 LinkedIn Post', ratio: '16:9', preset: 'linkedin' },
+        { id: 'instagram', name: '📸 Instagram Carousel', ratio: '3:4', preset: 'xhs' },
+        { id: 'youtube_script', name: '📺 YouTube Shorts Script', ratio: '9:16', preset: 'cyber' }
+      ]
+    };
+
+    // One-Click Preset Hook Tags
+    const HOOK_TAGS = {
+      zh: [
+        { id: 'viral_title', label: '🔥 爆款吸睛标题', hook: '请生成极具情绪吸引力与数字痛点的爆款标题' },
+        { id: 'tech_breakdown', label: '📊 极客干货拆解', hook: '硬核干货拆解，提取具象 ROI 数据与突破点' },
+        { id: 'executive_quote', label: '💼 职场干货金句', label: '💼 职场干货金句', hook: '高管视角，输出极简专业与行业洞察金句' },
+        { id: 'story_twist', label: '🎬 故事翻转 Hook', hook: '引人入胜的故事翻转视角，建立强烈好奇心' }
+      ],
+      en: [
+        { id: 'viral_title', label: '🔥 Viral Hook Title', hook: 'Craft a high-converting headline with a strong curiosity gap' },
+        { id: 'tech_breakdown', label: '📊 Tech & ROI Breakdown', hook: 'Extract hard-hitting data points and ROI metrics' },
+        { id: 'executive_quote', label: '💼 Executive Thought Leadership', hook: 'Authoritative, polished one-liner quotes for professionals' },
+        { id: 'story_twist', label: '🎬 Story Twist Hook', hook: 'Create an intriguing narrative hook with a surprising twist' }
+      ]
+    };
 
     // Full Internationalization Dictionary
     const I18N_DICT = {
@@ -381,6 +422,8 @@
         upgradeHeader: 'Upgrade Pro ($9.9/mo)',
         modeSingle: '🎴 Single Card',
         modeCarousel: '📚 Carousel Pack',
+        hookTagsLabel: '⚡ One-Click Hook Tags (Click to inject viral focus)',
+        platformMatrixLabel: '🎯 Dynamic Platform Matrix',
         inputPlaceholder: "Paste your long article, product overview, blog draft, or drop a PDF file here... e.g. '3 Rules for Indie Hackers to reach $10k ARR in 30 Days' or 'How to write viral content in 5 minutes'...",
         uploadPdf: 'Upload PDF',
         presetLabel: 'Preset Visual Theme',
@@ -393,10 +436,6 @@
         keyLabel: 'Bypass limits with custom Groq / Gemini Key',
         generateBtnSingle: 'Generate Single Card & Post',
         generateBtnCarousel: 'Generate Carousel Pack & Post',
-        tabXhs: '📕 Xiaohongshu',
-        tabTwitter: '🐦 Twitter Thread',
-        tabLinkedin: '💼 LinkedIn Post',
-        tabInstagram: '📸 Instagram Caption',
         copyBtn: 'Copy Post',
         studioTitle: 'Visual Studio Engine',
         modeBadgeSingle: 'Single Card',
@@ -412,7 +451,6 @@
         modalLicLabel: 'Have a Pro License Key?',
         modalActivate: 'Activate',
         modalBuy: 'Buy Pro License ($9.9/mo)',
-        // Default 3-Slide Carousel Pack in English
         defaultCarouselSlides: [
           {
             subtitle: '🔥 INDIE HACKER BLUEPRINT',
@@ -451,6 +489,8 @@
         upgradeHeader: '升级 Pro 版 ($9.9/月)',
         modeSingle: '🎴 单图卡片',
         modeCarousel: '📚 连载切片',
+        hookTagsLabel: '⚡ 一键爆款钩子套件 (点击注入爆款聚焦)',
+        platformMatrixLabel: '🎯 动态目标平台矩阵',
         inputPlaceholder: "粘贴你的文章、草稿或拖入 PDF 文件...例如：'独立开发者 30 天做成 1 万刀 ARR 的 3 个法则' 或 '如何用 ChatGPT 5 分钟写出爆款小红书文案'...",
         uploadPdf: '上传 PDF',
         presetLabel: '爆款视觉风格预设',
@@ -463,10 +503,6 @@
         keyLabel: '使用自定义 Groq / Gemini Key 突破限制',
         generateBtnSingle: '一键生成单图精炼卡片与贴文',
         generateBtnCarousel: '一键生成爆款连载卡包与贴文',
-        tabXhs: '📕 小红书文案',
-        tabTwitter: '🐦 Twitter Thread',
-        tabLinkedin: '💼 LinkedIn 长文',
-        tabInstagram: '📸 Instagram Caption',
         copyBtn: '一键复制贴文',
         studioTitle: '视觉卡片渲染引擎',
         modeBadgeSingle: '单图卡片模式',
@@ -482,7 +518,6 @@
         modalLicLabel: '已有 Pro 激活码？',
         modalActivate: '立即激活',
         modalBuy: '购买 Pro 授权 ($9.9/月)',
-        // Default 3-Slide Carousel Pack in Chinese
         defaultCarouselSlides: [
           {
             subtitle: '🔥 独立开发者爆款法则',
@@ -544,9 +579,72 @@
       applyTranslations();
     }
 
+    function renderDynamicMatrix() {
+      const langKey = selectedLang === 'zh' ? 'zh' : 'en';
+      const matrix = DYNAMIC_PLATFORMS[langKey] || DYNAMIC_PLATFORMS.zh;
+      const matrixContainer = document.getElementById('platformMatrixContainer');
+      const tabsHeader = document.getElementById('platformTabsHeader');
+
+      if (matrixContainer) {
+        matrixContainer.innerHTML = matrix.map(p => `
+          <button onclick="selectPlatform('${p.id}', '${p.preset}', '${p.ratio}')" id="platform-btn-${p.id}"
+            class="platform-btn p-2.5 rounded-xl border ${selectedPlatform === p.id ? 'border-purple-500 bg-purple-950/40 text-purple-300 ring-2 ring-purple-500/30 font-bold' : 'border-gray-800 bg-gray-900/60 text-gray-400 hover:text-gray-200'} text-xs text-left transition-all flex flex-col justify-between min-h-[58px]">
+            <span>${p.name}</span>
+            <span class="text-[9px] opacity-60 font-mono">📐 Ratio ${p.ratio}</span>
+          </button>
+        `).join('');
+      }
+
+      if (tabsHeader) {
+        tabsHeader.innerHTML = matrix.map(p => `
+          <button onclick="switchTab('${p.id}')" id="tab-${p.id}" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold ${selectedPlatform === p.id ? 'text-purple-400 bg-purple-500/10 border border-purple-500/30' : 'text-gray-400 hover:text-gray-200'} flex items-center gap-1.5">
+            <span>${p.name}</span>
+          </button>
+        `).join('');
+      }
+
+      // Render Preset Hook Tags
+      const tags = HOOK_TAGS[langKey] || HOOK_TAGS.zh;
+      const tagsContainer = document.getElementById('hookTagsContainer');
+      if (tagsContainer) {
+        tagsContainer.innerHTML = tags.map(t => `
+          <button onclick="selectHookTag('${t.id}', '${t.hook}')" id="hook-tag-${t.id}"
+            class="hook-tag-btn px-2.5 py-1 rounded-lg text-xs font-medium border ${selectedHookTag === t.id ? 'border-purple-500 bg-purple-600/30 text-purple-200' : 'border-gray-800 bg-gray-900/80 text-gray-400 hover:text-gray-200'} transition-all">
+            ${t.label}
+          </button>
+        `).join('');
+      }
+    }
+
+    function selectPlatform(id, preset, ratio) {
+      selectedPlatform = id;
+      selectPresetTheme(preset);
+      document.querySelectorAll('.platform-btn').forEach(btn => {
+        btn.className = 'platform-btn p-2.5 rounded-xl border border-gray-800 bg-gray-900/60 text-gray-400 hover:text-gray-200 text-xs text-left transition-all flex flex-col justify-between min-h-[58px]';
+      });
+      const activeBtn = document.getElementById(`platform-btn-${id}`);
+      if (activeBtn) activeBtn.className = 'platform-btn p-2.5 rounded-xl border border-purple-500 bg-purple-950/40 text-purple-300 ring-2 ring-purple-500/30 font-bold text-xs text-left transition-all flex flex-col justify-between min-h-[58px]';
+
+      const aspectBadge = document.getElementById('aspectBadge');
+      if (aspectBadge) aspectBadge.innerText = `📐 ${ratio} Ratio`;
+    }
+
+    function selectHookTag(id, hookText) {
+      if (selectedHookTag === id) {
+        selectedHookTag = '';
+      } else {
+        selectedHookTag = id;
+        showToast(`Injected Viral Hook: ${hookText}`);
+      }
+      renderDynamicMatrix();
+    }
+
     function applyTranslations() {
       const lang = selectedLang;
       const dict = I18N_DICT[lang] || I18N_DICT.en;
+
+      // Render Dynamic Platforms & Hook Tags
+      renderDynamicMatrix();
 
       // Header
       document.getElementById('quotaText').innerText = dict.quotaText;
@@ -557,6 +655,8 @@
       document.getElementById('txtModeCarousel').innerText = dict.modeCarousel;
 
       // Input & Presets
+      document.getElementById('txtHookTagsLabel').innerText = dict.hookTagsLabel;
+      document.getElementById('txtPlatformMatrixLabel').innerText = dict.platformMatrixLabel;
       document.getElementById('inputText').placeholder = dict.inputPlaceholder;
       document.getElementById('txtUploadPdf').innerText = dict.uploadPdf;
       document.getElementById('txtPresetLabel').innerText = dict.presetLabel;
@@ -571,11 +671,7 @@
       // Generate Button
       document.getElementById('generateBtnText').innerText = (currentMode === 'single') ? dict.generateBtnSingle : dict.generateBtnCarousel;
 
-      // Tabs
-      document.getElementById('txtTabXhs').innerText = dict.tabXhs;
-      document.getElementById('txtTabTwitter').innerText = dict.tabTwitter;
-      document.getElementById('txtTabLinkedin').innerText = dict.tabLinkedin;
-      document.getElementById('txtTabInstagram').innerText = dict.tabInstagram;
+      // Tabs & Copy
       document.getElementById('copyBtnText').innerText = dict.copyBtn;
 
       // Right Studio Panel
@@ -720,6 +816,8 @@
             target_style: currentPreset,
             target_lang: selectedLang,
             mode_preference: currentMode,
+            platform: selectedPlatform,
+            preset_hook: selectedHookTag,
             userApiKey: customKey,
             licenseKey: licenseKey
           })
@@ -748,7 +846,7 @@
 
     function renderGeneratedResults(data) {
       document.getElementById('outputContainer').classList.remove('hidden');
-      switchTab('xiaohongshu');
+      switchTab(selectedPlatform);
 
       // Render Dynamic Slides Array
       const slides = data.slides || [];
@@ -821,13 +919,12 @@
     }
 
     function switchTab(tab) {
-      activeTab = tab;
       document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.className = 'tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-gray-200 flex items-center gap-1.5';
       });
       const activeBtn = document.getElementById(`tab-${tab}`);
       if (activeBtn) {
-        activeBtn.className = 'tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/30 flex items-center gap-1.5';
+        activeBtn.className = 'tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-purple-400 bg-purple-500/10 border border-purple-500/30 flex items-center gap-1.5';
       }
 
       const area = document.getElementById('tabContentArea');
@@ -836,14 +933,14 @@
         return;
       }
 
-      if (tab === 'xiaohongshu') {
+      if (tab === 'xiaohongshu' || tab === 'wechat') {
         const xhs = currentResponseData.xiaohongshu_post || {};
         area.innerText = `【${xhs.title || ''}】\n\n${xhs.content || ''}`;
-      } else if (tab === 'twitter') {
+      } else if (tab === 'twitter' || tab === 'zhihu') {
         area.innerText = Array.isArray(currentResponseData.twitter_thread) ? currentResponseData.twitter_thread.join('\n\n---\n\n') : '';
       } else if (tab === 'linkedin') {
         area.innerText = currentResponseData.linkedin_post || '';
-      } else if (tab === 'instagram') {
+      } else if (tab === 'instagram' || tab === 'bilibili' || tab === 'youtube_script') {
         area.innerText = currentResponseData.instagram_caption || '';
       }
     }
