@@ -1,5 +1,5 @@
-// /api/generate.js — Cardify AI v2.1 Growth Engine
-// Multi-Provider Failover & Three-Tier Auth / Rate-Limiter Engine
+// /api/generate.js — Cardify AI v2.2 Master Engine
+// Multi-Provider Failover & Unified Master Prompt Architecture
 
 const rateLimitStore = new Map();
 const DAILY_FREE_LIMIT = 3; // 3 free runs per IP per day for free tier
@@ -33,48 +33,57 @@ function getIpRemaining(ip) {
 }
 
 const LANG_NAMES = {
-  en: 'English (en-US)',
-  zh: 'Simplified Chinese (zh-CN)',
-  es: 'Spanish (Español)',
-  pt: 'Portuguese (Português)',
-  ru: 'Russian (Русский)',
-  ja: 'Japanese (日本語)',
-  ko: 'Korean (한국어)',
-  fr: 'French (Français)',
-  de: 'German (Deutsch)'
+  en: 'en-US',
+  zh: 'zh-CN',
+  es: 'es-ES',
+  pt: 'pt-BR',
+  ru: 'ru-RU',
+  ja: 'ja-JP',
+  ko: 'ko-KR',
+  fr: 'fr-FR',
+  de: 'de-DE'
 };
 
-const VIRAL_SYSTEM_PROMPT = `You are a World-Class Viral Content Architect and Growth Hacker.
-Your mission is to process raw user input and transform it into highly-engaging, structured content specifically tailored for visual social media Carousel cards (e.g., Carousel posts on Twitter/X, LinkedIn, Xiaohongshu).
+const UNIFIED_MASTER_PROMPT = `You are a World-Class Visual Content Architect and Viral Growth Hacker.
+Your mission is to analyze raw input text and transform it into high-converting, structured content for visual social media cards (Twitter/X, LinkedIn, Xiaohongshu).
 
-### CORE OBJECTIVE
-Do NOT just summarize. Re-frame, polish, and elevate the raw content into "Social Currency"—content that makes the reader look smart, informed, or motivated when sharing it.
+### EXECUTION MODE
+You MUST dynamically select the format based on the user's explicit preference OR content length:
+1. "single": Output 1 highly concentrated visual card.
+2. "carousel": Split content into a 3 to 5 slide sequence for carousel posts.
 
-### OUTPUT REQUIREMENTS
-- STRICTLY output raw JSON ONLY.
-- NO markdown formatting (do NOT use \`\`\`json or \`\`\`).
-- Language MUST match the requested target language 100% with no mixed languages.
+### STRICT OUTPUT RULES
+1. Output MUST be ONLY valid JSON.
+2. Do NOT write markdown codeblock wrappers like \`\`\`json or \`\`\`. Output raw JSON directly.
+3. Language MUST strictly match the specified Target Language with ZERO mixed languages.
+4. Do NOT include any conversational filler.
 
 ### JSON SCHEMA
 {
-  "language": "string",
-  "card_type": "Carousel Slide",
-  "hook_headline": "string (A high-converting, scroll-stopping title. Max 10 words / 15 chars)",
-  "sub_hook": "string (A compelling statement explaining WHY this matters)",
-  "data_callouts": [
+  "language": "string (e.g., 'zh-CN' or 'en-US')",
+  "mode": "string ('single' | 'carousel')",
+  "total_slides": 3,
+  "slides": [
     {
-      "metric": "string (Bold key figure, e.g., '$10K+', '85%', '3 Steps')",
-      "label": "string (Short description of the impact)"
+      "slide_index": 1,
+      "slide_type": "string ('single_summary' | 'hook' | 'content' | 'action')",
+      "title": "string (High-converting, scroll-stopping title)",
+      "subtitle": "string (Punchy hook or context summary)",
+      "key_metric": {
+        "value": "string (Optional bold number, e.g., '10x', '$500', '85%')",
+        "label": "string (Short description of the impact)"
+      },
+      "bullet_points": [
+        {
+          "point_title": "string (Bold keyphrase)",
+          "point_desc": "string (Actionable takeaway, 1 sentence)"
+        }
+      ],
+      "takeaway_quote": "string (Shareable gold nugget sentence)"
     }
   ],
-  "core_insights": [
-    {
-      "title": "string (Punchy, bold action phrase)",
-      "description": "string (Clear, high-value explanation)"
-    }
-  ],
-  "takeaway_quote": "string (A powerful, shareable one-liner gold nugget)",
-  "call_to_action": "string (e.g., 'Save this for later', 'Follow for more')",
+  "tags": ["string (3 viral hashtags without #)"],
+  "footer_text": "string (Brand or category callout in Target Language)",
   "twitter_thread": [
     "1/ Hook Tweet stopping the scroll with high impact statement.",
     "2/ Core insight or key argument detailed breakdown.",
@@ -88,10 +97,13 @@ Do NOT just summarize. Re-frame, polish, and elevate the raw content into "Socia
   "instagram_caption": "Visual-first scroll-stopping caption summarizing main value proposition.\\n\\nSwipe through cards for step-by-step breakdown! 👉\\n\\n#growth #productivity #business"
 }
 
-### CRITICAL RULES
-1. The \`hook_headline\` must sound like a top 1% creator's viral post, not a generic textbook header.
-2. The \`takeaway_quote\` should be punchy enough to be screenshotted and shared on its own.
-3. Ensure all numbers or key concepts are front-loaded for immediate visual impact.`;
+### CONTENT & LANGUAGE RULES
+- Target Language Constraints:
+  * 'zh-CN': ALL fields must be in natural, viral, high-converting Chinese.
+  * 'en-US': ALL fields must be in fluent, polished, native English.
+- Quality Standard:
+  * Re-frame, polish, and elevate raw text into "Social Currency".
+  * For Slide 1 (Hook/Single): The title MUST be a top-1% creator style headline that hooks immediate attention.`;
 
 function extractJSON(raw) {
   if (!raw || typeof raw !== 'string') throw new Error('AI returned an empty response.');
@@ -200,7 +212,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'METHOD_NOT_ALLOWED' });
   }
 
-  const { input_text, target_style, target_lang, userApiKey, licenseKey } = req.body || {};
+  const { input_text, target_style, target_lang, mode_preference, userApiKey, licenseKey } = req.body || {};
 
   if (!input_text || typeof input_text !== 'string' || input_text.trim().length < 10) {
     return res.status(400).json({ error: 'INPUT_TOO_SHORT', message: 'Input text must be at least 10 characters long.' });
@@ -229,13 +241,13 @@ export default async function handler(req, res) {
     keyUsedType = 'free';
   }
 
-  const languageName = LANG_NAMES[target_lang] || 'English (en-US)';
-  const sysInstruction = `${VIRAL_SYSTEM_PROMPT}\n\nSTRICT CONSTRAINTS:\n1. Target Language MUST be ${languageName}. Write ALL JSON fields strictly in this language.\n2. Target Style Profile: ${target_style || 'Xiaohongshu / Social Viral'}.\n3. Return ONLY raw valid JSON matching the schema.`;
+  const targetLangCode = LANG_NAMES[target_lang] || 'zh-CN';
+  const modeVal = mode_preference === 'single' ? 'single' : 'carousel';
 
-  const userPrompt = `Source content to transform into viral Carousel cards & post suite:\n\n${input_text.trim()}`;
+  const userPrompt = `[Target Language]: ${targetLangCode}\n[Mode Preference]: ${modeVal}\n[Style Profile]: ${target_style || 'cyber'}\n[Raw Content]:\n${input_text.trim()}`;
 
   try {
-    const rawAiOutput = await executeLLMCall(activeKey, sysInstruction, userPrompt);
+    const rawAiOutput = await executeLLMCall(activeKey, UNIFIED_MASTER_PROMPT, userPrompt);
     const parsedData = extractJSON(rawAiOutput);
 
     return res.status(200).json({

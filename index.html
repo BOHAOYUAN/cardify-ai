@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cardify.ai 2.1 — Viral Social Carousel & AI Content Studio</title>
-  <meta name="description" content="Transform raw text or PDFs into viral Xiaohongshu Carousel slides, LinkedIn thought leadership, Twitter threads, and high-converting visual cards.">
+  <title>Cardify.ai 2.2 — Master Social Carousel & Visual Card Engine</title>
+  <meta name="description" content="Turn any article or PDF into viral Xiaohongshu Carousel slides, LinkedIn posts, Twitter threads, and single-summary visual cards.">
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -56,9 +56,10 @@
     
     /* Card Styles for Presets */
     .theme-cyber {
-      background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.98) 100%);
-      border: 1px solid rgba(139, 92, 246, 0.3);
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
+      border: 1px solid rgba(139, 92, 246, 0.35);
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      color: #f3f4f6 !important;
     }
 
     .theme-xhs {
@@ -106,7 +107,7 @@
         <div>
           <span class="text-xl font-extrabold font-outfit tracking-tight text-white flex items-center gap-2">
             Cardify<span class="text-purple-400">.ai</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-pink-500/20 to-purple-500/20 text-pink-300 border border-pink-500/30">v2.1 Viral Carousel</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v2.2 Master Engine</span>
           </span>
         </div>
       </div>
@@ -151,21 +152,26 @@
     <!-- ================= LEFT PANEL: CONTROL & GENERATION (7 cols) ================= -->
     <section class="lg:col-span-7 flex flex-col gap-5">
       
-      <!-- Input Box + Drag Drop PDF -->
+      <!-- Input Box + Mode Toggle + Drag Drop PDF -->
       <div class="glass-panel rounded-2xl p-5 border border-gray-800 flex flex-col gap-4">
         
-        <div class="flex items-center justify-between">
-          <label class="text-sm font-semibold text-gray-200 flex items-center gap-2">
-            <i data-lucide="sparkles" class="w-4 h-4 text-purple-400"></i>
-            Source Content (Text or PDF)
-          </label>
+        <!-- Mode Toggle Switch: Single vs Carousel -->
+        <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+          <div class="flex items-center gap-2 bg-gray-950 p-1 rounded-xl border border-gray-800">
+            <button onclick="setMode('single')" id="mode-single" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-400 hover:text-white flex items-center gap-1.5">
+              <span>🎴 单图卡片 (Single Card)</span>
+            </button>
+            <button onclick="setMode('carousel')" id="mode-carousel" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-purple-300 bg-purple-600/30 border border-purple-500/40 flex items-center gap-1.5 shadow-sm">
+              <span>📚 连载切片 (Carousel Pack)</span>
+            </button>
+          </div>
           <span class="text-xs text-gray-400" id="charCount">0 / 15,000</span>
         </div>
 
         <!-- Textarea -->
         <div class="relative">
           <textarea id="inputText" rows="6" oninput="updateCharCount()" 
-            placeholder="粘贴你的文章、长图文草稿或拖入 PDF 文件...例如：'独立开发者 30 天做成 1 万刀 ARR 的 3 个法则' 或 '如何用 ChatGPT 5 分钟写出爆款小红书文案'..."
+            placeholder="粘贴你的文章、草稿或拖入 PDF 文件...例如：'独立开发者 30 天做成 1 万刀 ARR 的 3 个法则' 或 '如何用 ChatGPT 5 分钟写出爆款小红书文案'..."
             class="w-full bg-gray-950/80 border border-gray-800 rounded-xl p-4 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all resize-none"></textarea>
           
           <!-- PDF Upload Overlay Button -->
@@ -180,14 +186,14 @@
 
         <!-- Preset Scene Templates Selection -->
         <div>
-          <label class="block text-xs font-medium text-gray-400 mb-2">爆款场景预设 (Preset Viral Profile)</label>
+          <label class="block text-xs font-medium text-gray-400 mb-2">爆款视觉风格预设 (Preset Visual Theme)</label>
           <div class="grid grid-cols-3 gap-2">
             
             <button onclick="selectPresetTheme('xhs')" id="preset-xhs" class="preset-btn p-3 rounded-xl border border-rose-500/40 bg-rose-950/20 hover:bg-rose-900/30 text-left transition-all flex flex-col gap-1">
               <div class="text-xs font-bold text-rose-300 flex items-center gap-1">
                 <span>📕 小红书爆款风</span>
               </div>
-              <span class="text-[10px] text-rose-200/70">粉绿明亮 + 抓人痛点</span>
+              <span class="text-[10px] text-rose-200/70">粉红明亮 + 抓人痛点</span>
             </button>
 
             <button onclick="selectPresetTheme('linkedin')" id="preset-linkedin" class="preset-btn p-3 rounded-xl border border-sky-500/30 bg-sky-950/20 hover:bg-sky-900/30 text-left transition-all flex flex-col gap-1">
@@ -225,9 +231,9 @@
         </div>
 
         <!-- GENERATE BUTTON -->
-        <button id="generateBtn" onclick="generateContent()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:from-pink-500 hover:to-indigo-500 text-white font-bold text-sm flex items-center justify-center gap-2 glow-purple transition-all active:scale-[0.99]">
+        <button id="generateBtn" onclick="generateContent()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-sm flex items-center justify-center gap-2 glow-purple transition-all active:scale-[0.99]">
           <i data-lucide="wand-2" class="w-4 h-4"></i>
-          <span>一键生成爆款连载卡包与贴文 (Generate Viral Carousel Suite)</span>
+          <span id="generateBtnText">一键生成爆款连载卡包与贴文 (Generate Carousel Pack)</span>
         </button>
 
       </div>
@@ -239,13 +245,13 @@
         <div class="flex items-center justify-between border-b border-gray-800 pb-3 overflow-x-auto">
           <div class="flex items-center gap-2">
             <button onclick="switchTab('xiaohongshu')" id="tab-xiaohongshu" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/30 flex items-center gap-1.5">
-              <span>📕 小红书连载文案</span>
+              <span>📕 小红书文案</span>
             </button>
             <button onclick="switchTab('twitter')" id="tab-twitter" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-gray-200 flex items-center gap-1.5">
               <span>🐦 Twitter Thread</span>
             </button>
             <button onclick="switchTab('linkedin')" id="tab-linkedin" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-gray-200 flex items-center gap-1.5">
-              <span>💼 LinkedIn 深度长文</span>
+              <span>💼 LinkedIn 长文</span>
             </button>
             <button onclick="switchTab('instagram')" id="tab-instagram" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-gray-200 flex items-center gap-1.5">
               <span>📸 Instagram Caption</span>
@@ -268,7 +274,7 @@
 
     </section>
 
-    <!-- ================= RIGHT PANEL: VISUAL CAROUSEL STUDIO (5 cols) ================= -->
+    <!-- ================= RIGHT PANEL: VISUAL STUDIO (5 cols) ================= -->
     <section class="lg:col-span-5 flex flex-col gap-5">
       
       <div class="glass-panel rounded-2xl p-5 border border-gray-800 flex flex-col gap-4">
@@ -276,9 +282,9 @@
         <div class="flex items-center justify-between">
           <h2 class="text-sm font-semibold text-gray-200 flex items-center gap-2">
             <i data-lucide="layers" class="w-4 h-4 text-purple-400"></i>
-            Viral Carousel Studio (爆款连载卡片)
+            Visual Studio Engine
           </h2>
-          <span class="text-[10px] bg-purple-900/40 text-purple-300 border border-purple-700/40 px-2 py-0.5 rounded-full font-mono">3~5 Slide Pack</span>
+          <span id="modeBadge" class="text-[10px] bg-purple-900/40 text-purple-300 border border-purple-700/40 px-2 py-0.5 rounded-full font-mono">Carousel Pack</span>
         </div>
 
         <!-- SWIPER CAROUSEL -->
@@ -286,78 +292,21 @@
           <div class="swiper cardSwiper w-full max-w-[340px] sm:max-w-[380px] mx-auto">
             <div class="swiper-wrapper" id="swiperWrapper">
               
-              <!-- Slide 1: Cover Hook -->
+              <!-- Default Slide 1 -->
               <div class="swiper-slide">
                 <div id="card-1" class="theme-cyber rounded-2xl p-6 min-h-[430px] flex flex-col justify-between relative overflow-hidden transition-all duration-300">
                   <div>
-                    <div class="text-[10px] font-bold uppercase tracking-widest opacity-75 mb-2" id="previewSubHook">🔥 独立开发者爆款法则</div>
-                    <h3 class="text-xl font-extrabold font-outfit leading-snug mb-4" id="previewHeadline">独立开发者 30 天做成 1 万刀 ARR 的 3 个法则</h3>
+                    <div class="text-[10px] font-bold uppercase tracking-widest opacity-75 mb-2">🔥 独立开发者爆款法则</div>
+                    <h3 class="text-xl font-extrabold font-outfit leading-snug mb-4">独立开发者 30 天做成 1 万刀 ARR 的 3 个法则</h3>
                     
                     <div class="bg-purple-950/40 border border-purple-500/20 rounded-xl p-4 mb-4">
-                      <p class="text-xs italic leading-relaxed" id="previewGoldQuote">"用户不是为了功能买单，而是为了社交货币与变现效率买单！"</p>
-                    </div>
-                  </div>
-
-                  <!-- Footer Viral Tag -->
-                  <div class="pt-4 border-t border-gray-800/60 flex items-center justify-between">
-                    <span class="text-[11px] font-bold font-mono text-purple-400" id="cardWatermark1">⚡️ Cardify.ai</span>
-                    <span class="text-[10px] opacity-60">1 / 3 Slide</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Slide 2: Core Data & Insights -->
-              <div class="swiper-slide">
-                <div id="card-2" class="theme-cyber rounded-2xl p-6 min-h-[430px] flex flex-col justify-between relative overflow-hidden transition-all duration-300">
-                  <div>
-                    <div class="text-[10px] font-bold uppercase tracking-widest opacity-75 mb-2">📊 核心数据与突破点</div>
-                    <h3 class="text-base font-bold font-outfit mb-4">数据表现 & 关键指标</h3>
-                    
-                    <div class="grid grid-cols-2 gap-3 mb-4" id="previewMetrics">
-                      <div class="bg-gray-900/80 border border-gray-800 rounded-xl p-3 text-center">
-                        <div class="text-xl font-extrabold text-purple-400 font-outfit">$10K+</div>
-                        <div class="text-[10px] opacity-75 mt-0.5">月经常性收入 (MRR)</div>
-                      </div>
-                      <div class="bg-gray-900/80 border border-gray-800 rounded-xl p-3 text-center">
-                        <div class="text-xl font-extrabold text-indigo-400 font-outfit">350%</div>
-                        <div class="text-[10px] opacity-75 mt-0.5">社交传播增幅</div>
-                      </div>
+                      <p class="text-xs italic leading-relaxed">"用户不是为了功能买单，而是为了社交货币与变现效率买单！"</p>
                     </div>
                   </div>
 
                   <div class="pt-4 border-t border-gray-800/60 flex items-center justify-between">
-                    <span class="text-[11px] font-bold font-mono text-purple-400" id="cardWatermark2">⚡️ Cardify.ai</span>
-                    <span class="text-[10px] opacity-60">2 / 3 Slide</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Slide 3: Actionable Playbook & CTA -->
-              <div class="swiper-slide">
-                <div id="card-3" class="theme-cyber rounded-2xl p-6 min-h-[430px] flex flex-col justify-between relative overflow-hidden transition-all duration-300">
-                  <div>
-                    <div class="text-[10px] font-bold uppercase tracking-widest opacity-75 mb-2">🛠 行动指南 & 转化</div>
-                    <h3 class="text-base font-bold font-outfit mb-3">实操步骤</h3>
-                    
-                    <div class="flex flex-col gap-2.5 mb-4" id="previewInsights">
-                      <div class="flex items-start gap-2 text-xs opacity-90">
-                        <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] flex items-center justify-center font-bold flex-shrink-0 mt-0.5">1</span>
-                        <span>锁定海外月入 $10k+ 验证赛道</span>
-                      </div>
-                      <div class="flex items-start gap-2 text-xs opacity-90">
-                        <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] flex items-center justify-center font-bold flex-shrink-0 mt-0.5">2</span>
-                        <span>翻看差评一键二改痛点</span>
-                      </div>
-                      <div class="flex items-start gap-2 text-xs opacity-90">
-                        <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] flex items-center justify-center font-bold flex-shrink-0 mt-0.5">3</span>
-                        <span>缝合爆款文案与连载卡片流</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="pt-4 border-t border-gray-800/60 flex items-center justify-between">
-                    <span class="text-[11px] font-bold font-mono text-purple-400" id="cardWatermark3">⚡️ Cardify.ai</span>
-                    <span class="text-[10px] font-semibold text-emerald-400" id="previewCta">📌 收藏备用，关注获取更多</span>
+                    <span class="text-[11px] font-bold font-mono text-purple-400">⚡️ Cardify.ai</span>
+                    <span class="text-[10px] opacity-60">1 / 1 Slide</span>
                   </div>
                 </div>
               </div>
@@ -371,11 +320,11 @@
         <div class="grid grid-cols-2 gap-3 mt-2">
           <button onclick="exportCurrentCard()" class="py-2.5 px-3 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs font-semibold text-gray-200 flex items-center justify-center gap-1.5 transition-all">
             <i data-lucide="image" class="w-3.5 h-3.5 text-purple-400"></i>
-            <span>导出当前 Slide (PNG)</span>
+            <span id="exportCurrentBtnText">导出当前 Card (PNG)</span>
           </button>
-          <button onclick="exportAllCards()" class="py-2.5 px-3 rounded-xl bg-purple-900/50 hover:bg-purple-800/50 border border-purple-700/50 text-xs font-semibold text-purple-200 flex items-center justify-center gap-1.5 transition-all">
+          <button onclick="exportAllCards()" id="exportAllBtn" class="py-2.5 px-3 rounded-xl bg-purple-900/50 hover:bg-purple-800/50 border border-purple-700/50 text-xs font-semibold text-purple-200 flex items-center justify-center gap-1.5 transition-all">
             <i data-lucide="layers" class="w-3.5 h-3.5 text-purple-300"></i>
-            <span>一键导出全套连载卡</span>
+            <span id="exportAllBtnText">导出全套卡片包</span>
           </button>
         </div>
 
@@ -397,13 +346,13 @@
           <i data-lucide="crown" class="w-6 h-6 text-amber-300"></i>
         </div>
         <h3 class="text-xl font-bold text-white font-outfit">Upgrade to Cardify Pro</h3>
-        <p class="text-xs text-gray-400">Unlock unlimited AI Carousel generations, custom watermarks, and high-converting viral templates.</p>
+        <p class="text-xs text-gray-400">Unlock unlimited AI generations, custom watermarks, and high-converting viral templates.</p>
       </div>
 
       <div class="bg-gray-950 p-4 rounded-xl border border-gray-800 flex flex-col gap-2.5 text-xs text-gray-300">
-        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span>Unlimited Viral Carousel Card Packs</span></div>
+        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span>Unlimited Single & Carousel Cards</span></div>
         <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span>Unlock Xiaohongshu & LinkedIn Premium Styles</span></div>
-        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span>Priority Groq Llama-3 70B & Gemini 1.5 Flash</span></div>
+        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span>Priority Groq Llama-3 70B & Gemini Flash</span></div>
       </div>
 
       <!-- License Key Activation -->
@@ -435,11 +384,12 @@
 
   <!-- ================= CORE APPLICATION LOGIC ================= -->
   <script>
-    let currentPreset = 'cyber'; // cyber | xhs | linkedin
+    let currentMode = 'carousel'; // 'single' | 'carousel'
+    let currentPreset = 'cyber'; // 'cyber' | 'xhs' | 'linkedin'
     let selectedLang = 'zh';
     let userApiKey = '';
     let licenseKey = localStorage.getItem('cardify_license_key') || '';
-    let currentPostsData = null;
+    let currentResponseData = null;
     let activeTab = 'xiaohongshu';
     let swiperInstance = null;
 
@@ -450,14 +400,38 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
       }
 
+      initSwiper();
+      fetchQuota();
+    });
+
+    function initSwiper() {
+      if (swiperInstance) swiperInstance.destroy(true, true);
       swiperInstance = new Swiper('.cardSwiper', {
         effect: 'cards',
         grabCursor: true,
         pagination: { el: '.swiper-pagination', clickable: true },
       });
+    }
 
-      fetchQuota();
-    });
+    function setMode(mode) {
+      currentMode = mode;
+      const btnSingle = document.getElementById('mode-single');
+      const btnCarousel = document.getElementById('mode-carousel');
+      const modeBadge = document.getElementById('mode-badge');
+      const btnText = document.getElementById('generateBtnText');
+
+      if (mode === 'single') {
+        btnSingle.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-purple-300 bg-purple-600/30 border border-purple-500/40 shadow-sm';
+        btnCarousel.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-400 hover:text-white';
+        if (modeBadge) modeBadge.innerText = 'Single Card Mode';
+        btnText.innerText = '一键生成单图精炼卡片与贴文 (Generate Single Card)';
+      } else {
+        btnCarousel.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-purple-300 bg-purple-600/30 border border-purple-500/40 shadow-sm';
+        btnSingle.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-400 hover:text-white';
+        if (modeBadge) modeBadge.innerText = 'Carousel Pack Mode';
+        btnText.innerText = '一键生成爆款连载卡包与贴文 (Generate Carousel Pack)';
+      }
+    }
 
     function selectPresetTheme(theme) {
       currentPreset = theme;
@@ -467,12 +441,8 @@
       const activeBtn = document.getElementById(`preset-${theme}`);
       if (activeBtn) activeBtn.classList.add('ring-2', 'ring-purple-500/50', 'active');
 
-      // Update Card Visual Class
-      for (let i = 1; i <= 3; i++) {
-        const card = document.getElementById(`card-${i}`);
-        if (card) {
-          card.className = `theme-${theme} rounded-2xl p-6 min-h-[430px] flex flex-col justify-between relative overflow-hidden transition-all duration-300`;
-        }
+      if (currentResponseData) {
+        renderSlides(currentResponseData.slides || []);
       }
     }
 
@@ -555,7 +525,7 @@
       const customKey = document.getElementById('userApiKey').value.trim();
       const btn = document.getElementById('generateBtn');
       btn.disabled = true;
-      btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Analyzing Viral Hook & Insights...`;
+      btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Processing ${currentMode === 'single' ? 'Single Card' : 'Carousel Slides'}...`;
       lucide.createIcons();
 
       try {
@@ -566,6 +536,7 @@
             input_text: text,
             target_style: currentPreset,
             target_lang: selectedLang,
+            mode_preference: currentMode,
             userApiKey: customKey,
             licenseKey: licenseKey
           })
@@ -578,9 +549,9 @@
           throw new Error(json.message || json.error || 'Generation failed');
         }
 
-        currentPostsData = json.data;
+        currentResponseData = json.data;
         renderGeneratedResults(json.data);
-        showToast('🔥 Viral Carousel & Post Suite Created!');
+        showToast(`✨ Generated ${json.data.slides?.length || 1} ${currentMode === 'single' ? 'Card' : 'Carousel Slides'}!`);
         fetchQuota();
 
       } catch (e) {
@@ -588,7 +559,11 @@
         showToast(e.message || 'API call failed.', true);
       } finally {
         btn.disabled = false;
-        btn.innerHTML = `<i data-lucide="wand-2" class="w-4 h-4"></i> <span>一键生成爆款连载卡包与贴文 (Generate Viral Carousel Suite)</span>`;
+        const btnText = document.getElementById('generateBtnText');
+        if (btnText) {
+          btnText.innerText = currentMode === 'single' ? '一键生成单图精炼卡片与贴文 (Generate Single Card)' : '一键生成爆款连载卡包与贴文 (Generate Carousel Pack)';
+        }
+        btn.innerHTML = `<i data-lucide="wand-2" class="w-4 h-4"></i> <span id="generateBtnText">${btnText ? btnText.innerText : 'Generate'}</span>`;
         lucide.createIcons();
       }
     }
@@ -597,34 +572,72 @@
       document.getElementById('outputContainer').classList.remove('hidden');
       switchTab('xiaohongshu');
 
-      // Update Carousel Visual Cards
-      if (data.hook_headline) document.getElementById('previewHeadline').innerText = data.hook_headline;
-      if (data.sub_hook) document.getElementById('previewSubHook').innerText = `🔥 ${data.sub_hook}`;
-      if (data.takeaway_quote) document.getElementById('previewGoldQuote').innerText = `"${data.takeaway_quote}"`;
-      if (data.call_to_action) document.getElementById('previewCta').innerText = `📌 ${data.call_to_action}`;
+      // Render Dynamic Slides Array
+      const slides = data.slides || [];
+      renderSlides(slides, data.footer_text);
+    }
 
-      // Render Metrics
-      if (Array.isArray(data.data_callouts) && data.data_callouts.length > 0) {
-        const metricsHtml = data.data_callouts.map(m => `
-          <div class="bg-gray-900/80 border border-gray-800 rounded-xl p-3 text-center">
-            <div class="text-xl font-extrabold text-purple-400 font-outfit">${m.metric}</div>
-            <div class="text-[10px] opacity-75 mt-0.5">${m.label}</div>
+    function renderSlides(slides, footerText = '⚡️ Cardify.ai') {
+      const wrapper = document.getElementById('swiperWrapper');
+      wrapper.innerHTML = '';
+
+      if (!slides || slides.length === 0) return;
+
+      slides.forEach((slide, idx) => {
+        const slideDiv = document.createElement('div');
+        slideDiv.className = 'swiper-slide';
+
+        const metricHtml = (slide.key_metric && slide.key_metric.value) ? `
+          <div class="bg-gray-900/80 border border-gray-800 rounded-xl p-3 text-center mb-3">
+            <div class="text-xl font-extrabold text-purple-400 font-outfit">${slide.key_metric.value}</div>
+            <div class="text-[10px] opacity-75 mt-0.5">${slide.key_metric.label || ''}</div>
           </div>
-        `).join('');
-        document.getElementById('previewMetrics').innerHTML = metricsHtml;
-      }
+        ` : '';
 
-      // Render Insights
-      if (Array.isArray(data.core_insights) && data.core_insights.length > 0) {
-        const insightsHtml = data.core_insights.map((insight, idx) => `
-          <div class="flex items-start gap-2 text-xs opacity-90">
-            <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] flex items-center justify-center font-bold flex-shrink-0 mt-0.5">${idx+1}</span>
+        const bulletsHtml = (Array.isArray(slide.bullet_points) && slide.bullet_points.length > 0) ? `
+          <div class="flex flex-col gap-2 mb-3">
+            ${slide.bullet_points.map((b, i) => `
+              <div class="flex items-start gap-2 text-xs opacity-90">
+                <span class="w-4 h-4 rounded-full bg-purple-500/20 text-purple-400 text-[10px] flex items-center justify-center font-bold flex-shrink-0 mt-0.5">${i+1}</span>
+                <div>
+                  <strong class="text-white">${b.point_title || ''}:</strong> ${b.point_desc || ''}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        ` : '';
+
+        const quoteHtml = slide.takeaway_quote ? `
+          <div class="bg-purple-950/40 border border-purple-500/20 rounded-xl p-3 mb-3">
+            <p class="text-xs italic leading-relaxed text-purple-200">"${slide.takeaway_quote}"</p>
+          </div>
+        ` : '';
+
+        slideDiv.innerHTML = `
+          <div id="card-${idx + 1}" class="theme-${currentPreset} rounded-2xl p-6 min-h-[430px] flex flex-col justify-between relative overflow-hidden transition-all duration-300">
             <div>
-              <strong class="text-white">${insight.title}:</strong> ${insight.description}
+              <div class="text-[10px] font-bold uppercase tracking-widest opacity-75 mb-2">${slide.subtitle || '🔥 核心洞察'}</div>
+              <h3 class="text-lg font-extrabold font-outfit leading-snug mb-3 text-white">${slide.title || ''}</h3>
+              ${metricHtml}
+              ${bulletsHtml}
+              ${quoteHtml}
+            </div>
+
+            <div class="pt-3 border-t border-gray-800/60 flex items-center justify-between">
+              <span class="text-[11px] font-bold font-mono text-purple-400">${footerText || '⚡️ Cardify.ai'}</span>
+              <span class="text-[10px] opacity-60">${idx + 1} / ${slides.length} Slide</span>
             </div>
           </div>
-        `).join('');
-        document.getElementById('previewInsights').innerHTML = insightsHtml;
+        `;
+        wrapper.appendChild(slideDiv);
+      });
+
+      initSwiper();
+
+      // Update Export Button Text
+      const exportAllBtn = document.getElementById('exportAllBtnText');
+      if (exportAllBtn) {
+        exportAllBtn.innerText = slides.length === 1 ? '导出当前卡片' : `一键导出全套 ${slides.length} 张卡片包`;
       }
     }
 
@@ -639,20 +652,20 @@
       }
 
       const area = document.getElementById('tabContentArea');
-      if (!currentPostsData) {
+      if (!currentResponseData) {
         area.innerText = 'No content generated yet.';
         return;
       }
 
       if (tab === 'xiaohongshu') {
-        const xhs = currentPostsData.xiaohongshu_post || {};
+        const xhs = currentResponseData.xiaohongshu_post || {};
         area.innerText = `【${xhs.title || ''}】\n\n${xhs.content || ''}`;
       } else if (tab === 'twitter') {
-        area.innerText = Array.isArray(currentPostsData.twitter_thread) ? currentPostsData.twitter_thread.join('\n\n---\n\n') : '';
+        area.innerText = Array.isArray(currentResponseData.twitter_thread) ? currentResponseData.twitter_thread.join('\n\n---\n\n') : '';
       } else if (tab === 'linkedin') {
-        area.innerText = currentPostsData.linkedin_post || '';
+        area.innerText = currentResponseData.linkedin_post || '';
       } else if (tab === 'instagram') {
-        area.innerText = currentPostsData.instagram_caption || '';
+        area.innerText = currentResponseData.instagram_caption || '';
       }
     }
 
@@ -673,25 +686,26 @@
       showToast('Rendering HD image...');
       const canvas = await html2canvas(targetCard, { scale: 2, useCORS: true, backgroundColor: null });
       const link = document.createElement('a');
-      link.download = `cardify-carousel-slide-${activeIndex + 1}.png`;
+      link.download = `cardify-card-slide-${activeIndex + 1}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
       showToast('Slide exported!');
     }
 
     async function exportAllCards() {
-      showToast('Exporting carousel package...');
-      for (let i = 1; i <= 3; i++) {
+      const slidesCount = currentResponseData?.slides?.length || 1;
+      showToast(`Exporting ${slidesCount} card slides...`);
+      for (let i = 1; i <= slidesCount; i++) {
         const card = document.getElementById(`card-${i}`);
         if (card) {
           const canvas = await html2canvas(card, { scale: 2, useCORS: true, backgroundColor: null });
           const link = document.createElement('a');
-          link.download = `cardify-carousel-pack-${i}.png`;
+          link.download = `cardify-pack-slide-${i}.png`;
           link.href = canvas.toDataURL('image/png');
           link.click();
         }
       }
-      showToast('All 3 Carousel Slides exported!');
+      showToast(`All ${slidesCount} Card Slides exported!`);
     }
 
     function openUpgradeModal() { document.getElementById('upgradeModal').classList.remove('hidden'); }
