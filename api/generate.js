@@ -1,5 +1,5 @@
-// /api/generate.js — Cardify AI v2.5 Dynamic Matrix Engine
-// Multi-Provider Failover & Platform Skill Injector Architecture
+// /api/generate.js — Cardify AI v3.0 Commercial Engine
+// Multi-Provider Failover & Usage Entitlement & Dodo License Verification
 
 const rateLimitStore = new Map();
 const DAILY_FREE_LIMIT = 3; // 3 free runs per IP per day for free tier

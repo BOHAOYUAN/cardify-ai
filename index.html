@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cardify.ai 2.7 — High-Contrast Multi-Platform Visual Studio</title>
-  <meta name="description" content="Turn any article or PDF into viral Xiaohongshu Carousel slides, LinkedIn posts, Twitter threads, Instagram Carousels, and YouTube Shorts scripts with high contrast styling & instant platform adaptation.">
+  <title>Cardify.ai 3.0 Commercial — High-DPI Visual Carousel & AI Growth Studio</title>
+  <meta name="description" content="Turn any article or PDF into viral Xiaohongshu Carousel slides, LinkedIn posts, Twitter threads, Instagram Carousels, and YouTube Shorts scripts with Retina 3x export, PDF LinkedIn Carousel support, and smart quota control.">
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -55,7 +55,6 @@
     }
 
     /* ================= DYNAMIC HIGH-CONTRAST THEMES ================= */
-    /* 1. Cyber Dark Glass Theme */
     .theme-cyber {
       background: linear-gradient(135deg, rgba(30, 41, 59, 0.98) 0%, rgba(15, 23, 42, 0.99) 100%);
       border: 1px solid rgba(139, 92, 246, 0.35);
@@ -74,7 +73,6 @@
     .theme-cyber .card-quote-text { color: #e9d5ff !important; }
     .theme-cyber .card-footer-brand { color: #a78bfa !important; }
 
-    /* 2. Xiaohongshu Rose Theme (Light Pink High Contrast) */
     .theme-xhs {
       background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%) !important;
       border: 1px solid #fecdd3 !important;
@@ -93,7 +91,6 @@
     .theme-xhs .card-quote-text { color: #9f1239 !important; }
     .theme-xhs .card-footer-brand { color: #e11d48 !important; font-weight: 700; }
 
-    /* 3. LinkedIn Executive Theme (Sky Blue High Contrast) */
     .theme-linkedin {
       background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
       border: 1px solid #cbd5e1 !important;
@@ -143,7 +140,7 @@
         <div>
           <span class="text-xl font-extrabold font-outfit tracking-tight text-white flex items-center gap-2">
             Cardify<span class="text-purple-400">.ai</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v2.7 Contrast</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v3.0 PRO</span>
           </span>
         </div>
       </div>
@@ -351,15 +348,30 @@
           </div>
         </div>
 
-        <!-- Export Buttons -->
-        <div class="grid grid-cols-2 gap-3 mt-2">
-          <button onclick="exportCurrentCard()" class="py-2.5 px-3 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs font-semibold text-gray-200 flex items-center justify-center gap-1.5 transition-all">
-            <i data-lucide="image" class="w-3.5 h-3.5 text-purple-400"></i>
-            <span id="exportCurrentBtnText">导出当前卡片 (PNG)</span>
+        <!-- Commercial High-DPI & Multi-Format Export Toolbar -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">
+          <!-- 1. Copy Image to Clipboard -->
+          <button onclick="copyCardImageToClipboard()" title="Copy current HD slide image directly to clipboard" class="py-2.5 px-2 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs font-semibold text-gray-200 flex items-center justify-center gap-1 transition-all">
+            <i data-lucide="copy" class="w-3.5 h-3.5 text-purple-400"></i>
+            <span id="txtCopyImgBtn">📋 复制图片</span>
           </button>
-          <button onclick="exportAllCards()" id="exportAllBtn" class="py-2.5 px-3 rounded-xl bg-purple-900/50 hover:bg-purple-800/50 border border-purple-700/50 text-xs font-semibold text-purple-200 flex items-center justify-center gap-1.5 transition-all">
+
+          <!-- 2. Export Current PNG (Retina 3x) -->
+          <button onclick="exportCurrentCard()" title="Export high resolution 3x Retina PNG" class="py-2.5 px-2 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs font-semibold text-gray-200 flex items-center justify-center gap-1 transition-all">
+            <i data-lucide="image" class="w-3.5 h-3.5 text-purple-400"></i>
+            <span id="txtExportCurrentBtn">📷 3x 高清</span>
+          </button>
+
+          <!-- 3. Export LinkedIn PDF Carousel -->
+          <button onclick="exportLinkedInPdf()" title="Export multi-page PDF for LinkedIn Carousel posts" class="py-2.5 px-2 rounded-xl bg-sky-950/60 hover:bg-sky-900/60 border border-sky-700/50 text-xs font-semibold text-sky-300 flex items-center justify-center gap-1 transition-all">
+            <i data-lucide="file-text" class="w-3.5 h-3.5 text-sky-400"></i>
+            <span>📄 PDF 导图</span>
+          </button>
+
+          <!-- 4. Export All Package (ZIP / Batch PNG) -->
+          <button onclick="exportAllCards()" id="exportAllBtn" title="Batch export all carousel slides" class="py-2.5 px-2 rounded-xl bg-purple-900/50 hover:bg-purple-800/50 border border-purple-700/50 text-xs font-semibold text-purple-200 flex items-center justify-center gap-1 transition-all">
             <i data-lucide="layers" class="w-3.5 h-3.5 text-purple-300"></i>
-            <span id="exportAllBtnText">一键导出全套连载卡包</span>
+            <span id="exportAllBtnText">📦 打包全套</span>
           </button>
         </div>
 
@@ -368,6 +380,22 @@
     </section>
 
   </main>
+
+  <!-- ================= FOOTER WITH MANDATORY LEGAL COMPLIANCE LINKS ================= -->
+  <footer class="w-full border-t border-gray-800/80 py-6 px-4 text-center text-xs text-gray-500 glass-panel mt-8">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-gray-300">Cardify.ai</span>
+        <span>© 2026 Lumiere Labs Ltd. All rights reserved. Powered by Dodo Payments Gateway.</span>
+      </div>
+      <div class="flex items-center gap-4 text-gray-400 font-medium">
+        <button onclick="openLegalModal('privacy')" class="hover:text-purple-400 transition-colors">Privacy Policy</button>
+        <button onclick="openLegalModal('terms')" class="hover:text-purple-400 transition-colors">Terms of Service</button>
+        <button onclick="openLegalModal('refund')" class="hover:text-purple-400 transition-colors">Refund Policy</button>
+        <button onclick="openLegalModal('contact')" class="hover:text-purple-400 transition-colors">Contact Support</button>
+      </div>
+    </div>
+  </footer>
 
   <!-- ================= DODO PAYMENTS / PRO MODAL ================= -->
   <div id="upgradeModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
@@ -399,10 +427,28 @@
         </div>
       </div>
 
-      <!-- Buy Link -->
-      <a href="https://dodopayments.com" target="_blank" class="w-full py-3 text-center rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-bold text-sm transition-all" id="txtModalBuy">
+      <!-- Dodo Payments Buy Link -->
+      <a href="https://dodopayments.com" target="_blank" onclick="trackAnalyticsEvent('dodo_checkout_click')" class="w-full py-3 text-center rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-bold text-sm transition-all shadow-lg shadow-amber-500/20" id="txtModalBuy">
         Buy Pro License ($9.9/mo)
       </a>
+    </div>
+  </div>
+
+  <!-- ================= MANDATORY LEGAL & COMPLIANCE MODAL ================= -->
+  <div id="legalModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="glass-panel w-full max-w-2xl rounded-2xl p-6 border border-gray-700 flex flex-col gap-4 relative max-h-[85vh] overflow-hidden">
+      <button onclick="closeLegalModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-3 border-b border-gray-800 pb-3">
+        <i data-lucide="shield-check" class="w-6 h-6 text-purple-400"></i>
+        <h3 class="text-lg font-bold text-white font-outfit" id="legalModalTitle">Legal & Compliance Policy</h3>
+      </div>
+
+      <div id="legalModalContent" class="overflow-y-auto pr-2 text-xs text-gray-300 leading-relaxed space-y-4">
+        <!-- Content inserted dynamically -->
+      </div>
     </div>
   </div>
 
@@ -415,9 +461,10 @@
   <!-- External JS Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
-  <!-- ================= CORE APPLICATION LOGIC & SMART CACHE ================= -->
+  <!-- ================= CORE APPLICATION LOGIC & COMMERCIAL ENGINE ================= -->
   <script>
     let currentMode = 'carousel'; // 'single' | 'carousel'
     let currentPreset = 'cyber'; // 'cyber' | 'xhs' | 'linkedin'
@@ -426,8 +473,10 @@
     let selectedHookTag = '';
     let userApiKey = '';
     let licenseKey = localStorage.getItem('cardify_license_key') || '';
+    let isProUser = false;
     let currentResponseData = null;
     let swiperInstance = null;
+    let remainingFreeQuota = 3;
 
     // Smart Memory Cache Store (Key: ${platform}_${mode}_${lang}, Value: JSON response)
     const platformCacheStore = {};
@@ -511,9 +560,9 @@
         studioTitle: 'Visual Studio Engine',
         modeBadgeSingle: 'Single Card',
         modeBadgeCarousel: 'Carousel Pack',
-        exportCurrentBtn: 'Export Current Card (PNG)',
-        exportAllBtnSingle: 'Export Card (PNG)',
-        exportAllBtnCarousel: 'Export All Slides (PNG)',
+        exportCurrentBtn: '📷 3x HD PNG',
+        exportAllBtnSingle: 'Export Card',
+        exportAllBtnCarousel: '📦 Package All',
         modalTitle: 'Upgrade to Cardify Pro',
         modalDesc: 'Unlock unlimited AI generations, custom watermarks, and high-converting viral templates.',
         modalFeat1: 'Unlimited Single & Carousel Cards',
@@ -579,9 +628,9 @@
         studioTitle: '视觉卡片渲染引擎',
         modeBadgeSingle: '单图卡片模式',
         modeBadgeCarousel: '连载切片卡包',
-        exportCurrentBtn: '导出当前卡片 (PNG)',
+        exportCurrentBtn: '📷 3x 高清',
         exportAllBtnSingle: '导出当前卡片',
-        exportAllBtnCarousel: '一键导出全套连载卡包',
+        exportAllBtnCarousel: '📦 打包全套',
         modalTitle: '升级到 Cardify Pro',
         modalDesc: '解锁无限次 AI 生成、自定义水印以及所有爆款高转化模板。',
         modalFeat1: '无限生成单图与连载切片卡包',
@@ -635,7 +684,15 @@
       initSwiper();
       fetchQuota();
       applyTranslations();
+      if (licenseKey) verifyLicenseKey(licenseKey);
     });
+
+    function trackAnalyticsEvent(eventName, eventProps = {}) {
+      console.log(`[Analytics Track] ${eventName}:`, eventProps);
+      if (window.posthog) {
+        window.posthog.capture(eventName, eventProps);
+      }
+    }
 
     function initSwiper() {
       if (swiperInstance) swiperInstance.destroy(true, true);
@@ -655,6 +712,7 @@
         currentPreset = matrix[0].preset;
       }
       applyTranslations();
+      trackAnalyticsEvent('lang_changed', { lang });
     }
 
     function renderDynamicMatrix() {
@@ -697,7 +755,7 @@
     // Level 3 Platform Selection & Dedicated Content Switch / Cache Lookup
     function selectPlatform(id, preset, ratio) {
       selectedPlatform = id;
-      selectPresetTheme(preset); // Level 1 Theme switch (Pure CSS, 0 cost)
+      selectPresetTheme(preset);
 
       const aspectBadge = document.getElementById('aspectBadge');
       if (aspectBadge) aspectBadge.innerText = `📐 ${ratio} Ratio`;
@@ -705,22 +763,19 @@
       const inputVal = document.getElementById('inputText').value.trim();
       const cacheKey = `${selectedPlatform}_${currentMode}_${selectedLang}`;
 
-      // Check Smart Memory Cache first
       if (platformCacheStore[cacheKey]) {
         currentResponseData = platformCacheStore[cacheKey];
         renderGeneratedResults(currentResponseData);
         showToast(`⚡ Loaded cached AI output for ${id} (0ms, 0 API Cost)`);
-      } 
-      // If user provided input text but hasn't generated for this platform, auto-generate for platform adaptation!
-      else if (inputVal.length >= 10) {
+      } else if (inputVal.length >= 10) {
         generateContent(false);
-      } 
-      // If input is empty, render dedicated default slides tailored to this specific platform!
-      else {
+      } else {
         const platformDefaults = PLATFORM_DEFAULT_SLIDES[id] || (I18N_DICT[selectedLang] || I18N_DICT.en).defaultCarouselSlides;
         renderSlides(platformDefaults, '⚡️ Cardify.ai');
         switchTab(selectedPlatform);
       }
+
+      trackAnalyticsEvent('platform_selected', { platform: id, ratio });
     }
 
     function selectHookTag(id, hookText) {
@@ -731,6 +786,7 @@
         showToast(`Injected Viral Hook: ${hookText}`);
       }
       renderDynamicMatrix();
+      trackAnalyticsEvent('hook_tag_clicked', { tag: id });
     }
 
     // Level 1 Visual Theme Switch (Pure CSS, Instant 0ms, Zero API Cost)
@@ -742,7 +798,6 @@
       const activeBtn = document.getElementById(`preset-${theme}`);
       if (activeBtn) activeBtn.classList.add('ring-2', 'ring-purple-500/50', 'active');
 
-      // Update slide elements CSS class in-place without re-requesting AI
       for (let i = 1; i <= 10; i++) {
         const card = document.getElementById(`card-${i}`);
         if (card) {
@@ -755,12 +810,11 @@
       const lang = selectedLang;
       const dict = I18N_DICT[lang] || I18N_DICT.en;
 
-      // Render Dynamic Platforms & Hook Tags
       renderDynamicMatrix();
 
       // Header
-      document.getElementById('quotaText').innerText = dict.quotaText;
-      document.getElementById('txtUpgradeHeader').innerText = dict.upgradeHeader;
+      document.getElementById('quotaText').innerText = isProUser ? '✦ PRO UNLIMITED' : `✦ ${remainingFreeQuota} Free Left`;
+      document.getElementById('txtUpgradeHeader').innerText = isProUser ? 'PRO Member ✨' : dict.upgradeHeader;
 
       // Mode Buttons
       document.getElementById('txtModeSingle').innerText = dict.modeSingle;
@@ -802,7 +856,6 @@
       document.getElementById('txtModalActivate').innerText = dict.modalActivate;
       document.getElementById('txtModalBuy').innerText = dict.modalBuy;
 
-      // Render Default Carousel/Single Slides if no AI data is loaded yet
       if (!currentResponseData) {
         const platformDefaults = PLATFORM_DEFAULT_SLIDES[selectedPlatform] || dict.defaultCarouselSlides;
         if (currentMode === 'single') {
@@ -828,7 +881,6 @@
         btnSingle.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-400 hover:text-white';
       }
 
-      // Check cache for new mode
       const cacheKey = `${selectedPlatform}_${currentMode}_${selectedLang}`;
       if (platformCacheStore[cacheKey]) {
         currentResponseData = platformCacheStore[cacheKey];
@@ -842,6 +894,7 @@
       }
 
       applyTranslations();
+      trackAnalyticsEvent('mode_changed', { mode });
     }
 
     function showToast(msg, isError = false) {
@@ -873,7 +926,11 @@
         const res = await fetch('/api/generate');
         if (res.ok) {
           const data = await res.json();
-          document.getElementById('quotaText').innerText = `✦ ${data.remaining} Free Left`;
+          remainingFreeQuota = data.remaining || 0;
+          const quotaBadge = document.getElementById('quotaText');
+          if (quotaBadge) {
+            quotaBadge.innerText = isProUser ? '✦ PRO UNLIMITED' : `✦ ${remainingFreeQuota} Free Left`;
+          }
         }
       } catch (e) {
         console.warn('Quota fetch failed:', e);
@@ -903,13 +960,14 @@
         document.getElementById('inputText').value = fullText.trim();
         updateCharCount();
         showToast(`Extracted ${pdf.numPages} pages from PDF!`);
+        trackAnalyticsEvent('pdf_uploaded', { pages: pdf.numPages });
       } catch (e) {
         console.error(e);
         showToast('Failed to parse PDF file.', true);
       }
     }
 
-    // Core Generation with Smart Cache & Force Regenerate Option
+    // Commercial Generation Engine with Quota Intercept
     async function generateContent(forceRegenerate = false) {
       const text = document.getElementById('inputText').value.trim();
       if (!text || text.length < 10) {
@@ -917,9 +975,18 @@
         return;
       }
 
+      const customKey = document.getElementById('userApiKey').value.trim();
+
+      // 0 Free Left Intercept: If free quota is exhausted and user is not Pro / has no custom key
+      if (!isProUser && !customKey && remainingFreeQuota <= 0) {
+        openUpgradeModal();
+        showToast('Daily free limit reached (0/3). Upgrade to Pro to continue!', true);
+        trackAnalyticsEvent('quota_intercept_triggered');
+        return;
+      }
+
       const cacheKey = `${selectedPlatform}_${currentMode}_${selectedLang}`;
 
-      // Check Smart Cache if not force regenerating
       if (!forceRegenerate && platformCacheStore[cacheKey]) {
         currentResponseData = platformCacheStore[cacheKey];
         renderGeneratedResults(currentResponseData);
@@ -927,7 +994,6 @@
         return;
       }
 
-      const customKey = document.getElementById('userApiKey').value.trim();
       const btn = document.getElementById('generateBtn');
       btn.disabled = true;
       btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Generating ${selectedPlatform} Viral Pack...`;
@@ -952,18 +1018,19 @@
         const json = await res.json();
 
         if (!res.ok) {
-          if (res.status === 429) openUpgradeModal();
+          if (res.status === 429) {
+            openUpgradeModal();
+          }
           throw new Error(json.message || json.error || 'Generation failed');
         }
 
         currentResponseData = json.data;
-        
-        // Save to Smart Memory Cache
         platformCacheStore[cacheKey] = json.data;
 
         renderGeneratedResults(json.data);
         showToast(`✨ Generated Fresh Output for ${selectedPlatform}!`);
         fetchQuota();
+        trackAnalyticsEvent('ai_generated_success', { platform: selectedPlatform, mode: currentMode });
 
       } catch (e) {
         console.error(e);
@@ -978,7 +1045,6 @@
       document.getElementById('outputContainer').classList.remove('hidden');
       switchTab(selectedPlatform);
 
-      // Render Dynamic Slides Array
       const slides = data.slides || [];
       renderSlides(slides, data.footer_text);
     }
@@ -995,7 +1061,7 @@
 
         const metricHtml = (slide.key_metric && slide.key_metric.value) ? `
           <div class="card-metric-box bg-gray-900/80 border border-gray-800 rounded-xl p-3 text-center mb-3">
-            <div class="card-metric-value text-xl font-extrabold text-purple-400 font-outfit">${slide.key_metric.value}</div>
+            <div class="card-metric-value text-xl font-extrabold font-outfit">${slide.key_metric.value}</div>
             <div class="card-metric-label text-[10px] opacity-75 mt-0.5">${slide.key_metric.label || ''}</div>
           </div>
         ` : '';
@@ -1004,9 +1070,9 @@
           <div class="flex flex-col gap-2 mb-3">
             ${slide.bullet_points.map((b, i) => `
               <div class="flex items-start gap-2 text-xs opacity-90">
-                <span class="card-bullet-num w-4 h-4 rounded-full bg-purple-500/20 text-purple-400 text-[10px] flex items-center justify-center font-bold flex-shrink-0 mt-0.5">${i+1}</span>
+                <span class="card-bullet-num w-4 h-4 rounded-full text-[10px] flex items-center justify-center font-bold flex-shrink-0 mt-0.5">${i+1}</span>
                 <div>
-                  <strong class="card-bullet-title text-white">${b.point_title || ''}:</strong> <span class="card-bullet-desc">${b.point_desc || ''}</span>
+                  <strong class="card-bullet-title">${b.point_title || ''}:</strong> <span class="card-bullet-desc">${b.point_desc || ''}</span>
                 </div>
               </div>
             `).join('')}
@@ -1014,8 +1080,8 @@
         ` : '';
 
         const quoteHtml = slide.takeaway_quote ? `
-          <div class="card-quote-box bg-purple-950/40 border border-purple-500/20 rounded-xl p-3 mb-3">
-            <p class="card-quote-text text-xs italic leading-relaxed text-purple-200">"${slide.takeaway_quote}"</p>
+          <div class="card-quote-box rounded-xl p-3 mb-3">
+            <p class="card-quote-text text-xs italic leading-relaxed">"${slide.takeaway_quote}"</p>
           </div>
         ` : '';
 
@@ -1030,7 +1096,7 @@
             </div>
 
             <div class="pt-3 border-t border-gray-800/60 flex items-center justify-between">
-              <span class="card-footer-brand text-[11px] font-bold font-mono text-purple-400">${footerText || '⚡️ Cardify.ai'}</span>
+              <span class="card-footer-brand text-[11px] font-bold font-mono">${footerText || '⚡️ Cardify.ai'}</span>
               <span class="text-[10px] opacity-60">${idx + 1} / ${slides.length} Slide</span>
             </div>
           </div>
@@ -1040,7 +1106,6 @@
 
       initSwiper();
 
-      // Update Export Button Text
       const exportAllBtn = document.getElementById('exportAllBtnText');
       const dict = I18N_DICT[selectedLang] || I18N_DICT.en;
       if (exportAllBtn) {
@@ -1083,19 +1148,80 @@
       copyText.innerText = 'Copied!';
       setTimeout(() => copyText.innerText = I18N_DICT[selectedLang]?.copyBtn || 'Copy Post', 2000);
       showToast('Copied post text to clipboard!');
+      trackAnalyticsEvent('copy_post_text');
     }
 
+    // Commercial High-DPI 3x Retina PNG Export
     async function exportCurrentCard() {
       const activeIndex = swiperInstance.activeIndex || 0;
       const targetCard = document.getElementById(`card-${activeIndex + 1}`) || document.getElementById('card-1');
       
-      showToast('Rendering HD image...');
-      const canvas = await html2canvas(targetCard, { scale: 2, useCORS: true, backgroundColor: null });
+      showToast('Rendering Retina 3x Ultra-HD Image...');
+      const canvas = await html2canvas(targetCard, { scale: 3, useCORS: true, backgroundColor: null });
       const link = document.createElement('a');
-      link.download = `cardify-card-slide-${activeIndex + 1}.png`;
+      link.download = `cardify-retina-slide-${activeIndex + 1}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
-      showToast('Slide exported!');
+      showToast('Retina 3x HD Slide Exported!');
+      trackAnalyticsEvent('export_card_png', { slide: activeIndex + 1 });
+    }
+
+    // Commercial Direct Copy Image to Clipboard
+    async function copyCardImageToClipboard() {
+      const activeIndex = swiperInstance.activeIndex || 0;
+      const targetCard = document.getElementById(`card-${activeIndex + 1}`) || document.getElementById('card-1');
+      
+      showToast('Rendering HD Image to Clipboard...');
+      try {
+        const canvas = await html2canvas(targetCard, { scale: 3, useCORS: true, backgroundColor: null });
+        canvas.toBlob(async (blob) => {
+          if (!blob) {
+            showToast('Clipboard export failed', true);
+            return;
+          }
+          await navigator.clipboard.write([
+            new ClipboardItem({ 'image/png': blob })
+          ]);
+          showToast('📋 Image copied directly to Clipboard! Ready to paste!');
+          trackAnalyticsEvent('copy_card_image');
+        });
+      } catch (e) {
+        console.error(e);
+        showToast('Clipboard copy not supported by browser. Downloading PNG instead.');
+        exportCurrentCard();
+      }
+    }
+
+    // Commercial Multi-Page PDF Export (LinkedIn Carousel)
+    async function exportLinkedInPdf() {
+      const slidesCount = (currentResponseData?.slides?.length) || (I18N_DICT[selectedLang] || I18N_DICT.en).defaultCarouselSlides.length;
+      showToast(`Building LinkedIn Carousel PDF (${slidesCount} pages)...`);
+
+      try {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+
+        for (let i = 1; i <= slidesCount; i++) {
+          const card = document.getElementById(`card-${i}`);
+          if (card) {
+            const canvas = await html2canvas(card, { scale: 2.5, useCORS: true, backgroundColor: null });
+            const imgData = canvas.toDataURL('image/png');
+            
+            if (i > 1) pdf.addPage();
+            pdf.addImage(imgData, 'PNG', 15, 20, pdfWidth - 30, (pdfWidth - 30) * (canvas.height / canvas.width));
+          }
+        }
+
+        pdf.save('cardify-linkedin-carousel.pdf');
+        showToast('📄 LinkedIn Multi-Page PDF Exported!');
+        trackAnalyticsEvent('export_linkedin_pdf', { slides: slidesCount });
+      } catch (e) {
+        console.error(e);
+        showToast('PDF Export failed. Batch PNG downloading instead.', true);
+        exportAllCards();
+      }
     }
 
     async function exportAllCards() {
@@ -1104,7 +1230,7 @@
       for (let i = 1; i <= slidesCount; i++) {
         const card = document.getElementById(`card-${i}`);
         if (card) {
-          const canvas = await html2canvas(card, { scale: 2, useCORS: true, backgroundColor: null });
+          const canvas = await html2canvas(card, { scale: 3, useCORS: true, backgroundColor: null });
           const link = document.createElement('a');
           link.download = `cardify-pack-slide-${i}.png`;
           link.href = canvas.toDataURL('image/png');
@@ -1112,21 +1238,88 @@
         }
       }
       showToast(`All ${slidesCount} Card Slides exported!`);
+      trackAnalyticsEvent('export_all_cards', { count: slidesCount });
     }
 
-    function openUpgradeModal() { document.getElementById('upgradeModal').classList.remove('hidden'); }
-    function closeUpgradeModal() { document.getElementById('upgradeModal').classList.add('hidden'); }
-    function activateLicense() {
+    // Modal Control & License Verification
+    function openUpgradeModal() {
+      document.getElementById('upgradeModal').classList.remove('hidden');
+      trackAnalyticsEvent('upgrade_modal_opened');
+    }
+
+    function closeUpgradeModal() {
+      document.getElementById('upgradeModal').classList.add('hidden');
+    }
+
+    async function verifyLicenseKey(key) {
+      try {
+        const res = await fetch('/api/verify-license', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ licenseKey: key })
+        });
+        const data = await res.json();
+        if (data.valid) {
+          isProUser = true;
+          localStorage.setItem('cardify_license_key', key);
+          showToast('Pro License Activated! Unlimited VIP Access Unlocked.');
+          applyTranslations();
+        }
+      } catch (e) {
+        console.warn('License verification failed:', e);
+      }
+    }
+
+    async function activateLicense() {
       const val = document.getElementById('licenseKeyInput').value.trim();
       if (val.length >= 5) {
         licenseKey = val;
-        localStorage.setItem('cardify_license_key', val);
+        await verifyLicenseKey(val);
         closeUpgradeModal();
-        showToast('License Key Activated! VIP unlocked.');
-        fetchQuota();
       } else {
         showToast('Invalid License Key format.', true);
       }
+    }
+
+    // Mandatory Legal Policies Modal
+    function openLegalModal(type) {
+      const modal = document.getElementById('legalModal');
+      const title = document.getElementById('legalModalTitle');
+      const content = document.getElementById('legalModalContent');
+
+      modal.classList.remove('hidden');
+
+      if (type === 'privacy') {
+        title.innerText = 'Privacy Policy ( Cardify.ai )';
+        content.innerHTML = `
+          <p><strong>Last Updated: August 2026</strong></p>
+          <p>Lumiere Labs Ltd ("Cardify.ai") respects your privacy. We process input content solely in memory to render visual card packages and social content. We do not sell or store your private text inputs or custom API Keys.</p>
+          <p><strong>Data Processing:</strong> Processing occurs securely via serverless infrastructure. No input text is retained post-request execution.</p>
+        `;
+      } else if (type === 'terms') {
+        title.innerText = 'Terms of Service ( Cardify.ai )';
+        content.innerHTML = `
+          <p><strong>Terms & Conditions:</strong> By using Cardify.ai, you agree to comply with all applicable local and international copyright laws. Users retain full ownership of all generated visual cards.</p>
+          <p><strong>Service SLA:</strong> Free tiers include 3 daily runs per IP. Pro subscriptions unlock unlimited generations via Dodo Payments merchant billing.</p>
+        `;
+      } else if (type === 'refund') {
+        title.innerText = 'Refund & Cancellation Policy';
+        content.innerHTML = `
+          <p><strong>7-Day Satisfaction Guarantee:</strong> We offer a 7-day money-back guarantee for all digital Pro Subscriptions processed via Dodo Payments if you are unsatisfied with the tool.</p>
+          <p>To request a refund, contact <strong>support@cardify.ai</strong> with your Dodo Payments receipt number.</p>
+        `;
+      } else if (type === 'contact') {
+        title.innerText = 'Contact & Customer Support';
+        content.innerHTML = `
+          <p>Have questions, enterprise inquiries, or need support?</p>
+          <p>📧 Email: <strong>support@cardify.ai</strong> / <strong>haoyuanbo625@gmail.com</strong></p>
+          <p>🌐 Merchant Gateway: Dodo Payments Merchant Portal</p>
+        `;
+      }
+    }
+
+    function closeLegalModal() {
+      document.getElementById('legalModal').classList.add('hidden');
     }
   </script>
 </body>
