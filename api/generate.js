@@ -1,5 +1,5 @@
-// /api/generate.js — Cardify AI v3.2 Prompt-to-Theme & Infographic Engine
-// Dynamic CSS Theme Injector & Visual Infographic Structuring Engine
+// /api/generate.js — Cardify AI v3.4 Resilient Multi-Provider API Gateway
+// Failover Chain: Custom Key -> Groq Llama-3 70B -> Gemini 1.5 Flash REST -> Robust Fallback JSON
 
 const rateLimitStore = new Map();
 const DAILY_FREE_LIMIT = 3;
@@ -50,6 +50,16 @@ const PLATFORM_INJECTORS = {
 - Tone: Warm, actionable, empathetic, uses visual keywords & emojis.
 - Headline Rules: Must use curiosity gap or benefit-driven numbers (e.g., "建议收藏", "3个避坑指南").`,
 
+  wechat: `### PLATFORM-SPECIFIC STYLE INJECTOR (WeChat)
+- Style: Deep insights, structured key takeaways, elegant quotes.
+- Tone: Professional, authoritative, engaging.`,
+
+  zhihu: `### PLATFORM-SPECIFIC STYLE INJECTOR (Zhihu/Jike)
+- Style: Hardcore tech breakdown, data ROI metrics, contrarian insights.`,
+
+  bilibili: `### PLATFORM-SPECIFIC STYLE INJECTOR (Bilibili/Video Script)
+- Style: Hook -> Problem -> Solution -> Call to Action storyboard format.`,
+
   linkedin: `### PLATFORM-SPECIFIC STYLE INJECTOR (LinkedIn)
 - Style: Professional, concise, data-driven, thought leadership.
 - Tone: Authoritative, polished, action-oriented.
@@ -65,9 +75,8 @@ const PLATFORM_INJECTORS = {
 - Tone: Aspirational, structured, inspiring.
 - Headline Rules: Visually arresting titles with strong value promise.`,
 
-  youtube_script: `### PLATFORM-SPECIFIC STYLE INJECTOR (YouTube/Shorts Script)
-- Style: Hook -> Problem -> Solution -> CTA storyboard format.
-- Output Focus: Split into 3-5 slides, each representing a visual scene hook + script takeaway.`
+  youtube_script: `### PLATFORM-SPECIFIC STYLE INJECTOR (YouTube Shorts Script)
+- Style: Hook -> Problem -> Solution -> CTA storyboard format.`
 };
 
 const BASE_MASTER_PROMPT = `You are a World-Class Visual Content Architect and Viral Growth Specialist.
@@ -209,19 +218,55 @@ async function callGeminiRest(apiKey, sysInstruction, userPrompt) {
   return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 }
 
-async function executeLLMCall(apiKey, sysInstruction, userPrompt) {
-  if (apiKey.startsWith('gsk_')) {
-    return await callGroq(apiKey, sysInstruction, userPrompt);
+// Multi-tier API Key Failover Provider Strategy
+async function robustLLMFailover(userKey, sysInstruction, userPrompt) {
+  const keysToTry = [];
+
+  // 1. User-supplied Key
+  if (userKey && typeof userKey === 'string' && userKey.trim().length > 10) {
+    keysToTry.push({ type: 'user', key: userKey.trim() });
   }
-  if (apiKey.startsWith('AIza')) {
-    return await callGeminiRest(apiKey, sysInstruction, userPrompt);
+
+  // 2. Groq Env Keys
+  if (process.env.GROQ_API_KEY) {
+    keysToTry.push({ type: 'groq_env', key: process.env.GROQ_API_KEY.trim() });
   }
-  try {
-    return await callGroq(apiKey, sysInstruction, userPrompt);
-  } catch (e) {
-    if (apiKey.startsWith('AIza')) return await callGeminiRest(apiKey, sysInstruction, userPrompt);
-    throw e;
+
+  // 3. Gemini Env Keys
+  if (process.env.GEMINI_API_KEY) {
+    keysToTry.push({ type: 'gemini_env', key: process.env.GEMINI_API_KEY.trim() });
   }
+
+  // 4. Default Fallback Public Keys
+  keysToTry.push({ type: 'groq_default', key: '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' });
+
+  let lastError = null;
+
+  for (const item of keysToTry) {
+    try {
+      let rawText = '';
+      if (item.key.startsWith('gsk_')) {
+        rawText = await callGroq(item.key, sysInstruction, userPrompt);
+      } else if (item.key.startsWith('AIza')) {
+        rawText = await callGeminiRest(item.key, sysInstruction, userPrompt);
+      } else {
+        try {
+          rawText = await callGroq(item.key, sysInstruction, userPrompt);
+        } catch (e) {
+          rawText = await callGeminiRest(item.key, sysInstruction, userPrompt);
+        }
+      }
+
+      if (rawText && rawText.trim().length > 0) {
+        return { rawText, usedProvider: item.type };
+      }
+    } catch (e) {
+      console.warn(`[LLM Failover] Provider ${item.type} failed:`, e.message);
+      lastError = e;
+    }
+  }
+
+  throw lastError || new Error('All AI LLM providers failed.');
 }
 
 export default async function handler(req, res) {
@@ -242,19 +287,16 @@ export default async function handler(req, res) {
 
   const { input_text, target_style, target_lang, mode_preference, platform, preset_hook, custom_theme_prompt, userApiKey, licenseKey } = req.body || {};
 
-  if (!input_text || typeof input_text !== 'string' || input_text.trim().length < 10) {
-    return res.status(400).json({ error: 'INPUT_TOO_SHORT', message: 'Input text must be at least 10 characters long.' });
+  if (!input_text || typeof input_text !== 'string' || input_text.trim().length < 5) {
+    return res.status(400).json({ error: 'INPUT_TOO_SHORT', message: 'Input text must be at least 5 characters long.' });
   }
 
   const ip = getClientIp(req);
-  let activeKey = null;
   let keyUsedType = 'free';
 
   if (typeof userApiKey === 'string' && userApiKey.trim().length > 10) {
-    activeKey = userApiKey.trim();
     keyUsedType = 'user';
   } else if (typeof licenseKey === 'string' && licenseKey.trim().length >= 5) {
-    activeKey = process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY || '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';
     keyUsedType = 'official_vip';
   } else {
     const limitCheck = checkDailyIpLimit(ip);
@@ -265,7 +307,6 @@ export default async function handler(req, res) {
         key_used: 'none'
       });
     }
-    activeKey = process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY || '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';
     keyUsedType = 'free';
   }
 
@@ -282,12 +323,13 @@ export default async function handler(req, res) {
   userPrompt += `\n[Raw Content]:\n${input_text.trim()}`;
 
   try {
-    const rawAiOutput = await executeLLMCall(activeKey, finalSystemPrompt, userPrompt);
-    const parsedData = extractJSON(rawAiOutput);
+    const { rawText, usedProvider } = await robustLLMFailover(userApiKey, finalSystemPrompt, userPrompt);
+    const parsedData = extractJSON(rawText);
 
     return res.status(200).json({
       success: true,
       key_used: keyUsedType,
+      provider: usedProvider,
       remaining_free: keyUsedType === 'free' ? getIpRemaining(ip) : 999,
       data: parsedData
     });
@@ -295,7 +337,7 @@ export default async function handler(req, res) {
     console.error('[Cardify AI Backend Error]', err);
     return res.status(500).json({
       error: 'AI_GENERATION_FAILED',
-      message: err.message || 'Failed to generate viral content suite.',
+      message: err.message || 'AI generation failed. Please check your API key or try again.',
       key_used: keyUsedType
     });
   }

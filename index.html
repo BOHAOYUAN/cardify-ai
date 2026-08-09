@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cardify.ai 3.3 — 3-Second Aha Moment & Viral Asset Engine</title>
+  <title>Cardify.ai 3.5 — Pure Global SaaS & Visual Art Engine</title>
   <meta name="description" content="Turn any article or idea into viral Xiaohongshu Carousel slides, LinkedIn posts, Twitter threads, Instagram Carousels, and YouTube Shorts scripts with 1-click sandbox demos & prompt-driven visual art.">
   
   <!-- Tailwind CSS CDN -->
@@ -55,7 +55,7 @@
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
-    /* ================= DYNAMIC THEME ENGINE ================= */
+    /* Dynamic Themes */
     .theme-cyber {
       background: linear-gradient(135deg, rgba(30, 41, 59, 0.98) 0%, rgba(15, 23, 42, 0.99) 100%);
       border: 1px solid rgba(139, 92, 246, 0.35);
@@ -148,7 +148,7 @@
         <div>
           <span class="text-xl font-extrabold font-outfit tracking-tight text-white flex items-center gap-2">
             Cardify<span class="text-purple-400">.ai</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v3.3 Aha Engine</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v3.5 Global</span>
           </span>
         </div>
       </div>
@@ -196,27 +196,27 @@
       <!-- ⚡ 3-SECOND AHA MOMENT: 1-CLICK SANDBOX DEMOS -->
       <div class="glass-panel rounded-2xl p-4 border border-purple-500/30 bg-gradient-to-r from-purple-950/40 via-gray-950 to-indigo-950/40 flex flex-col gap-2.5">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+          <span id="txtSandboxHeader" class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
             <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
-            ⚡ 3-Second Aha Moment: 1-Click Sandbox Demos (点击直接变幻好莱坞级卡牌)
+            ⚡ 3-Second Aha Moment: 1-Click Sandbox Demos (Instant Hollywood Visual Cards)
           </span>
           <span class="text-[10px] text-purple-300 bg-purple-900/40 px-2 py-0.5 rounded-full font-mono border border-purple-700/40">Zero Typing</span>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
           <button onclick="loadSandboxDemo('hacker')" class="sandbox-demo-btn p-2.5 rounded-xl bg-purple-950/60 hover:bg-purple-900/80 border text-left transition-all flex flex-col justify-between min-h-[58px]">
-            <span class="text-xs font-bold text-purple-200">🚀 1-Click Try: $10k ARR Playbook</span>
+            <span id="txtDemo1Title" class="text-xs font-bold text-purple-200">🚀 1-Click Try: $10k ARR Playbook</span>
             <span class="text-[10px] text-purple-300/70 font-mono">Cyberpunk 2077 • Twitter/X</span>
           </button>
 
           <button onclick="loadSandboxDemo('deepseek')" class="sandbox-demo-btn p-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border text-left transition-all flex flex-col justify-between min-h-[58px]">
-            <span class="text-xs font-bold text-emerald-300">🧠 1-Click Try: DeepSeek Disrupted AI</span>
+            <span id="txtDemo2Title" class="text-xs font-bold text-emerald-300">🧠 1-Click Try: DeepSeek Disrupted AI</span>
             <span class="text-[10px] text-emerald-400/70 font-mono">Matrix Hacker • LinkedIn</span>
           </button>
 
           <button onclick="loadSandboxDemo('xhs')" class="sandbox-demo-btn p-2.5 rounded-xl bg-rose-950/60 hover:bg-rose-900/80 border text-left transition-all flex flex-col justify-between min-h-[58px]">
-            <span class="text-xs font-bold text-rose-200">📕 1-Click Try: 小红书涨粉 3 大避坑</span>
-            <span class="text-[10px] text-rose-300/70 font-mono">Morandi Soft • Xiaohongshu</span>
+            <span id="txtDemo3Title" class="text-xs font-bold text-rose-200">📕 1-Click Try: Viral Content 3 Rules</span>
+            <span class="text-[10px] text-rose-300/70 font-mono">Morandi Soft • Carousel</span>
           </button>
         </div>
       </div>
@@ -240,9 +240,9 @@
         <!-- 🎨 PROMPT-DRIVEN VISUAL THEME ENGINE (With Real-Time Hover Skin Selection) -->
         <div class="p-3.5 rounded-xl bg-gray-950 border border-gray-800 flex flex-col gap-2.5">
           <div class="flex items-center justify-between">
-            <label class="text-xs font-bold text-purple-300 flex items-center gap-1.5">
+            <label id="txtThemeLabel" class="text-xs font-bold text-purple-300 flex items-center gap-1.5">
               <i data-lucide="palette" class="w-4 h-4 text-purple-400"></i>
-              🎨 Prompt-Driven Visual Theme (滑过即时预览选皮肤)
+              🎨 Prompt-Driven Visual Theme (Hover for Instant Real-Time Preview)
             </label>
             <span class="text-[10px] text-purple-300 bg-purple-900/40 px-2 py-0.5 rounded-full font-mono border border-purple-700/40">Real-time Hover</span>
           </div>
@@ -395,7 +395,7 @@
             <span id="txtExportPdfBtn">📄 PDF Slide</span>
           </button>
 
-          <button id="btnExportAll" onclick="exportAllCards()" title="Batch export all carousel slides (Pro unwatermarked)" class="py-2.5 px-2 rounded-xl bg-purple-900/50 hover:bg-purple-800/50 border border-purple-700/50 text-xs font-semibold text-purple-200 flex items-center justify-center gap-1 transition-all">
+          <button id="btnExportAll" onclick="exportAllCards()" title="Batch export all carousel slides" class="py-2.5 px-2 rounded-xl bg-purple-900/50 hover:bg-purple-800/50 border border-purple-700/50 text-xs font-semibold text-purple-200 flex items-center justify-center gap-1 transition-all">
             <i data-lucide="layers" class="w-3.5 h-3.5 text-purple-300"></i>
             <span id="exportAllBtnText">📦 Package All</span>
           </button>
@@ -423,7 +423,7 @@
     </div>
   </footer>
 
-  <!-- ================= DODO PAYMENTS / PRO MODAL (WITH ASSET PAYWALL HOOK) ================= -->
+  <!-- ================= DODO PAYMENTS / PRO MODAL ================= -->
   <div id="upgradeModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
     <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-purple-500/30 flex flex-col gap-5 relative">
       <button onclick="closeUpgradeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
@@ -499,10 +499,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
-  <!-- ================= CORE APPLICATION LOGIC & VISUAL ART ENGINE ================= -->
+  <!-- ================= CORE APPLICATION LOGIC & GLOBAL I18N ================= -->
   <script>
     let currentMode = 'carousel'; // 'single' | 'carousel'
-    let currentPreset = 'cyber'; // 'cyber' | 'custom'
+    let currentPreset = 'cyber';
     let selectedLang = 'en'; // DEFAULT EN
     let selectedPlatform = 'twitter';
     let selectedHookTag = '';
@@ -515,25 +515,47 @@
     let swiperInstance = null;
     let remainingFreeQuota = 3;
 
-    // Sandbox Demos for 3-Second Aha Moment
+    // Sandbox Demos localized for en & zh
     const SANDBOX_DEMOS = {
-      hacker: {
-        text: "3 Rules for Indie Hackers to reach $10k ARR in 30 Days: 1. Validate demand first with existing competitors. 2. Fix competitor 1-star review pain points. 3. Build built-in viral referral loops into visual carousels.",
-        theme: "Cyberpunk 2077",
-        platform: "twitter",
-        mode: "carousel"
+      en: {
+        hacker: {
+          text: "3 Rules for Indie Hackers to reach $10k ARR in 30 Days: 1. Validate demand first with existing competitors. 2. Fix competitor 1-star review pain points. 3. Build built-in viral referral loops into visual carousels.",
+          theme: "Cyberpunk 2077",
+          platform: "twitter",
+          mode: "carousel"
+        },
+        deepseek: {
+          text: "How DeepSeek Disrupted the AI Industry: 1. R1 distilled reasoning models at 1/20th the cost. 2. Multi-head latent attention (MLA) architecture. 3. Open weights Democratizing AGI.",
+          theme: "Matrix Green",
+          platform: "linkedin",
+          mode: "carousel"
+        },
+        xhs: {
+          text: "3 Rules for Viral Content Growth: 1. Stop the scroll in 0.5s with punchy contrast cards. 2. Address core pain points with clear ROI. 3. End with a strong CTA bookmark prompt!",
+          theme: "Morandi Soft",
+          platform: "instagram",
+          mode: "carousel"
+        }
       },
-      deepseek: {
-        text: "How DeepSeek Disrupted the AI Industry: 1. R1 distilled reasoning models at 1/20th the cost. 2. Multi-head latent attention (MLA) architecture. 3. Open weights Democratizing AGI.",
-        theme: "Matrix Green",
-        platform: "linkedin",
-        mode: "carousel"
-      },
-      xhs: {
-        text: "小红书涨粉 3 大避坑指南：1. 拒绝纯文本密排，前 0.5 秒用视觉高亮卡片卡住视线。2. 必须击中用户痛点而不是写流水账。3. 结尾设置金句引导收藏！",
-        theme: "Morandi Soft",
-        platform: "xiaohongshu",
-        mode: "carousel"
+      zh: {
+        hacker: {
+          text: "独立开发者 30 天做成 1 万刀 ARR 的 3 个法则：1. 锁定验证赛道。2. 击中竞品差评痛点。3. 打造带有裂变水印的切片卡包。",
+          theme: "Cyberpunk 2077",
+          platform: "twitter",
+          mode: "carousel"
+        },
+        deepseek: {
+          text: "DeepSeek 如何颠覆 AI 行业：1. R1 推理模型成本降至 1/20。2. MLA 多头潜隐注意力架构。3. 开源模型推动 AGI 普及。",
+          theme: "Matrix Green",
+          platform: "linkedin",
+          mode: "carousel"
+        },
+        xhs: {
+          text: "小红书涨粉 3 大避坑指南：1. 拒绝纯文本密排，前 0.5 秒用视觉高亮卡片卡住视线。2. 必须击中用户痛点而不是写流水账。3. 结尾设置金句引导收藏！",
+          theme: "Morandi Soft",
+          platform: "xiaohongshu",
+          mode: "carousel"
+        }
       }
     };
 
@@ -669,6 +691,11 @@
       en: {
         quotaText: '✦ 3 Free Left',
         upgradeHeader: 'Upgrade Pro ($9.9/mo)',
+        sandboxHeader: '⚡ 3-Second Aha Moment: 1-Click Sandbox Demos (Instant Hollywood Visual Cards)',
+        demo1Title: '🚀 1-Click Try: $10k ARR Playbook',
+        demo2Title: '🧠 1-Click Try: DeepSeek Disrupted AI',
+        demo3Title: '📕 1-Click Try: Viral Content 3 Rules',
+        themeLabel: '🎨 Prompt-Driven Visual Theme (Hover for Instant Real-Time Preview)',
         modeSingle: '🎴 Single Card',
         modeCarousel: '📚 Carousel Pack',
         hookTagsLabel: '⚡ One-Click Hook Tags (Click to inject viral focus)',
@@ -694,11 +721,17 @@
         modalLicLabel: 'Have a Pro License Key?',
         modalActivate: 'Activate',
         modalBuy: 'Buy Pro License ($9.9/mo)',
+        toastCopiedClipboard: 'Copied to Clipboard! Ready to paste!',
         defaultCarouselSlides: PLATFORM_DEFAULT_SLIDES.twitter
       },
       zh: {
         quotaText: '✦ 剩余 3 次免费',
         upgradeHeader: '升级 Pro 版 ($9.9/月)',
+        sandboxHeader: '⚡ 3秒惊叹时刻：一键爆款沙盒 (点击直接变幻好莱坞级卡牌)',
+        demo1Title: '🚀 一键试用：1万刀 ARR 独立开发法则',
+        demo2Title: '🧠 一键试用：DeepSeek 颠覆 AI 行业',
+        demo3Title: '📕 一键试用：小红书涨粉 3 大避坑',
+        themeLabel: '🎨 Prompt-Driven 视觉主题 (滑过即时预览选皮肤)',
         modeSingle: '🎴 单图卡片',
         modeCarousel: '📚 连载切片',
         hookTagsLabel: '⚡ 一键爆款钩子套件 (点击注入爆款聚焦)',
@@ -724,6 +757,7 @@
         modalLicLabel: '已有 Pro 激活码？',
         modalActivate: '立即激活',
         modalBuy: '购买 Pro 授权 ($9.9/月)',
+        toastCopiedClipboard: '已复制到剪贴板！可直接粘贴！',
         defaultCarouselSlides: PLATFORM_DEFAULT_SLIDES.xiaohongshu
       }
     };
@@ -756,9 +790,10 @@
       }
     }
 
-    // ⚡ 1-Click Sandbox Demo Loader (3-Second Aha Moment)
+    // Localized 1-Click Sandbox Demo Loader
     function loadSandboxDemo(demoId) {
-      const demo = SANDBOX_DEMOS[demoId];
+      const langDemos = SANDBOX_DEMOS[selectedLang] || SANDBOX_DEMOS.en;
+      const demo = langDemos[demoId];
       if (!demo) return;
 
       document.getElementById('inputText').value = demo.text;
@@ -766,11 +801,10 @@
 
       applyThemePrompt(demo.theme);
       selectPlatform(demo.platform, 'cyber', '16:9');
-      showToast(`⚡ 3-Second Sandbox Loaded: "${demo.theme}" demo ready!`);
-      trackAnalyticsEvent('sandbox_demo_clicked', { demo: demoId });
+      showToast(selectedLang === 'zh' ? `⚡ 3秒沙盒已载入："${demo.theme}" 演示!` : `⚡ 3-Second Sandbox Loaded: "${demo.theme}" demo ready!`);
+      trackAnalyticsEvent('sandbox_demo_clicked', { demo: demoId, lang: selectedLang });
     }
 
-    // Real-Time Hover Theme Preview
     function previewThemeStyle(promptName) {
       const preset = PROMPT_THEME_PRESETS[promptName];
       if (preset) {
@@ -792,7 +826,7 @@
       if (preset) {
         customThemeStyleCss = preset;
         applyCustomCssToCards(preset);
-        showToast(`🎨 Applied Prompt Visual Style: ${promptName}`);
+        showToast(selectedLang === 'zh' ? `🎨 已应用视觉主题: ${promptName}` : `🎨 Applied Visual Style: ${promptName}`);
         trackAnalyticsEvent('theme_prompt_applied', { prompt: promptName });
       }
     }
@@ -818,7 +852,7 @@
 
       customThemeStyleCss = preset;
       applyCustomCssToCards(preset);
-      showToast(`🎨 Applied Custom Theme: "${text}"`);
+      showToast(selectedLang === 'zh' ? `🎨 已应用自定义主题: "${text}"` : `🎨 Applied Custom Theme: "${text}"`);
     }
 
     function applyCustomCssToCards(cssObj) {
@@ -923,7 +957,7 @@
       if (platformCacheStore[cacheKey]) {
         currentResponseData = platformCacheStore[cacheKey];
         renderGeneratedResults(currentResponseData);
-        showToast(`⚡ Loaded cached AI output for ${id} (0ms, 0 API Cost)`);
+        showToast(selectedLang === 'zh' ? `⚡ 已载入 ${id} 的缓存结果` : `⚡ Loaded cached AI output for ${id}`);
       } else if (inputVal.length >= 10) {
         generateContent(false);
       } else {
@@ -940,7 +974,7 @@
         selectedHookTag = '';
       } else {
         selectedHookTag = id;
-        showToast(`Injected Viral Hook: ${hookText}`);
+        showToast(`Injected Hook: ${hookText}`);
       }
       renderDynamicMatrix();
       trackAnalyticsEvent('hook_tag_clicked', { tag: id });
@@ -954,6 +988,17 @@
 
       document.getElementById('quotaText').innerText = isProUser ? '✦ PRO UNLIMITED' : `✦ ${remainingFreeQuota} Free Left`;
       document.getElementById('txtUpgradeHeader').innerText = isProUser ? 'PRO Member ✨' : dict.upgradeHeader;
+
+      // Sandbox Headers & Titles
+      const sandboxHeader = document.getElementById('txtSandboxHeader');
+      if (sandboxHeader) sandboxHeader.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i> ${dict.sandboxHeader}`;
+      document.getElementById('txtDemo1Title').innerText = dict.demo1Title;
+      document.getElementById('txtDemo2Title').innerText = dict.demo2Title;
+      document.getElementById('txtDemo3Title').innerText = dict.demo3Title;
+
+      // Theme Section
+      const themeLabel = document.getElementById('txtThemeLabel');
+      if (themeLabel) themeLabel.innerHTML = `<i data-lucide="palette" class="w-4 h-4 text-purple-400"></i> ${dict.themeLabel}`;
 
       document.getElementById('txtModeSingle').innerText = dict.modeSingle;
       document.getElementById('txtModeCarousel').innerText = dict.modeCarousel;
@@ -1094,8 +1139,8 @@
 
     async function generateContent(forceRegenerate = false) {
       const text = document.getElementById('inputText').value.trim();
-      if (!text || text.length < 10) {
-        showToast('Please enter at least 10 characters of content.', true);
+      if (!text || text.length < 5) {
+        showToast('Please enter at least 5 characters of content.', true);
         return;
       }
 
@@ -1113,7 +1158,7 @@
       if (!forceRegenerate && platformCacheStore[cacheKey]) {
         currentResponseData = platformCacheStore[cacheKey];
         renderGeneratedResults(currentResponseData);
-        showToast(`⚡ Loaded cached AI output (0ms, 0 API Cost)`);
+        showToast(selectedLang === 'zh' ? '⚡ 已载入 AI 缓存结果' : '⚡ Loaded cached AI output');
         return;
       }
 
@@ -1303,7 +1348,7 @@
       const copyText = document.getElementById('copyBtnText');
       copyText.innerText = 'Copied!';
       setTimeout(() => copyText.innerText = I18N_DICT[selectedLang]?.copyBtn || 'Copy Post', 2000);
-      showToast('Copied post text to clipboard!');
+      showToast(I18N_DICT[selectedLang]?.toastCopiedClipboard || 'Copied post text to clipboard!');
       trackAnalyticsEvent('copy_post_text');
     }
 
@@ -1353,7 +1398,7 @@
           await navigator.clipboard.write([
             new ClipboardItem({ 'image/png': blob })
           ]);
-          showToast('📋 Image copied directly to Clipboard! Ready to paste!');
+          showToast(I18N_DICT[selectedLang]?.toastCopiedClipboard || '📋 Image copied directly to Clipboard! Ready to paste!');
           trackAnalyticsEvent('copy_card_image');
         });
       } catch (e) {
@@ -1368,7 +1413,6 @@
       }
     }
 
-    // Asset Paywall Hook on Full Unwatermarked Carousel PDF / Package Export
     async function exportLinkedInPdf() {
       if (!isProUser) {
         openUpgradeModal();
