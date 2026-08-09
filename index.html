@@ -148,7 +148,7 @@
         <div>
           <span class="text-xl font-extrabold font-outfit tracking-tight text-white flex items-center gap-2">
             Cardify<span class="text-purple-400">.ai</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v5.0 Commercial Matrix</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v5.1 Smart Native Lang</span>
           </span>
         </div>
       </div>
@@ -159,7 +159,8 @@
         <!-- Language Selector -->
         <div class="relative">
           <select id="langSelect" onchange="handleLangChange(this.value)" class="bg-gray-900/90 text-gray-200 text-xs font-medium px-3 py-2 rounded-lg border border-gray-700/80 focus:outline-none focus:border-purple-500 transition-all cursor-pointer">
-            <option value="en" selected>🇺🇸 English (en-US)</option>
+            <option value="auto" selected>🌐 自动感知母语 (Auto Detect)</option>
+            <option value="en">🇺🇸 English (en-US)</option>
             <option value="zh">🇨🇳 简体中文 (zh-CN)</option>
             <option value="es">🇪🇸 Español (es-ES)</option>
             <option value="pt">🇵🇹 Português (pt-BR)</option>
@@ -519,7 +520,7 @@
   <script>
     let currentMode = 'carousel';
     let currentPreset = 'cyber';
-    let selectedLang = 'en';
+    let selectedLang = 'auto';
     let selectedPlatform = 'twitter';
     let selectedHookTag = '';
     let customThemePrompt = '';
@@ -1231,10 +1232,18 @@
       });
     }
 
-    // FULL 9-LANGUAGE SWITCHER (INSTANT NATIVE RE-RENDER)
+    function getEffectiveLang() {
+      if (selectedLang === 'auto') {
+        return (navigator.language && navigator.language.startsWith('zh')) ? 'zh' : 'en';
+      }
+      return selectedLang;
+    }
+
+    // FULL 9-LANGUAGE SWITCHER (INSTANT NATIVE RE-RENDER & AUTO DETECT)
     function handleLangChange(lang) {
       selectedLang = lang;
-      const matrix = DYNAMIC_PLATFORMS[lang] || DYNAMIC_PLATFORMS.en;
+      const eff = getEffectiveLang();
+      const matrix = DYNAMIC_PLATFORMS[eff] || DYNAMIC_PLATFORMS.en;
       if (matrix && matrix.length > 0) {
         selectedPlatform = matrix[0].id;
         currentPreset = matrix[0].preset;
@@ -1243,11 +1252,19 @@
       // Clear cache when language changes so fresh localized slides render
       currentResponseData = null;
       applyTranslations();
+
+      if (lang !== 'auto') {
+        showToast(`🌐 已开启跨语言提炼模式：目标语言 (${lang.toUpperCase()})`);
+      } else {
+        showToast(`🌐 智能感知模式：保持输入内容的原语种提炼`);
+      }
+
       trackAnalyticsEvent('lang_changed', { lang });
     }
 
     function renderDynamicMatrix() {
-      const matrix = DYNAMIC_PLATFORMS[selectedLang] || DYNAMIC_PLATFORMS.en;
+      const eff = getEffectiveLang();
+      const matrix = DYNAMIC_PLATFORMS[eff] || DYNAMIC_PLATFORMS.en;
       const matrixContainer = document.getElementById('platformMatrixContainer');
       const tabsHeader = document.getElementById('platformTabsHeader');
 
@@ -1269,7 +1286,7 @@
         `).join('');
       }
 
-      const tags = HOOK_TAGS[selectedLang] || HOOK_TAGS.en;
+      const tags = HOOK_TAGS[eff] || HOOK_TAGS.en;
       const tagsContainer = document.getElementById('hookTagsContainer');
       if (tagsContainer) {
         tagsContainer.innerHTML = tags.map(t => `
@@ -1297,7 +1314,8 @@
       } else if (inputVal.length >= 10) {
         generateContent(false);
       } else {
-        const platformDefaults = LOCALIZED_DEFAULT_SLIDES[selectedLang] || LOCALIZED_DEFAULT_SLIDES.en;
+        const eff = getEffectiveLang();
+        const platformDefaults = LOCALIZED_DEFAULT_SLIDES[eff] || LOCALIZED_DEFAULT_SLIDES.en;
         renderSlides(platformDefaults, '⚡️ Cardify.ai');
         switchTab(selectedPlatform);
       }
@@ -1317,7 +1335,8 @@
     }
 
     function applyTranslations() {
-      const dict = I18N_DICT[selectedLang] || I18N_DICT.en;
+      const eff = getEffectiveLang();
+      const dict = I18N_DICT[eff] || I18N_DICT.en;
 
       renderDynamicMatrix();
 
@@ -1361,7 +1380,7 @@
 
       // INSTANTLY RE-RENDER RIGHT-SIDE PREVIEW CARDS IN TARGET LANGUAGE!
       if (!currentResponseData) {
-        const platformDefaults = LOCALIZED_DEFAULT_SLIDES[selectedLang] || LOCALIZED_DEFAULT_SLIDES.en;
+        const platformDefaults = LOCALIZED_DEFAULT_SLIDES[eff] || LOCALIZED_DEFAULT_SLIDES.en;
         if (currentMode === 'single') {
           renderSlides([platformDefaults[0]], isProUser ? '⚡️ Cardify Pro' : '⚡️ Made with Cardify.ai');
         } else {

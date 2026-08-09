@@ -33,6 +33,7 @@ function getIpRemaining(ip) {
 }
 
 const LANG_NAMES = {
+  auto: 'Auto Detect (Preserve Native Input Language)',
   en: 'en-US',
   zh: 'zh-CN',
   es: 'es-ES',
@@ -315,14 +316,22 @@ export default async function handler(req, res) {
     keyUsedType = 'free';
   }
 
-  const targetLangCode = LANG_NAMES[target_lang] || 'en-US';
+  const isAutoDetect = (!target_lang || target_lang === 'auto');
+  const targetLangCode = isAutoDetect 
+    ? 'Auto Detect (MUST match native language of user input text)' 
+    : (LANG_NAMES[target_lang] || 'en-US');
+
+  const langRule = isAutoDetect
+    ? 'CRITICAL LANGUAGE RULE: Output MUST strictly match and preserve the native language of the user input content (e.g. if input text is Chinese, output Chinese; if input text is English, output English). Do NOT translate.'
+    : `CRITICAL LANGUAGE RULE: Output MUST strictly translate, adapt, and localize content into ${targetLangCode} with zero language mix.`;
+
   const modeVal = mode_preference === 'single' ? 'single' : 'carousel';
   const platformKey = platform || 'twitter';
   const platformInjector = PLATFORM_INJECTORS[platformKey] || PLATFORM_INJECTORS.twitter;
 
-  const finalSystemPrompt = `${BASE_MASTER_PROMPT}\n\n[TARGET LANGUAGE]: ${targetLangCode}\n[TARGET PLATFORM]: ${platformKey}\n\n${platformInjector}`;
+  const finalSystemPrompt = `${BASE_MASTER_PROMPT}\n\n[LANGUAGE INSTRUCTION]: ${langRule}\n[TARGET PLATFORM]: ${platformKey}\n\n${platformInjector}`;
 
-  let userPrompt = `[Target Language]: ${targetLangCode}\n[Mode Preference]: ${modeVal}\n[Platform]: ${platformKey}\n[Style Profile]: ${target_style || 'cyber'}`;
+  let userPrompt = `[Target Language Mode]: ${targetLangCode}\n[Mode Preference]: ${modeVal}\n[Platform]: ${platformKey}\n[Style Profile]: ${target_style || 'cyber'}`;
   if (custom_theme_prompt) userPrompt += `\n[Custom Prompt Visual Theme]: ${custom_theme_prompt}`;
   if (preset_hook) userPrompt += `\n[Viral Hook Focus]: ${preset_hook}`;
   userPrompt += `\n[Raw Content]:\n${input_text.trim()}`;
