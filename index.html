@@ -148,7 +148,7 @@
         <div>
           <span class="text-xl font-extrabold font-outfit tracking-tight text-white flex items-center gap-2">
             Cardify<span class="text-purple-400">.ai</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v3.8 Global</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v4.1 AI LIVE</span>
           </span>
         </div>
       </div>
@@ -1254,7 +1254,7 @@
       if (aspectBadge) aspectBadge.innerText = `📐 ${ratio} Ratio`;
 
       const inputVal = document.getElementById('inputText').value.trim();
-      const cacheKey = `${selectedPlatform}_${currentMode}_${selectedLang}`;
+      const cacheKey = `${selectedPlatform}_${currentMode}_${selectedLang}_${inputVal.slice(0, 50)}`;
 
       if (platformCacheStore[cacheKey]) {
         currentResponseData = platformCacheStore[cacheKey];
@@ -1453,7 +1453,7 @@
         customKey = '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';
       }
 
-      const cacheKey = `${selectedPlatform}_${currentMode}_${selectedLang}`;
+      const cacheKey = `${selectedPlatform}_${currentMode}_${selectedLang}_${text.slice(0, 50)}`;
 
       if (!forceRegenerate && platformCacheStore[cacheKey]) {
         currentResponseData = platformCacheStore[cacheKey];
