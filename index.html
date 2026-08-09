@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cardify.ai 3.5 — Pure Global SaaS & Visual Art Engine</title>
-  <meta name="description" content="Turn any article or idea into viral Xiaohongshu Carousel slides, LinkedIn posts, Twitter threads, Instagram Carousels, and YouTube Shorts scripts with 1-click sandbox demos & prompt-driven visual art.">
+  <title>Cardify.ai 3.6 — 9-Language Global Visual Art SaaS</title>
+  <meta name="description" content="Turn any article or idea into viral social media cards with 1-click sandbox demos & prompt-driven visual art in 9 global languages.">
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -148,7 +148,7 @@
         <div>
           <span class="text-xl font-extrabold font-outfit tracking-tight text-white flex items-center gap-2">
             Cardify<span class="text-purple-400">.ai</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v3.5 Global</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v3.6 9-Lang Global</span>
           </span>
         </div>
       </div>
@@ -156,18 +156,18 @@
       <!-- Controls & Upgrade CTA -->
       <div class="flex items-center gap-3">
         
-        <!-- Language Selector (DEFAULT: English en-US) -->
+        <!-- Language Selector (Support All 9 Languages natively) -->
         <div class="relative">
           <select id="langSelect" onchange="handleLangChange(this.value)" class="bg-gray-900/90 text-gray-200 text-xs font-medium px-3 py-2 rounded-lg border border-gray-700/80 focus:outline-none focus:border-purple-500 transition-all cursor-pointer">
             <option value="en" selected>🇺🇸 English (en-US)</option>
             <option value="zh">🇨🇳 简体中文 (zh-CN)</option>
-            <option value="es">🇪🇸 Español</option>
-            <option value="pt">🇵🇹 Português</option>
-            <option value="ru">🇷🇺 Русский</option>
-            <option value="ja">🇯🇵 日本語</option>
-            <option value="ko">🇰🇷 한국어</option>
-            <option value="fr">🇫🇷 Français</option>
-            <option value="de">🇩🇪 Deutsch</option>
+            <option value="es">🇪🇸 Español (es-ES)</option>
+            <option value="pt">🇵🇹 Português (pt-BR)</option>
+            <option value="ru">🇷🇺 Русский (ru-RU)</option>
+            <option value="ja">🇯🇵 日本語 (ja-JP)</option>
+            <option value="ko">🇰🇷 한국어 (ko-KR)</option>
+            <option value="fr">🇫🇷 Français (fr-FR)</option>
+            <option value="de">🇩🇪 Deutsch (de-DE)</option>
           </select>
         </div>
 
@@ -499,11 +499,11 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
-  <!-- ================= CORE APPLICATION LOGIC & GLOBAL I18N ================= -->
+  <!-- ================= CORE APPLICATION LOGIC & FULL 9-LANG GLOBAL I18N ================= -->
   <script>
-    let currentMode = 'carousel'; // 'single' | 'carousel'
+    let currentMode = 'carousel';
     let currentPreset = 'cyber';
-    let selectedLang = 'en'; // DEFAULT EN
+    let selectedLang = 'en';
     let selectedPlatform = 'twitter';
     let selectedHookTag = '';
     let customThemePrompt = '';
@@ -515,133 +515,7 @@
     let swiperInstance = null;
     let remainingFreeQuota = 3;
 
-    // Sandbox Demos localized for en & zh
-    const SANDBOX_DEMOS = {
-      en: {
-        hacker: {
-          text: "3 Rules for Indie Hackers to reach $10k ARR in 30 Days: 1. Validate demand first with existing competitors. 2. Fix competitor 1-star review pain points. 3. Build built-in viral referral loops into visual carousels.",
-          theme: "Cyberpunk 2077",
-          platform: "twitter",
-          mode: "carousel"
-        },
-        deepseek: {
-          text: "How DeepSeek Disrupted the AI Industry: 1. R1 distilled reasoning models at 1/20th the cost. 2. Multi-head latent attention (MLA) architecture. 3. Open weights Democratizing AGI.",
-          theme: "Matrix Green",
-          platform: "linkedin",
-          mode: "carousel"
-        },
-        xhs: {
-          text: "3 Rules for Viral Content Growth: 1. Stop the scroll in 0.5s with punchy contrast cards. 2. Address core pain points with clear ROI. 3. End with a strong CTA bookmark prompt!",
-          theme: "Morandi Soft",
-          platform: "instagram",
-          mode: "carousel"
-        }
-      },
-      zh: {
-        hacker: {
-          text: "独立开发者 30 天做成 1 万刀 ARR 的 3 个法则：1. 锁定验证赛道。2. 击中竞品差评痛点。3. 打造带有裂变水印的切片卡包。",
-          theme: "Cyberpunk 2077",
-          platform: "twitter",
-          mode: "carousel"
-        },
-        deepseek: {
-          text: "DeepSeek 如何颠覆 AI 行业：1. R1 推理模型成本降至 1/20。2. MLA 多头潜隐注意力架构。3. 开源模型推动 AGI 普及。",
-          theme: "Matrix Green",
-          platform: "linkedin",
-          mode: "carousel"
-        },
-        xhs: {
-          text: "小红书涨粉 3 大避坑指南：1. 拒绝纯文本密排，前 0.5 秒用视觉高亮卡片卡住视线。2. 必须击中用户痛点而不是写流水账。3. 结尾设置金句引导收藏！",
-          theme: "Morandi Soft",
-          platform: "xiaohongshu",
-          mode: "carousel"
-        }
-      }
-    };
-
-    const PROMPT_THEME_PRESETS = {
-      'Cyberpunk 2077': {
-        bg: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
-        titleColor: '#00ffcc',
-        subtitleColor: '#ff007f',
-        metricBg: 'rgba(15, 12, 41, 0.9)',
-        metricValueColor: '#00ffcc',
-        quoteBg: 'rgba(255, 0, 127, 0.15)',
-        quoteBorder: '1px solid rgba(255, 0, 127, 0.4)',
-        quoteTextColor: '#ff80bf',
-        border: '1px solid rgba(0, 255, 204, 0.4)',
-        textColor: '#e2e8f0',
-        fontFamily: "'Fira Code', monospace"
-      },
-      'Apple Minimalist': {
-        bg: 'linear-gradient(135deg, #fbfbfd 0%, #f2f2f7 100%)',
-        titleColor: '#1d1d1f',
-        subtitleColor: '#86868b',
-        metricBg: '#ffffff',
-        metricValueColor: '#0071e3',
-        quoteBg: '#f5f5f7',
-        quoteBorder: '1px solid #d2d2d7',
-        quoteTextColor: '#1d1d1f',
-        border: '1px solid #e5e5ea',
-        textColor: '#1d1d1f',
-        fontFamily: "'Inter', sans-serif"
-      },
-      'Morandi Soft': {
-        bg: 'linear-gradient(135deg, #e8e5e1 0%, #d8d3cd 100%)',
-        titleColor: '#4a443e',
-        subtitleColor: '#8c827a',
-        metricBg: '#f4f1ea',
-        metricValueColor: '#7a8b7b',
-        quoteBg: '#ede9e3',
-        quoteBorder: '1px solid #c8c2bc',
-        quoteTextColor: '#5c544d',
-        border: '1px solid #c8c2bc',
-        textColor: '#3d3834',
-        fontFamily: "'Inter', sans-serif"
-      },
-      'Matrix Green': {
-        bg: 'linear-gradient(135deg, #001100 0%, #002200 100%)',
-        titleColor: '#00ff66',
-        subtitleColor: '#33cc66',
-        metricBg: 'rgba(0, 30, 0, 0.85)',
-        metricValueColor: '#00ff66',
-        quoteBg: 'rgba(0, 50, 0, 0.5)',
-        quoteBorder: '1px solid rgba(0, 255, 102, 0.4)',
-        quoteTextColor: '#99ffbb',
-        border: '1px solid rgba(0, 255, 102, 0.5)',
-        textColor: '#ccffdd',
-        fontFamily: "'Fira Code', monospace"
-      },
-      'Vaporwave Sunset': {
-        bg: 'linear-gradient(135deg, #2b1055 0%, #7597de 100%)',
-        titleColor: '#ffe53b',
-        subtitleColor: '#ff2525',
-        metricBg: 'rgba(43, 16, 85, 0.7)',
-        metricValueColor: '#ffe53b',
-        quoteBg: 'rgba(255, 37, 37, 0.15)',
-        quoteBorder: '1px solid rgba(255, 229, 59, 0.4)',
-        quoteTextColor: '#ffffff',
-        border: '1px solid rgba(255, 37, 37, 0.4)',
-        textColor: '#ffffff',
-        fontFamily: "'Outfit', sans-serif"
-      },
-      'Luxury Gold': {
-        bg: 'linear-gradient(135deg, #141414 0%, #0a0a0a 100%)',
-        titleColor: '#d4af37',
-        subtitleColor: '#f3e5ab',
-        metricBg: '#1f1f1f',
-        metricValueColor: '#d4af37',
-        quoteBg: '#181818',
-        quoteBorder: '1px solid #d4af37',
-        quoteTextColor: '#f3e5ab',
-        border: '1px solid rgba(212, 175, 55, 0.4)',
-        textColor: '#e5e5e5',
-        fontFamily: "'Outfit', sans-serif"
-      }
-    };
-
-    const platformCacheStore = {};
-
+    // Fully Localized Platforms Matrix for 9 Global Languages
     const DYNAMIC_PLATFORMS = {
       zh: [
         { id: 'xiaohongshu', name: '📕 小红书爆款', ratio: '3:4', preset: 'xhs' },
@@ -654,21 +528,48 @@
         { id: 'linkedin', name: '💼 LinkedIn Post', ratio: '16:9', preset: 'linkedin' },
         { id: 'instagram', name: '📸 Instagram Carousel', ratio: '3:4', preset: 'xhs' },
         { id: 'youtube_script', name: '📺 YouTube Shorts Script', ratio: '9:16', preset: 'cyber' }
-      ]
-    };
-
-    const PLATFORM_DEFAULT_SLIDES = {
-      xiaohongshu: [
-        { subtitle: '📕 小红书爆款指南', title: '避坑指南：独立开发者必看的 3 个涨粉变现法则', key_metric: { value: '10x', label: '笔记爆款率提升' }, bullet_points: [{ point_title: '建立情绪共鸣', point_desc: '小红书用户要的是解决痛点与可执行的干货清单！' }], takeaway_quote: '📌 建议点赞收藏，随时翻看避坑！' },
-        { subtitle: '📊 视觉对比', title: '卡片式排版 vs 普通长图文', diagram_type: 'versus', versus_comparison: { old_way: '大段文本排版紧密，缺乏情绪抓手', new_way: '视觉卡片 + 数据高亮 + 黄金金句' }, bullet_points: [{ point_title: '粉绿高明度配色', point_desc: '利用视觉抓手在前 0.5 秒吸引注意力。' }], takeaway_quote: '高颜值视觉卡片是小红书涨粉最强法宝。' }
       ],
-      linkedin: [
-        { subtitle: '💼 EXECUTIVE THOUGHT LEADERSHIP', title: 'The $10K ARR Playbook: B2B Growth & ROI Insights', key_metric: { value: '$10K+', label: 'Monthly Recurring Revenue' }, bullet_points: [{ point_title: 'Validate Enterprise Specs', point_desc: 'Target pre-validated B2B tracks with existing high willingness to pay.' }], takeaway_quote: 'Authority and ROI data drive decision-makers to convert.' },
-        { subtitle: '📊 DATA-DRIVEN BENCHMARKS', title: 'Proven B2B Content Performance', diagram_type: 'versus', versus_comparison: { old_way: 'Generic marketing speak & text blocks', new_way: 'Structured infographic diagrams & ROI stats' }, bullet_points: [{ point_title: 'Fix Competitor Pain Points', point_desc: 'Turn 1-star G2/Capterra reviews into your core differentiator.' }], takeaway_quote: 'Structured thought-leadership posts position you as an industry authority.' }
+      es: [
+        { id: 'twitter', name: '🐦 Twitter/X Hilo', ratio: '16:9', preset: 'cyber' },
+        { id: 'linkedin', name: '💼 LinkedIn Publicación', ratio: '16:9', preset: 'linkedin' },
+        { id: 'instagram', name: '📸 Instagram Carrusel', ratio: '3:4', preset: 'xhs' },
+        { id: 'youtube_script', name: '📺 YouTube Shorts Guion', ratio: '9:16', preset: 'cyber' }
       ],
-      twitter: [
-        { subtitle: '🐦 VIRAL THREAD HOOK', title: 'How 1 Indie Hacker Reached $10k ARR in 30 Days (Step-by-Step)', key_metric: { value: '10x', label: 'Retweet Potential' }, bullet_points: [{ point_title: 'Front-load Hard Truths', point_desc: 'Stop the scroll with bold contrarian claims in <10 words.' }], takeaway_quote: 'Content that makes people look smart gets retweeted endlessly.' },
-        { subtitle: '📊 PROVEN TACTICS', title: 'Organic Social Currency Strategy', diagram_type: 'flow', bullet_points: [{ point_title: '1. Repurpose Articles', point_desc: 'Turn dry blog posts into multi-slide viral carousels.' }, { point_title: '2. Multi-Platform Push', point_desc: 'Post to Twitter, LinkedIn, Instagram, Xiaohongshu.' }], takeaway_quote: '📌 Save this thread for later & RT to share with your audience!' }
+      pt: [
+        { id: 'twitter', name: '🐦 Twitter/X Thread', ratio: '16:9', preset: 'cyber' },
+        { id: 'linkedin', name: '💼 LinkedIn Postagem', ratio: '16:9', preset: 'linkedin' },
+        { id: 'instagram', name: '📸 Instagram Carrossel', ratio: '3:4', preset: 'xhs' },
+        { id: 'youtube_script', name: '📺 YouTube Shorts Roteiro', ratio: '9:16', preset: 'cyber' }
+      ],
+      ru: [
+        { id: 'twitter', name: '🐦 Twitter/X Тред', ratio: '16:9', preset: 'cyber' },
+        { id: 'linkedin', name: '💼 LinkedIn Пост', ratio: '16:9', preset: 'linkedin' },
+        { id: 'instagram', name: '📸 Instagram Карусель', ratio: '3:4', preset: 'xhs' },
+        { id: 'youtube_script', name: '📺 YouTube Shorts Сценарий', ratio: '9:16', preset: 'cyber' }
+      ],
+      ja: [
+        { id: 'twitter', name: '🐦 Twitter/X スレッド', ratio: '16:9', preset: 'cyber' },
+        { id: 'linkedin', name: '💼 LinkedIn 投稿', ratio: '16:9', preset: 'linkedin' },
+        { id: 'instagram', name: '📸 Instagram カルーセル', ratio: '3:4', preset: 'xhs' },
+        { id: 'youtube_script', name: '📺 YouTube Shorts 台本', ratio: '9:16', preset: 'cyber' }
+      ],
+      ko: [
+        { id: 'twitter', name: '🐦 Twitter/X 스레드', ratio: '16:9', preset: 'cyber' },
+        { id: 'linkedin', name: '💼 LinkedIn 포스트', ratio: '16:9', preset: 'linkedin' },
+        { id: 'instagram', name: '📸 Instagram 캐러셀', ratio: '3:4', preset: 'xhs' },
+        { id: 'youtube_script', name: '📺 YouTube Shorts 대본', ratio: '9:16', preset: 'cyber' }
+      ],
+      fr: [
+        { id: 'twitter', name: '🐦 Twitter/X Fil', ratio: '16:9', preset: 'cyber' },
+        { id: 'linkedin', name: '💼 LinkedIn Publication', ratio: '16:9', preset: 'linkedin' },
+        { id: 'instagram', name: '📸 Instagram Carrousel', ratio: '3:4', preset: 'xhs' },
+        { id: 'youtube_script', name: '📺 YouTube Shorts Script', ratio: '9:16', preset: 'cyber' }
+      ],
+      de: [
+        { id: 'twitter', name: '🐦 Twitter/X Thread', ratio: '16:9', preset: 'cyber' },
+        { id: 'linkedin', name: '💼 LinkedIn Beitrag', ratio: '16:9', preset: 'linkedin' },
+        { id: 'instagram', name: '📸 Instagram Karussell', ratio: '3:4', preset: 'xhs' },
+        { id: 'youtube_script', name: '📺 YouTube Shorts Skript', ratio: '9:16', preset: 'cyber' }
       ]
     };
 
@@ -684,6 +585,18 @@
         { id: 'tech_breakdown', label: '📊 Tech & ROI Breakdown', hook: 'Extract hard-hitting data points and ROI metrics' },
         { id: 'executive_quote', label: '💼 Executive Thought Leadership', hook: 'Authoritative, polished one-liner quotes for professionals' },
         { id: 'story_twist', label: '🎬 Story Twist Hook', hook: 'Create an intriguing narrative hook with a surprising twist' }
+      ],
+      es: [
+        { id: 'viral_title', label: '🔥 Título Viral Hook', hook: 'Título de alta conversión con curiosidad' },
+        { id: 'tech_breakdown', label: '📊 Desglose de ROI', hook: 'Extraer métricas clave de ROI' },
+        { id: 'executive_quote', label: '💼 Cita Ejecutiva', hook: 'Citas autoritarias para profesionales' },
+        { id: 'story_twist', label: '🎬 Giro Narrativo Hook', hook: 'Hook narrativo intrigante' }
+      ],
+      ja: [
+        { id: 'viral_title', label: '🔥 フックタイトル', hook: '感情を揺さぶるバズタイトルを作成' },
+        { id: 'tech_breakdown', label: '📊 ノウハウ分解', hook: '具体的なROIデータと突破ポイントを抽出' },
+        { id: 'executive_quote', label: '💼 プロの名言', hook: '専門的で権威のある一言名言' },
+        { id: 'story_twist', label: '🎬 ストーリー展開', hook: '好奇心を刺激する展開フック' }
       ]
     };
 
@@ -700,7 +613,7 @@
         modeCarousel: '📚 Carousel Pack',
         hookTagsLabel: '⚡ One-Click Hook Tags (Click to inject viral focus)',
         platformMatrixLabel: '🎯 Dynamic Platform Matrix',
-        inputPlaceholder: "Paste your long article, product overview, blog draft, or drop a PDF file here... e.g. '3 Rules for Indie Hackers to reach $10k ARR in 30 Days' or 'How to write viral content in 5 minutes'...",
+        inputPlaceholder: "Paste your long article, product overview, blog draft, or drop a PDF file here...",
         uploadPdf: 'Upload PDF',
         keyLabel: 'Bypass limits with custom Groq / Gemini Key',
         generateBtnSingle: 'Generate Single Card & Post',
@@ -721,8 +634,7 @@
         modalLicLabel: 'Have a Pro License Key?',
         modalActivate: 'Activate',
         modalBuy: 'Buy Pro License ($9.9/mo)',
-        toastCopiedClipboard: 'Copied to Clipboard! Ready to paste!',
-        defaultCarouselSlides: PLATFORM_DEFAULT_SLIDES.twitter
+        toastCopiedClipboard: 'Copied to Clipboard! Ready to paste!'
       },
       zh: {
         quotaText: '✦ 剩余 3 次免费',
@@ -736,7 +648,7 @@
         modeCarousel: '📚 连载切片',
         hookTagsLabel: '⚡ 一键爆款钩子套件 (点击注入爆款聚焦)',
         platformMatrixLabel: '🎯 动态目标平台矩阵',
-        inputPlaceholder: "粘贴你的文章、草稿或拖入 PDF 文件...例如：'独立开发者 30 天做成 1 万刀 ARR 的 3 个法则' 或 '如何用 ChatGPT 5 分钟写出爆款小红书文案'...",
+        inputPlaceholder: "粘贴你的文章、草稿或拖入 PDF 文件...",
         uploadPdf: '上传 PDF',
         keyLabel: '使用自定义 Groq / Gemini Key 突破限制',
         generateBtnSingle: '一键生成单图精炼卡片与贴文',
@@ -757,8 +669,252 @@
         modalLicLabel: '已有 Pro 激活码？',
         modalActivate: '立即激活',
         modalBuy: '购买 Pro 授权 ($9.9/月)',
-        toastCopiedClipboard: '已复制到剪贴板！可直接粘贴！',
-        defaultCarouselSlides: PLATFORM_DEFAULT_SLIDES.xiaohongshu
+        toastCopiedClipboard: '已复制到剪贴板！可直接粘贴！'
+      },
+      es: {
+        quotaText: '✦ 3 Gratis Restantes',
+        upgradeHeader: 'Actualizar a Pro ($9.9/mes)',
+        sandboxHeader: '⚡ Momento Aha en 3 seg: Demos en 1 Clic (Tarjetas Visuales de Hollywood)',
+        demo1Title: '🚀 1 Clic: Guía de $10k ARR',
+        demo2Title: '🧠 1 Clic: DeepSeek Disruptivo',
+        demo3Title: '📕 1 Clic: 3 Reglas de Contenido Viral',
+        themeLabel: '🎨 Tema Visual impulsado por Prompt (Vista previa en tiempo real)',
+        modeSingle: '🎴 Tarjeta Única',
+        modeCarousel: '📚 Paquete Carrusel',
+        hookTagsLabel: '⚡ Etiquetas Gancho en 1 Clic',
+        platformMatrixLabel: '🎯 Matriz de Plataformas Dinámicas',
+        inputPlaceholder: "Pega tu artículo, borrador o sube un PDF...",
+        uploadPdf: 'Subir PDF',
+        keyLabel: 'Bypass con Clave Groq / Gemini',
+        generateBtnSingle: 'Generar Tarjeta Única y Publicación',
+        generateBtnCarousel: 'Generar Paquete Carrusel y Publicación',
+        regenerateBtn: '⚡️ Regenerar',
+        copyBtn: 'Copiar Publicación',
+        studioTitle: 'Motor de Estudio Visual',
+        modeBadgeSingle: 'Tarjeta Única',
+        modeBadgeCarousel: 'Paquete Carrusel',
+        exportCurrentBtn: '📷 3x HD PNG',
+        exportAllBtnSingle: 'Exportar Tarjeta',
+        exportAllBtnCarousel: '📦 Empaquetar Todo',
+        modalTitle: 'Desbloquear Paquete Pro Carrusel',
+        modalDesc: 'Generaciones AI ilimitadas, marcas de agua personalizadas y plantillas virales.',
+        modalFeat1: 'Tarjetas Únicas y Carrusel Ilimitadas',
+        modalFeat2: 'Estilos Visuales por Prompts',
+        modalFeat3: 'Groq Llama-3 70B y Gemini Flash Prioritario',
+        modalLicLabel: '¿Tienes clave de licencia Pro?',
+        modalActivate: 'Activar',
+        modalBuy: 'Comprar Pro ($9.9/mes)',
+        toastCopiedClipboard: '¡Copiado al Portapapeles!'
+      },
+      pt: {
+        quotaText: '✦ 3 Grátis Restantes',
+        upgradeHeader: 'Upgrade Pro ($9.9/mês)',
+        sandboxHeader: '⚡ Momento Aha em 3s: Demos em 1 Clique',
+        demo1Title: '🚀 1 Clique: Guia de $10k ARR',
+        demo2Title: '🧠 1 Clique: DeepSeek IA',
+        demo3Title: '📕 1 Clique: 3 Regras Virais',
+        themeLabel: '🎨 Tema Visual via Prompt',
+        modeSingle: '🎴 Cartão Único',
+        modeCarousel: '📚 Pacote Carrossel',
+        hookTagsLabel: '⚡ Tags de Gancho em 1 Clique',
+        platformMatrixLabel: '🎯 Matriz de Plataformas',
+        inputPlaceholder: "Cole seu artigo, rascunho ou envie um PDF...",
+        uploadPdf: 'Enviar PDF',
+        keyLabel: 'Bypass com Chave Groq / Gemini',
+        generateBtnSingle: 'Gerar Cartão Único e Post',
+        generateBtnCarousel: 'Gerar Pacote Carrossel e Post',
+        regenerateBtn: '⚡️ Gerar Novamente',
+        copyBtn: 'Copiar Post',
+        studioTitle: 'Estúdio de Renderização Visual',
+        modeBadgeSingle: 'Cartão Único',
+        modeBadgeCarousel: 'Pacote Carrossel',
+        exportCurrentBtn: '📷 3x HD PNG',
+        exportAllBtnSingle: 'Exportar Cartão',
+        exportAllBtnCarousel: '📦 Exportar Tudo',
+        modalTitle: 'Desbloquear Pacote Pro',
+        modalDesc: 'Gerações ilimitadas e modelos virais sem marca de água.',
+        modalFeat1: 'Cartões ilimitados',
+        modalFeat2: 'Estilos visuais via Prompt',
+        modalFeat3: 'Prioridade Groq Llama-3 e Gemini',
+        modalLicLabel: 'Tem uma chave Pro?',
+        modalActivate: 'Ativar',
+        modalBuy: 'Comprar Pro ($9.9/mês)',
+        toastCopiedClipboard: 'Copiado para a área de transferência!'
+      },
+      ru: {
+        quotaText: '✦ Осталось 3 бесплатно',
+        upgradeHeader: 'Обновить до Pro ($9.9/мес)',
+        sandboxHeader: '⚡ 3-секундный Aha-момент: Демо в 1 клик',
+        demo1Title: '🚀 1 клик: $10k ARR Руководство',
+        demo2Title: '🧠 1 клик: DeepSeek AI',
+        demo3Title: '📕 1 клик: 3 Правила Вирусного Контента',
+        themeLabel: '🎨 Визуальная Тема по Промпту',
+        modeSingle: '🎴 Одна Карточка',
+        modeCarousel: '📚 Карусель Каруселей',
+        hookTagsLabel: '⚡ Вирусные Теги в 1 Клик',
+        platformMatrixLabel: '🎯 Матрица Платформ',
+        inputPlaceholder: "Вставьте статью или загрузите PDF...",
+        uploadPdf: 'Загрузить PDF',
+        keyLabel: 'Свой Groq / Gemini Key',
+        generateBtnSingle: 'Создать Карточку и Пост',
+        generateBtnCarousel: 'Создать Карусель и Пост',
+        regenerateBtn: '⚡️ Сгенерировать Снова',
+        copyBtn: 'Копировать Пост',
+        studioTitle: 'Визуальная Студия Render',
+        modeBadgeSingle: 'Одиночная Карточка',
+        modeBadgeCarousel: 'Пакет Карусели',
+        exportCurrentBtn: '📷 3x HD PNG',
+        exportAllBtnSingle: 'Экспорт',
+        exportAllBtnCarousel: '📦 Экспорт Всего',
+        modalTitle: 'Разблокировать Pro Пакет',
+        modalDesc: 'Неограниченная генерация без водяных знаков.',
+        modalFeat1: 'Неограниченные карточки',
+        modalFeat2: 'Стили по промптам',
+        modalFeat3: 'Приоритет Groq Llama-3 и Gemini',
+        modalLicLabel: 'Есть Pro ключ?',
+        modalActivate: 'Активировать',
+        modalBuy: 'Купить Pro ($9.9/мес)',
+        toastCopiedClipboard: 'Скопировано в буфер обмена!'
+      },
+      ja: {
+        quotaText: '✦ 残り3回無料',
+        upgradeHeader: 'Pro版にアップグレード ($9.9/月)',
+        sandboxHeader: '⚡ 3秒アハ体験：1クリックデモ (ハリウッド級ビジュアル)',
+        demo1Title: '🚀 1クリック試用：$10k ARR法則',
+        demo2Title: '🧠 1クリック試用：DeepSeek AI',
+        demo3Title: '📕 1クリック試用：バズコンテンツの鉄則',
+        themeLabel: '🎨 プロンプト駆動型テーマ (リアルタイムプレビュー)',
+        modeSingle: '🎴 シングルカード',
+        modeCarousel: '📚 カルーセルパック',
+        hookTagsLabel: '⚡ バズフックタグ (ワンクリック)',
+        platformMatrixLabel: '🎯 ターゲットプラットフォーム',
+        inputPlaceholder: "文章、下書きを貼り付けるか、PDFをドロップ...",
+        uploadPdf: 'PDFをアップロード',
+        keyLabel: 'カスタム Groq / Gemini Key を使用',
+        generateBtnSingle: 'シングルカードと投稿を生成',
+        generateBtnCarousel: 'カルーセルパックと投稿を生成',
+        regenerateBtn: '⚡️ 再生成',
+        copyBtn: '投稿をコピー',
+        studioTitle: 'ビジュアルスタジオエンジン',
+        modeBadgeSingle: 'シングルモード',
+        modeBadgeCarousel: 'カルーセルパック',
+        exportCurrentBtn: '📷 3x 高画質',
+        exportAllBtnSingle: 'カードをエクスポート',
+        exportAllBtnCarousel: '📦 全て一括出力',
+        modalTitle: 'Proパックをアンロック',
+        modalDesc: '無制限AI生成、ウォーターマーク削除、独自ブランディング。',
+        modalFeat1: 'カード＆カルーセル無制限生成',
+        modalFeat2: 'プロンプト駆動の限定スタイル',
+        modalFeat3: '優先 Groq Llama-3 70B & Gemini',
+        modalLicLabel: 'Proライセンスキーをお持ちですか？',
+        modalActivate: '有効化',
+        modalBuy: 'Proを購入 ($9.9/月)',
+        toastCopiedClipboard: 'クリップボードにコピーしました！'
+      },
+      ko: {
+        quotaText: '✦ 3회 무료 남음',
+        upgradeHeader: 'Pro 업그레이드 ($9.9/월)',
+        sandboxHeader: '⚡ 3초 Aha 모멘트: 1클릭 데모 (할리우드급 비주얼)',
+        demo1Title: '🚀 1클릭: $10k ARR 공략법',
+        demo2Title: '🧠 1클릭: DeepSeek AI',
+        demo3Title: '📕 1클릭: 바이럴 3가지 법칙',
+        themeLabel: '🎨 프롬프트 기반 비주얼 테마 (실시간 미리보기)',
+        modeSingle: '🎴 싱글 카드',
+        modeCarousel: '📚 캐러셀 패키지',
+        hookTagsLabel: '⚡ 원클릭 훅 태그',
+        platformMatrixLabel: '🎯 다이나믹 플랫폼 매트릭스',
+        inputPlaceholder: "글, 초안을 붙여넣거나 PDF 파일을 업로드하세요...",
+        uploadPdf: 'PDF 업로드',
+        keyLabel: 'Groq / Gemini Key 사용',
+        generateBtnSingle: '싱글 카드 및 포스트 생성',
+        generateBtnCarousel: '캐러셀 패키지 및 포스트 생성',
+        regenerateBtn: '⚡️ 다시 생성',
+        copyBtn: '포스트 복사',
+        studioTitle: '비주얼 스튜디오 엔진',
+        modeBadgeSingle: '싱글 카드',
+        modeBadgeCarousel: '캐러셀 패키지',
+        exportCurrentBtn: '📷 3x HD PNG',
+        exportAllBtnSingle: '내보내기',
+        exportAllBtnCarousel: '📦 전체 일괄 내보내기',
+        modalTitle: 'Pro 패키지 잠금 해제',
+        modalDesc: '무제한 AI 생성 및 워터마크 제거.',
+        modalFeat1: '무제한 카드 생성',
+        modalFeat2: '프롬프트 비주얼 스타일',
+        modalFeat3: '우선 Groq Llama-3 및 Gemini',
+        modalLicLabel: 'Pro 라이선스 키가 있으신가요?',
+        modalActivate: '활성화',
+        modalBuy: 'Pro 구매 ($9.9/월)',
+        toastCopiedClipboard: '클립보드에 복사되었습니다!'
+      },
+      fr: {
+        quotaText: '✦ 3 Gratuits Restants',
+        upgradeHeader: 'Passer à Pro (9,9$/mois)',
+        sandboxHeader: '⚡ Moment Aha en 3s: Démos en 1 Clic',
+        demo1Title: '🚀 1 Clic: Guide $10k ARR',
+        demo2Title: '🧠 1 Clic: DeepSeek IA',
+        demo3Title: '📕 1 Clic: 3 Règles Virales',
+        themeLabel: '🎨 Thème Visuel par Prompt (Aperçu temps réel)',
+        modeSingle: '🎴 Carte Unique',
+        modeCarousel: '📚 Pack Carrousel',
+        hookTagsLabel: '⚡ Tags d\'Accroche en 1 Clic',
+        platformMatrixLabel: '🎯 Matrice de Plateformes',
+        inputPlaceholder: "Collez votre article, brouillon ou déposez un PDF...",
+        uploadPdf: 'Téléverser PDF',
+        keyLabel: 'Contourner avec Clé Groq / Gemini',
+        generateBtnSingle: 'Générer Carte Unique & Post',
+        generateBtnCarousel: 'Générer Pack Carrousel & Post',
+        regenerateBtn: '⚡️ Régénérer',
+        copyBtn: 'Copier le Post',
+        studioTitle: 'Moteur de Studio Visuel',
+        modeBadgeSingle: 'Carte Unique',
+        modeBadgeCarousel: 'Pack Carrousel',
+        exportCurrentBtn: '📷 3x HD PNG',
+        exportAllBtnSingle: 'Exporter la Carte',
+        exportAllBtnCarousel: '📦 Tout Exporter',
+        modalTitle: 'Débloquer le Pack Pro',
+        modalDesc: 'Générations IA illimitées et filigranes personnalisés.',
+        modalFeat1: 'Cartes illimitées',
+        modalFeat2: 'Styles visuels personnalisés',
+        modalFeat3: 'Priorité Groq Llama-3 & Gemini',
+        modalLicLabel: 'Vous avez une clé Pro ?',
+        modalActivate: 'Activer',
+        modalBuy: 'Acheter Pro (9,9$/mois)',
+        toastCopiedClipboard: 'Copié dans le presse-papiers !'
+      },
+      de: {
+        quotaText: '✦ 3 Gratis Übrig',
+        upgradeHeader: 'Auf Pro Upgraden ($9.9/Monat)',
+        sandboxHeader: '⚡ 3-Sekunden Aha-Moment: 1-Klick Demos',
+        demo1Title: '🚀 1 Klick: $10k ARR Leitfaden',
+        demo2Title: '🧠 1 Klick: DeepSeek KI',
+        demo3Title: '📕 1 Klick: 3 Virale Regeln',
+        themeLabel: '🎨 Prompt-Driven Visuelles Thema (Echtzeit-Vorschau)',
+        modeSingle: '🎴 Einzelne Karte',
+        modeCarousel: '📚 Karussell-Paket',
+        hookTagsLabel: '⚡ 1-Klick Hook-Tags',
+        platformMatrixLabel: '🎯 Dynamische Plattformen',
+        inputPlaceholder: "Fügen Sie Ihren Artikel ein oder laden Sie ein PDF hoch...",
+        uploadPdf: 'PDF Hochladen',
+        keyLabel: 'Limit umgehen mit Groq / Gemini Key',
+        generateBtnSingle: 'Karte & Beitrag Erstellen',
+        generateBtnCarousel: 'Karussell-Paket & Beitrag Erstellen',
+        regenerateBtn: '⚡️ Neu Generieren',
+        copyBtn: 'Beitrag Kopieren',
+        studioTitle: 'Visuelles Studio-System',
+        modeBadgeSingle: 'Einzelkarte',
+        modeBadgeCarousel: 'Karussell-Paket',
+        exportCurrentBtn: '📷 3x HD PNG',
+        exportAllBtnSingle: 'Karte Exportieren',
+        exportAllBtnCarousel: '📦 Alles Exportieren',
+        modalTitle: 'Pro Karussell-Paket Freischalten',
+        modalDesc: 'Unbegrenzte KI-Generierungen ohne Wasserzeichen.',
+        modalFeat1: 'Unbegrenzte Karten & Karusselle',
+        modalFeat2: 'Prompt-visuelle Stile',
+        modalFeat3: 'Priorität Groq Llama-3 & Gemini',
+        modalLicLabel: 'Haben Sie einen Pro-Lizenzschlüssel?',
+        modalActivate: 'Aktivieren',
+        modalBuy: 'Pro Kaufen ($9.9/Monat)',
+        toastCopiedClipboard: 'In Zwischenablage kopiert!'
       }
     };
 
@@ -790,18 +946,24 @@
       }
     }
 
-    // Localized 1-Click Sandbox Demo Loader
+    // Localized Sandbox Demo Loader for All Languages
     function loadSandboxDemo(demoId) {
-      const langDemos = SANDBOX_DEMOS[selectedLang] || SANDBOX_DEMOS.en;
-      const demo = langDemos[demoId];
-      if (!demo) return;
+      const langDemos = SANDBOX_DEMOS[selectedLang] || SANDBOX_DEMOS[selectedLang === 'zh' ? 'zh' : 'en'];
+      const demo = langDemos ? demo.hacker ? demo[demoId] : SANDBOX_DEMOS.en[demoId] : SANDBOX_DEMOS.en[demoId];
+      
+      const defaultDemoObj = (SANDBOX_DEMOS[selectedLang] && SANDBOX_DEMOS[selectedLang][demoId]) 
+        || (selectedLang === 'zh' ? SANDBOX_DEMOS.zh[demoId] : SANDBOX_DEMOS.en[demoId]);
 
-      document.getElementById('inputText').value = demo.text;
+      if (!defaultDemoObj) return;
+
+      document.getElementById('inputText').value = defaultDemoObj.text;
       updateCharCount();
 
-      applyThemePrompt(demo.theme);
-      selectPlatform(demo.platform, 'cyber', '16:9');
-      showToast(selectedLang === 'zh' ? `⚡ 3秒沙盒已载入："${demo.theme}" 演示!` : `⚡ 3-Second Sandbox Loaded: "${demo.theme}" demo ready!`);
+      applyThemePrompt(defaultDemoObj.theme);
+      selectPlatform(defaultDemoObj.platform, 'cyber', '16:9');
+      
+      const dict = I18N_DICT[selectedLang] || I18N_DICT.en;
+      showToast(`⚡ Demo Loaded: "${defaultDemoObj.theme}" ready!`);
       trackAnalyticsEvent('sandbox_demo_clicked', { demo: demoId, lang: selectedLang });
     }
 
@@ -826,7 +988,7 @@
       if (preset) {
         customThemeStyleCss = preset;
         applyCustomCssToCards(preset);
-        showToast(selectedLang === 'zh' ? `🎨 已应用视觉主题: ${promptName}` : `🎨 Applied Visual Style: ${promptName}`);
+        showToast(`🎨 Applied Visual Style: ${promptName}`);
         trackAnalyticsEvent('theme_prompt_applied', { prompt: promptName });
       }
     }
@@ -852,7 +1014,7 @@
 
       customThemeStyleCss = preset;
       applyCustomCssToCards(preset);
-      showToast(selectedLang === 'zh' ? `🎨 已应用自定义主题: "${text}"` : `🎨 Applied Custom Theme: "${text}"`);
+      showToast(`🎨 Applied Custom Theme: "${text}"`);
     }
 
     function applyCustomCssToCards(cssObj) {
@@ -897,10 +1059,10 @@
       });
     }
 
+    // FULL 9-LANGUAGE SWITCHER
     function handleLangChange(lang) {
       selectedLang = lang;
-      const langKey = lang === 'zh' ? 'zh' : 'en';
-      const matrix = DYNAMIC_PLATFORMS[langKey];
+      const matrix = DYNAMIC_PLATFORMS[lang] || DYNAMIC_PLATFORMS.en;
       if (matrix && matrix.length > 0) {
         selectedPlatform = matrix[0].id;
         currentPreset = matrix[0].preset;
@@ -910,8 +1072,7 @@
     }
 
     function renderDynamicMatrix() {
-      const langKey = selectedLang === 'zh' ? 'zh' : 'en';
-      const matrix = DYNAMIC_PLATFORMS[langKey] || DYNAMIC_PLATFORMS.en;
+      const matrix = DYNAMIC_PLATFORMS[selectedLang] || DYNAMIC_PLATFORMS.en;
       const matrixContainer = document.getElementById('platformMatrixContainer');
       const tabsHeader = document.getElementById('platformTabsHeader');
 
@@ -933,7 +1094,7 @@
         `).join('');
       }
 
-      const tags = HOOK_TAGS[langKey] || HOOK_TAGS.en;
+      const tags = HOOK_TAGS[selectedLang] || HOOK_TAGS.en;
       const tagsContainer = document.getElementById('hookTagsContainer');
       if (tagsContainer) {
         tagsContainer.innerHTML = tags.map(t => `
@@ -957,11 +1118,11 @@
       if (platformCacheStore[cacheKey]) {
         currentResponseData = platformCacheStore[cacheKey];
         renderGeneratedResults(currentResponseData);
-        showToast(selectedLang === 'zh' ? `⚡ 已载入 ${id} 的缓存结果` : `⚡ Loaded cached AI output for ${id}`);
+        showToast(`⚡ Loaded cached AI output for ${id}`);
       } else if (inputVal.length >= 10) {
         generateContent(false);
       } else {
-        const platformDefaults = PLATFORM_DEFAULT_SLIDES[id] || (I18N_DICT[selectedLang] || I18N_DICT.en).defaultCarouselSlides;
+        const platformDefaults = PLATFORM_DEFAULT_SLIDES[id] || (I18N_DICT[selectedLang] || I18N_DICT.en).defaultCarouselSlides || PLATFORM_DEFAULT_SLIDES.twitter;
         renderSlides(platformDefaults, '⚡️ Cardify.ai');
         switchTab(selectedPlatform);
       }
@@ -981,22 +1142,19 @@
     }
 
     function applyTranslations() {
-      const lang = selectedLang;
-      const dict = I18N_DICT[lang] || I18N_DICT.en;
+      const dict = I18N_DICT[selectedLang] || I18N_DICT.en;
 
       renderDynamicMatrix();
 
-      document.getElementById('quotaText').innerText = isProUser ? '✦ PRO UNLIMITED' : `✦ ${remainingFreeQuota} Free Left`;
+      document.getElementById('quotaText').innerText = isProUser ? '✦ PRO UNLIMITED' : (dict.quotaText || `✦ ${remainingFreeQuota} Free Left`);
       document.getElementById('txtUpgradeHeader').innerText = isProUser ? 'PRO Member ✨' : dict.upgradeHeader;
 
-      // Sandbox Headers & Titles
       const sandboxHeader = document.getElementById('txtSandboxHeader');
       if (sandboxHeader) sandboxHeader.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i> ${dict.sandboxHeader}`;
       document.getElementById('txtDemo1Title').innerText = dict.demo1Title;
       document.getElementById('txtDemo2Title').innerText = dict.demo2Title;
       document.getElementById('txtDemo3Title').innerText = dict.demo3Title;
 
-      // Theme Section
       const themeLabel = document.getElementById('txtThemeLabel');
       if (themeLabel) themeLabel.innerHTML = `<i data-lucide="palette" class="w-4 h-4 text-purple-400"></i> ${dict.themeLabel}`;
 
@@ -1027,7 +1185,7 @@
       document.getElementById('txtModalBuy').innerText = dict.modalBuy;
 
       if (!currentResponseData) {
-        const platformDefaults = PLATFORM_DEFAULT_SLIDES[selectedPlatform] || dict.defaultCarouselSlides;
+        const platformDefaults = PLATFORM_DEFAULT_SLIDES[selectedPlatform] || dict.defaultCarouselSlides || PLATFORM_DEFAULT_SLIDES.twitter;
         if (currentMode === 'single') {
           renderSlides([platformDefaults[0]], isProUser ? '⚡️ Cardify Pro' : '⚡️ Made with Cardify.ai');
         } else {
@@ -1099,7 +1257,8 @@
           remainingFreeQuota = data.remaining || 0;
           const quotaBadge = document.getElementById('quotaText');
           if (quotaBadge) {
-            quotaBadge.innerText = isProUser ? '✦ PRO UNLIMITED' : `✦ ${remainingFreeQuota} Free Left`;
+            const dict = I18N_DICT[selectedLang] || I18N_DICT.en;
+            quotaBadge.innerText = isProUser ? '✦ PRO UNLIMITED' : (dict.quotaText || `✦ ${remainingFreeQuota} Free Left`);
           }
         }
       } catch (e) {
@@ -1158,7 +1317,7 @@
       if (!forceRegenerate && platformCacheStore[cacheKey]) {
         currentResponseData = platformCacheStore[cacheKey];
         renderGeneratedResults(currentResponseData);
-        showToast(selectedLang === 'zh' ? '⚡ 已载入 AI 缓存结果' : '⚡ Loaded cached AI output');
+        showToast('⚡ Loaded cached AI output');
         return;
       }
 
@@ -1404,6 +1563,8 @@
       } catch (e) {
         console.error(e);
         showToast('Clipboard copy not supported by browser. Downloading PNG instead.');
+        exportCurrentCard();
+      } font-medium {
         exportCurrentCard();
       } finally {
         setTimeout(() => {
