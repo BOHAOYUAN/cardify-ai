@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cardify.ai 3.2 — AI Visual Art & Prompt-Driven Infographic Engine</title>
-  <meta name="description" content="Turn any text or PDF into unique Prompt-Driven visual carousels, Infographic diagrams, LinkedIn PDF slide decks, and viral social matrix posts.">
+  <title>Cardify.ai 3.3 — 3-Second Aha Moment & Viral Asset Engine</title>
+  <meta name="description" content="Turn any article or idea into viral Xiaohongshu Carousel slides, LinkedIn posts, Twitter threads, Instagram Carousels, and YouTube Shorts scripts with 1-click sandbox demos & prompt-driven visual art.">
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -114,6 +114,13 @@
       box-shadow: 0 0 35px -5px rgba(139, 92, 246, 0.4);
     }
 
+    /* Pulse animation for 3-second Sandbox Demos */
+    @keyframes sandboxPulse {
+      0%, 100% { border-color: rgba(168, 85, 247, 0.4); box-shadow: 0 0 15px rgba(168, 85, 247, 0.2); }
+      50% { border-color: rgba(236, 72, 153, 0.8); box-shadow: 0 0 25px rgba(236, 72, 153, 0.5); }
+    }
+    .sandbox-demo-btn { animation: sandboxPulse 3s infinite ease-in-out; }
+
     /* Custom Scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
@@ -141,7 +148,7 @@
         <div>
           <span class="text-xl font-extrabold font-outfit tracking-tight text-white flex items-center gap-2">
             Cardify<span class="text-purple-400">.ai</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v3.2 Visual Art Engine</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v3.3 Aha Engine</span>
           </span>
         </div>
       </div>
@@ -186,6 +193,34 @@
     <!-- ================= LEFT PANEL: CONTROL & GENERATION (7 cols) ================= -->
     <section class="lg:col-span-7 flex flex-col gap-5">
       
+      <!-- ⚡ 3-SECOND AHA MOMENT: 1-CLICK SANDBOX DEMOS -->
+      <div class="glass-panel rounded-2xl p-4 border border-purple-500/30 bg-gradient-to-r from-purple-950/40 via-gray-950 to-indigo-950/40 flex flex-col gap-2.5">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+            <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
+            ⚡ 3-Second Aha Moment: 1-Click Sandbox Demos (点击直接变幻好莱坞级卡牌)
+          </span>
+          <span class="text-[10px] text-purple-300 bg-purple-900/40 px-2 py-0.5 rounded-full font-mono border border-purple-700/40">Zero Typing</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <button onclick="loadSandboxDemo('hacker')" class="sandbox-demo-btn p-2.5 rounded-xl bg-purple-950/60 hover:bg-purple-900/80 border text-left transition-all flex flex-col justify-between min-h-[58px]">
+            <span class="text-xs font-bold text-purple-200">🚀 1-Click Try: $10k ARR Playbook</span>
+            <span class="text-[10px] text-purple-300/70 font-mono">Cyberpunk 2077 • Twitter/X</span>
+          </button>
+
+          <button onclick="loadSandboxDemo('deepseek')" class="sandbox-demo-btn p-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border text-left transition-all flex flex-col justify-between min-h-[58px]">
+            <span class="text-xs font-bold text-emerald-300">🧠 1-Click Try: DeepSeek Disrupted AI</span>
+            <span class="text-[10px] text-emerald-400/70 font-mono">Matrix Hacker • LinkedIn</span>
+          </button>
+
+          <button onclick="loadSandboxDemo('xhs')" class="sandbox-demo-btn p-2.5 rounded-xl bg-rose-950/60 hover:bg-rose-900/80 border text-left transition-all flex flex-col justify-between min-h-[58px]">
+            <span class="text-xs font-bold text-rose-200">📕 1-Click Try: 小红书涨粉 3 大避坑</span>
+            <span class="text-[10px] text-rose-300/70 font-mono">Morandi Soft • Xiaohongshu</span>
+          </button>
+        </div>
+      </div>
+
       <!-- Input Box + Mode Toggle + Prompt Visual Injector + One-Click Presets -->
       <div class="glass-panel rounded-2xl p-5 border border-gray-800 flex flex-col gap-4">
         
@@ -202,14 +237,14 @@
           <span class="text-xs text-gray-400" id="charCount">0 / 15,000</span>
         </div>
 
-        <!-- 🎨 PROMPT-DRIVEN VISUAL THEME ENGINE (Custom Visual Identity) -->
-        <div class="p-3.5 rounded-xl bg-gradient-to-r from-purple-950/40 via-gray-950 to-indigo-950/40 border border-purple-500/30 flex flex-col gap-2.5">
+        <!-- 🎨 PROMPT-DRIVEN VISUAL THEME ENGINE (With Real-Time Hover Skin Selection) -->
+        <div class="p-3.5 rounded-xl bg-gray-950 border border-gray-800 flex flex-col gap-2.5">
           <div class="flex items-center justify-between">
             <label class="text-xs font-bold text-purple-300 flex items-center gap-1.5">
               <i data-lucide="palette" class="w-4 h-4 text-purple-400"></i>
-              🎨 Prompt-Driven Visual Theme (独一无二的个人 IP 视觉引擎)
+              🎨 Prompt-Driven Visual Theme (滑过即时预览选皮肤)
             </label>
-            <span class="text-[10px] text-purple-300 bg-purple-900/40 px-2 py-0.5 rounded-full font-mono border border-purple-700/40">Prompt-to-CSS</span>
+            <span class="text-[10px] text-purple-300 bg-purple-900/40 px-2 py-0.5 rounded-full font-mono border border-purple-700/40">Real-time Hover</span>
           </div>
 
           <div class="relative">
@@ -217,14 +252,14 @@
               class="w-full bg-gray-900 border border-purple-800/50 rounded-lg px-3 py-2 text-xs text-purple-200 placeholder-gray-500 focus:outline-none focus:border-purple-400 transition-all font-mono">
           </div>
 
-          <!-- Quick Theme Prompt Preset Badges -->
+          <!-- Quick Theme Prompt Preset Badges with Hover Feedback -->
           <div class="flex flex-wrap gap-1.5">
-            <button onclick="applyThemePrompt('Cyberpunk 2077')" class="px-2.5 py-1 rounded-md bg-purple-950/80 hover:bg-purple-900 text-[11px] font-mono text-purple-300 border border-purple-700/40">⚡️ Cyberpunk 2077</button>
-            <button onclick="applyThemePrompt('Apple Minimalist')" class="px-2.5 py-1 rounded-md bg-slate-900 hover:bg-slate-800 text-[11px] font-mono text-slate-200 border border-slate-700">🍏 Apple Minimalist</button>
-            <button onclick="applyThemePrompt('Morandi Soft')" class="px-2.5 py-1 rounded-md bg-rose-950/60 hover:bg-rose-900/60 text-[11px] font-mono text-rose-300 border border-rose-800/40">🎨 Morandi Soft</button>
-            <button onclick="applyThemePrompt('Matrix Green')" class="px-2.5 py-1 rounded-md bg-emerald-950/80 hover:bg-emerald-900 text-[11px] font-mono text-emerald-300 border border-emerald-700/40">💻 Matrix Green</button>
-            <button onclick="applyThemePrompt('Vaporwave Sunset')" class="px-2.5 py-1 rounded-md bg-pink-950/80 hover:bg-pink-900 text-[11px] font-mono text-pink-300 border border-pink-700/40">🌅 Vaporwave 80s</button>
-            <button onclick="applyThemePrompt('Luxury Gold')" class="px-2.5 py-1 rounded-md bg-amber-950/80 hover:bg-amber-900 text-[11px] font-mono text-amber-300 border border-amber-700/40">👑 Luxury Dark Gold</button>
+            <button onclick="applyThemePrompt('Cyberpunk 2077')" onmouseenter="previewThemeStyle('Cyberpunk 2077')" onmouseleave="restoreThemeStyle()" class="px-2.5 py-1 rounded-md bg-purple-950/80 hover:bg-purple-900 text-[11px] font-mono text-purple-300 border border-purple-700/40 transition-all">⚡️ Cyberpunk 2077</button>
+            <button onclick="applyThemePrompt('Apple Minimalist')" onmouseenter="previewThemeStyle('Apple Minimalist')" onmouseleave="restoreThemeStyle()" class="px-2.5 py-1 rounded-md bg-slate-900 hover:bg-slate-800 text-[11px] font-mono text-slate-200 border border-slate-700 transition-all">🍏 Apple Minimalist</button>
+            <button onclick="applyThemePrompt('Morandi Soft')" onmouseenter="previewThemeStyle('Morandi Soft')" onmouseleave="restoreThemeStyle()" class="px-2.5 py-1 rounded-md bg-rose-950/60 hover:bg-rose-900/60 text-[11px] font-mono text-rose-300 border border-rose-800/40 transition-all">🎨 Morandi Soft</button>
+            <button onclick="applyThemePrompt('Matrix Green')" onmouseenter="previewThemeStyle('Matrix Green')" onmouseleave="restoreThemeStyle()" class="px-2.5 py-1 rounded-md bg-emerald-950/80 hover:bg-emerald-900 text-[11px] font-mono text-emerald-300 border border-emerald-700/40 transition-all">💻 Matrix Green</button>
+            <button onclick="applyThemePrompt('Vaporwave Sunset')" onmouseenter="previewThemeStyle('Vaporwave Sunset')" onmouseleave="restoreThemeStyle()" class="px-2.5 py-1 rounded-md bg-pink-950/80 hover:bg-pink-900 text-[11px] font-mono text-pink-300 border border-pink-700/40 transition-all">🌅 Vaporwave 80s</button>
+            <button onclick="applyThemePrompt('Luxury Gold')" onmouseenter="previewThemeStyle('Luxury Gold')" onmouseleave="restoreThemeStyle()" class="px-2.5 py-1 rounded-md bg-amber-950/80 hover:bg-amber-900 text-[11px] font-mono text-amber-300 border border-amber-700/40 transition-all">👑 Luxury Dark Gold</button>
           </div>
         </div>
 
@@ -360,7 +395,7 @@
             <span id="txtExportPdfBtn">📄 PDF Slide</span>
           </button>
 
-          <button id="btnExportAll" onclick="exportAllCards()" title="Batch export all carousel slides" class="py-2.5 px-2 rounded-xl bg-purple-900/50 hover:bg-purple-800/50 border border-purple-700/50 text-xs font-semibold text-purple-200 flex items-center justify-center gap-1 transition-all">
+          <button id="btnExportAll" onclick="exportAllCards()" title="Batch export all carousel slides (Pro unwatermarked)" class="py-2.5 px-2 rounded-xl bg-purple-900/50 hover:bg-purple-800/50 border border-purple-700/50 text-xs font-semibold text-purple-200 flex items-center justify-center gap-1 transition-all">
             <i data-lucide="layers" class="w-3.5 h-3.5 text-purple-300"></i>
             <span id="exportAllBtnText">📦 Package All</span>
           </button>
@@ -388,7 +423,7 @@
     </div>
   </footer>
 
-  <!-- ================= DODO PAYMENTS / PRO MODAL ================= -->
+  <!-- ================= DODO PAYMENTS / PRO MODAL (WITH ASSET PAYWALL HOOK) ================= -->
   <div id="upgradeModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
     <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-purple-500/30 flex flex-col gap-5 relative">
       <button onclick="closeUpgradeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
@@ -399,13 +434,13 @@
         <div class="w-12 h-12 rounded-2xl bg-purple-600/30 border border-purple-500/50 flex items-center justify-center">
           <i data-lucide="crown" class="w-6 h-6 text-amber-300"></i>
         </div>
-        <h3 class="text-xl font-bold text-white font-outfit" id="txtModalTitle">Upgrade to Cardify Pro</h3>
+        <h3 class="text-xl font-bold text-white font-outfit" id="txtModalTitle">Unlock Pro Carousel Package</h3>
         
-        <!-- Price Anchoring Banner -->
+        <!-- Asset Paywall Highlight Banner -->
         <div class="bg-gradient-to-r from-purple-950/80 to-indigo-950/80 border border-purple-500/30 rounded-xl px-4 py-2.5 text-center my-1 w-full">
           <div class="text-xs text-gray-400 line-through">Regular Price $19.9 / month</div>
           <div class="text-lg font-extrabold text-amber-300 font-outfit">Limited Time 50% OFF: $9.9 / month</div>
-          <div class="text-[10px] text-purple-200 mt-0.5">✦ Less than a cup of coffee to save 20+ hours of visual creation monthly!</div>
+          <div class="text-[10px] text-purple-200 mt-0.5">✦ Download full unwatermarked carousel pack + add your custom IP branding!</div>
         </div>
 
         <p class="text-xs text-gray-400" id="txtModalDesc">Unlock unlimited AI generations, custom watermarks, and high-converting viral templates.</p>
@@ -413,8 +448,8 @@
 
       <div class="bg-gray-950 p-4 rounded-xl border border-gray-800 flex flex-col gap-2.5 text-xs text-gray-300">
         <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span id="txtModalFeat1">Unlimited Single & Carousel Cards</span></div>
-        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span id="txtModalFeat2">Unlock Prompt-Driven Visual Styles</span></div>
-        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span>Remove 'Made with Cardify.ai' Watermark / Add Custom Branding</span></div>
+        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span>Download Unwatermarked High-Res Carousel ZIP & PDF</span></div>
+        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span>Custom Personal Branding Watermark / Avatar ID</span></div>
         <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span id="txtModalFeat3">Priority Groq Llama-3 70B & Gemini Flash</span></div>
       </div>
 
@@ -480,7 +515,28 @@
     let swiperInstance = null;
     let remainingFreeQuota = 3;
 
-    // Pre-computed Dynamic Style Presets
+    // Sandbox Demos for 3-Second Aha Moment
+    const SANDBOX_DEMOS = {
+      hacker: {
+        text: "3 Rules for Indie Hackers to reach $10k ARR in 30 Days: 1. Validate demand first with existing competitors. 2. Fix competitor 1-star review pain points. 3. Build built-in viral referral loops into visual carousels.",
+        theme: "Cyberpunk 2077",
+        platform: "twitter",
+        mode: "carousel"
+      },
+      deepseek: {
+        text: "How DeepSeek Disrupted the AI Industry: 1. R1 distilled reasoning models at 1/20th the cost. 2. Multi-head latent attention (MLA) architecture. 3. Open weights Democratizing AGI.",
+        theme: "Matrix Green",
+        platform: "linkedin",
+        mode: "carousel"
+      },
+      xhs: {
+        text: "小红书涨粉 3 大避坑指南：1. 拒绝纯文本密排，前 0.5 秒用视觉高亮卡片卡住视线。2. 必须击中用户痛点而不是写流水账。3. 结尾设置金句引导收藏！",
+        theme: "Morandi Soft",
+        platform: "xiaohongshu",
+        mode: "carousel"
+      }
+    };
+
     const PROMPT_THEME_PRESETS = {
       'Cyberpunk 2077': {
         bg: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
@@ -619,7 +675,6 @@
         platformMatrixLabel: '🎯 Dynamic Platform Matrix',
         inputPlaceholder: "Paste your long article, product overview, blog draft, or drop a PDF file here... e.g. '3 Rules for Indie Hackers to reach $10k ARR in 30 Days' or 'How to write viral content in 5 minutes'...",
         uploadPdf: 'Upload PDF',
-        presetLabel: 'Preset Visual Theme',
         keyLabel: 'Bypass limits with custom Groq / Gemini Key',
         generateBtnSingle: 'Generate Single Card & Post',
         generateBtnCarousel: 'Generate Carousel Pack & Post',
@@ -631,7 +686,7 @@
         exportCurrentBtn: '📷 3x HD PNG',
         exportAllBtnSingle: 'Export Card',
         exportAllBtnCarousel: '📦 Package All',
-        modalTitle: 'Upgrade to Cardify Pro',
+        modalTitle: 'Unlock Pro Carousel Package',
         modalDesc: 'Unlock unlimited AI generations, custom watermarks, and high-converting viral templates.',
         modalFeat1: 'Unlimited Single & Carousel Cards',
         modalFeat2: 'Unlock Prompt-Driven Visual Styles',
@@ -650,7 +705,6 @@
         platformMatrixLabel: '🎯 动态目标平台矩阵',
         inputPlaceholder: "粘贴你的文章、草稿或拖入 PDF 文件...例如：'独立开发者 30 天做成 1 万刀 ARR 的 3 个法则' 或 '如何用 ChatGPT 5 分钟写出爆款小红书文案'...",
         uploadPdf: '上传 PDF',
-        presetLabel: '爆款视觉风格预设',
         keyLabel: '使用自定义 Groq / Gemini Key 突破限制',
         generateBtnSingle: '一键生成单图精炼卡片与贴文',
         generateBtnCarousel: '一键生成爆款连载卡包与贴文',
@@ -662,8 +716,8 @@
         exportCurrentBtn: '📷 3x 高清',
         exportAllBtnSingle: '导出当前卡片',
         exportAllBtnCarousel: '📦 打包全套',
-        modalTitle: '升级到 Cardify Pro',
-        modalDesc: '解锁无限次 AI 生成、自定义水印以及所有爆款高转化模板。',
+        modalTitle: '解锁 Pro 无水印套图连载包',
+        modalDesc: '解锁无限次 AI 生成、自定义 IP 水印头像以及全套无水印切片打包。',
         modalFeat1: '无限生成单图与连载切片卡包',
         modalFeat2: '解锁 Prompt 驱动的独一无二视觉主题',
         modalFeat3: '优先 Groq Llama-3 70B & Gemini Flash',
@@ -702,7 +756,34 @@
       }
     }
 
-    // Prompt-Driven Theme Engine Functionality
+    // ⚡ 1-Click Sandbox Demo Loader (3-Second Aha Moment)
+    function loadSandboxDemo(demoId) {
+      const demo = SANDBOX_DEMOS[demoId];
+      if (!demo) return;
+
+      document.getElementById('inputText').value = demo.text;
+      updateCharCount();
+
+      applyThemePrompt(demo.theme);
+      selectPlatform(demo.platform, 'cyber', '16:9');
+      showToast(`⚡ 3-Second Sandbox Loaded: "${demo.theme}" demo ready!`);
+      trackAnalyticsEvent('sandbox_demo_clicked', { demo: demoId });
+    }
+
+    // Real-Time Hover Theme Preview
+    function previewThemeStyle(promptName) {
+      const preset = PROMPT_THEME_PRESETS[promptName];
+      if (preset) {
+        applyCustomCssToCards(preset);
+      }
+    }
+
+    function restoreThemeStyle() {
+      if (customThemeStyleCss) {
+        applyCustomCssToCards(customThemeStyleCss);
+      }
+    }
+
     function applyThemePrompt(promptName) {
       document.getElementById('customThemePromptInput').value = promptName;
       customThemePrompt = promptName;
@@ -721,7 +802,6 @@
       if (!text) return;
       customThemePrompt = text;
 
-      // Fallback matching or generate pseudo theme
       const preset = PROMPT_THEME_PRESETS[text] || {
         bg: 'linear-gradient(135deg, #111827 0%, #1f2937 100%)',
         titleColor: '#c084fc',
@@ -1071,7 +1151,6 @@
         currentResponseData = json.data;
         platformCacheStore[cacheKey] = json.data;
 
-        // Apply LLM returned CSS theme if present
         if (json.data.custom_css_theme) {
           const t = json.data.custom_css_theme;
           customThemeStyleCss = {
@@ -1108,7 +1187,6 @@
       renderSlides(slides, watermarkText);
     }
 
-    // Render Infographic Diagrams (Matrix / Versus Comparison / Step-by-Step Flowchart)
     function renderSlides(slides, footerText = '⚡️ Made with Cardify.ai') {
       const wrapper = document.getElementById('swiperWrapper');
       wrapper.innerHTML = '';
@@ -1119,7 +1197,6 @@
         const slideDiv = document.createElement('div');
         slideDiv.className = 'swiper-slide';
 
-        // 1. Versus Diagram Component
         const versusHtml = (slide.diagram_type === 'versus' || slide.versus_comparison) ? `
           <div class="my-3 grid grid-cols-2 gap-2 text-[11px]">
             <div class="p-2.5 rounded-xl bg-red-950/40 border border-red-500/30 text-red-200">
@@ -1133,7 +1210,6 @@
           </div>
         ` : '';
 
-        // 2. Metric Box
         const metricHtml = (slide.key_metric && slide.key_metric.value) ? `
           <div class="card-metric-box bg-gray-900/80 border border-gray-800 rounded-xl p-3 text-center mb-3">
             <div class="card-metric-value text-xl font-extrabold font-outfit">${slide.key_metric.value}</div>
@@ -1141,7 +1217,6 @@
           </div>
         ` : '';
 
-        // 3. Flowchart Steps or Bullet Matrix
         const bulletsHtml = (Array.isArray(slide.bullet_points) && slide.bullet_points.length > 0) ? `
           <div class="flex flex-col gap-2 mb-3">
             ${slide.bullet_points.map((b, i) => `
@@ -1155,7 +1230,6 @@
           </div>
         ` : '';
 
-        // 4. Quote Box
         const quoteHtml = slide.takeaway_quote ? `
           <div class="card-quote-box rounded-xl p-3 mb-3">
             <p class="card-quote-text text-xs italic leading-relaxed">"${slide.takeaway_quote}"</p>
@@ -1294,7 +1368,15 @@
       }
     }
 
+    // Asset Paywall Hook on Full Unwatermarked Carousel PDF / Package Export
     async function exportLinkedInPdf() {
+      if (!isProUser) {
+        openUpgradeModal();
+        showToast('Unwatermarked LinkedIn PDF Deck is a Pro feature!', true);
+        trackAnalyticsEvent('paywall_pdf_intercept');
+        return;
+      }
+
       const slidesCount = (currentResponseData?.slides?.length) || (I18N_DICT[selectedLang] || I18N_DICT.en).defaultCarouselSlides.length;
       const btn = document.getElementById('btnExportPdf');
       const txt = document.getElementById('txtExportPdfBtn');
@@ -1324,8 +1406,7 @@
         trackAnalyticsEvent('export_linkedin_pdf', { slides: slidesCount });
       } catch (e) {
         console.error(e);
-        showToast('PDF Export failed. Batch PNG downloading instead.', true);
-        exportAllCards();
+        showToast('PDF Export failed.', true);
       } finally {
         btn.disabled = false;
         txt.innerText = '📄 PDF Slide';
@@ -1333,6 +1414,13 @@
     }
 
     async function exportAllCards() {
+      if (!isProUser) {
+        openUpgradeModal();
+        showToast('Unwatermarked Batch Carousel Package is a Pro feature!', true);
+        trackAnalyticsEvent('paywall_package_intercept');
+        return;
+      }
+
       const slidesCount = (currentResponseData?.slides?.length) || (I18N_DICT[selectedLang] || I18N_DICT.en).defaultCarouselSlides.length;
       const btn = document.getElementById('btnExportAll');
       const txt = document.getElementById('exportAllBtnText');
