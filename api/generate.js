@@ -237,8 +237,9 @@ async function robustLLMFailover(userKey, sysInstruction, userPrompt) {
     keysToTry.push({ type: 'gemini_env', key: process.env.GEMINI_API_KEY.trim() });
   }
 
-  // 4. Default Fallback Public Keys
-  keysToTry.push({ type: 'groq_default', key: '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' });
+  // 4. Default Fallback Public Keys (Multiple Redundant High-Quota Keys)
+  keysToTry.push({ type: 'groq_default_1', key: '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' });
+  keysToTry.push({ type: 'groq_default_2', key: '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' });
 
   let lastError = null;
 
@@ -325,6 +326,14 @@ export default async function handler(req, res) {
   try {
     const { rawText, usedProvider } = await robustLLMFailover(userApiKey, finalSystemPrompt, userPrompt);
     const parsedData = extractJSON(rawText);
+
+    // Normalize slides array if LLM returned alternate key names
+    if (!Array.isArray(parsedData.slides)) {
+      if (Array.isArray(parsedData.cards)) parsedData.slides = parsedData.cards;
+      else if (Array.isArray(parsedData.items)) parsedData.slides = parsedData.items;
+      else if (Array.isArray(parsedData.pages)) parsedData.slides = parsedData.pages;
+      else parsedData.slides = [];
+    }
 
     return res.status(200).json({
       success: true,

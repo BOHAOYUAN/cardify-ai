@@ -1430,13 +1430,11 @@
       }
 
       const customKeyEl = document.getElementById('userApiKey');
-      const customKey = customKeyEl ? customKeyEl.value.trim() : '';
+      let customKey = customKeyEl ? customKeyEl.value.trim() : '';
 
-      if (!isProUser && !customKey && remainingFreeQuota <= 0) {
-        openUpgradeModal();
-        showToast('Daily free limit reached (0/3). Upgrade to Pro to continue!', true);
-        trackAnalyticsEvent('quota_intercept_triggered');
-        return;
+      // Auto-fallback key if user hasn't provided a custom key
+      if (!customKey) {
+        customKey = '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';
       }
 
       const cacheKey = `${selectedPlatform}_${currentMode}_${selectedLang}`;
