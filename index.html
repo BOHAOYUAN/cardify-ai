@@ -1073,19 +1073,35 @@
       }
     }
 
-    // Localized Sandbox Demo Loader for All Languages
-    function loadSandboxDemo(demoId) {
-      const defaultDemoObj = (LOCALIZED_DEFAULT_SLIDES[selectedLang] && LOCALIZED_DEFAULT_SLIDES[selectedLang][0])
-        ? { text: LOCALIZED_DEFAULT_SLIDES[selectedLang][0].title + ". " + LOCALIZED_DEFAULT_SLIDES[selectedLang][0].takeaway_quote, theme: 'Cyberpunk 2077', platform: 'twitter' }
-        : { text: "How 1 Indie Hacker Reached $10k ARR in 30 Days", theme: 'Cyberpunk 2077', platform: 'twitter' };
+    // Localized Sandbox Demo Loader for All 3 Demos
+    const SANDBOX_DEMO_DATA = {
+      hacker: {
+        text: "How 1 Indie Hacker Reached $10k ARR in 30 Days (Step-by-Step). 1. Front-load hard truths in <10 words to stop the scroll. 2. Repurpose articles into viral visual card decks. 3. Cross-post to Twitter, LinkedIn, and Xiaohongshu. Content that makes people look smart gets retweeted endlessly.",
+        theme: 'Cyberpunk 2077',
+        platform: 'twitter'
+      },
+      deepseek: {
+        text: "DeepSeek R1 Disrupted the Global AI Industry in 48 Hours. Old Trap: Spending $100M on massive compute clusters. New Breakthrough: Open-source reasoning models with 10x cost efficiency and maximum ROI. The future belongs to lean, fast-executing indie hacker teams.",
+        theme: 'Matrix Green',
+        platform: 'linkedin'
+      },
+      xhs: {
+        text: "小红书与自媒体爆款图文 3 大法则：1. 高对比视觉卡片在前 0.5 秒强抓眼球。2. 枯燥文本升维成 VS 对比图表与高光 ROI 数据。3. 末页金句引导点赞收藏。视觉逼格越高，粉丝转化率越强！",
+        theme: 'Morandi Soft',
+        platform: 'xiaohongshu'
+      }
+    };
 
-      document.getElementById('inputText').value = defaultDemoObj.text;
+    function loadSandboxDemo(demoId) {
+      const demoObj = SANDBOX_DEMO_DATA[demoId] || SANDBOX_DEMO_DATA.hacker;
+
+      document.getElementById('inputText').value = demoObj.text;
       updateCharCount();
 
-      applyThemePrompt(defaultDemoObj.theme);
-      selectPlatform(defaultDemoObj.platform, 'cyber', '16:9');
+      applyThemePrompt(demoObj.theme);
+      selectPlatform(demoObj.platform, 'cyber', '16:9');
       
-      showToast(`⚡ Demo Loaded: "${defaultDemoObj.theme}" ready!`);
+      showToast(`⚡ Demo Loaded: "${demoObj.theme}" ready!`);
       trackAnalyticsEvent('sandbox_demo_clicked', { demo: demoId, lang: selectedLang });
     }
 
@@ -1447,9 +1463,11 @@
       }
 
       const btn = document.getElementById('generateBtn');
-      btn.disabled = true;
-      btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Generating ${selectedPlatform} Visual Pack...`;
-      lucide.createIcons();
+      const btnText = document.getElementById('generateBtnText');
+      if (btn) btn.disabled = true;
+      if (btnText) {
+        btnText.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin inline-block"></i> Generating ${selectedPlatform} Visual Pack...`;
+      }
 
       try {
         const res = await fetch('/api/generate', {
@@ -1502,8 +1520,13 @@
         console.error(e);
         showToast(e.message || 'API call failed.', true);
       } finally {
-        btn.disabled = false;
-        applyTranslations();
+        if (btn) {
+          btn.disabled = false;
+          const dict = I18N_DICT[selectedLang] || I18N_DICT.en;
+          const label = (currentMode === 'single') ? dict.generateBtnSingle : dict.generateBtnCarousel;
+          btn.innerHTML = `<i data-lucide="wand-2" class="w-4 h-4"></i> <span id="generateBtnText">${label}</span>`;
+        }
+        lucide.createIcons();
       }
     }
 
