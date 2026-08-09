@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cardify.ai 3.6 — 9-Language Global Visual Art SaaS</title>
+  <title>Cardify.ai 3.7 — Full Multi-Lingual Visual Engine</title>
   <meta name="description" content="Turn any article or idea into viral social media cards with 1-click sandbox demos & prompt-driven visual art in 9 global languages.">
   
   <!-- Tailwind CSS CDN -->
@@ -148,7 +148,7 @@
         <div>
           <span class="text-xl font-extrabold font-outfit tracking-tight text-white flex items-center gap-2">
             Cardify<span class="text-purple-400">.ai</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v3.6 9-Lang Global</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v3.7 9-Lang Native</span>
           </span>
         </div>
       </div>
@@ -156,7 +156,7 @@
       <!-- Controls & Upgrade CTA -->
       <div class="flex items-center gap-3">
         
-        <!-- Language Selector (Support All 9 Languages natively) -->
+        <!-- Language Selector -->
         <div class="relative">
           <select id="langSelect" onchange="handleLangChange(this.value)" class="bg-gray-900/90 text-gray-200 text-xs font-medium px-3 py-2 rounded-lg border border-gray-700/80 focus:outline-none focus:border-purple-500 transition-all cursor-pointer">
             <option value="en" selected>🇺🇸 English (en-US)</option>
@@ -274,7 +274,7 @@
         <!-- Textarea -->
         <div class="relative">
           <textarea id="inputText" rows="6" oninput="updateCharCount()" 
-            placeholder="Paste your long article, product overview, blog draft, or drop a PDF file here... e.g. '3 Rules for Indie Hackers to reach $10k ARR in 30 Days' or 'How to write viral content in 5 minutes'..."
+            placeholder="Paste your long article, product overview, blog draft, or drop a PDF file here..."
             class="w-full bg-gray-950/80 border border-gray-800 rounded-xl p-4 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all resize-none"></textarea>
           
           <!-- PDF Upload Overlay Button -->
@@ -499,7 +499,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
-  <!-- ================= CORE APPLICATION LOGIC & FULL 9-LANG GLOBAL I18N ================= -->
+  <!-- ================= CORE APPLICATION LOGIC & FULL 9-LANG NATIVE SYSTEM ================= -->
   <script>
     let currentMode = 'carousel';
     let currentPreset = 'cyber';
@@ -515,7 +515,41 @@
     let swiperInstance = null;
     let remainingFreeQuota = 3;
 
-    // Fully Localized Platforms Matrix for 9 Global Languages
+    // LOCALIZED DEFAULT SLIDE DECKS FOR ALL 9 LANGUAGES
+    const LOCALIZED_DEFAULT_SLIDES = {
+      en: [
+        { subtitle: '🐦 VIRAL THREAD HOOK', title: 'How 1 Indie Hacker Reached $10k ARR in 30 Days (Step-by-Step)', key_metric: { value: '10x', label: 'Retweet Potential' }, bullet_points: [{ point_title: 'Front-load Hard Truths', point_desc: 'Stop the scroll with bold contrarian claims in <10 words.' }], takeaway_quote: 'Content that makes people look smart gets retweeted endlessly.' },
+        { subtitle: '📊 PROVEN TACTICS', title: 'Organic Social Currency Strategy', diagram_type: 'flow', bullet_points: [{ point_title: '1. Repurpose Articles', point_desc: 'Turn dry blog posts into multi-slide viral carousels.' }, { point_title: '2. Multi-Platform Push', point_desc: 'Post to Twitter, LinkedIn, Instagram, Xiaohongshu.' }], takeaway_quote: '📌 Save this thread for later & RT to share with your audience!' }
+      ],
+      zh: [
+        { subtitle: '📕 小红书爆款指南', title: '避坑指南：独立开发者必看的 3 个涨粉变现法则', key_metric: { value: '10x', label: '笔记爆款率提升' }, bullet_points: [{ point_title: '建立情绪共鸣', point_desc: '小红书用户要的是解决痛点与可执行的干货清单！' }], takeaway_quote: '📌 建议点赞收藏，随时翻看避坑！' },
+        { subtitle: '📊 视觉对比', title: '卡片式排版 vs 普通长图文', diagram_type: 'versus', versus_comparison: { old_way: '大段文本排版紧密，缺乏情绪抓手', new_way: '视觉卡片 + 数据高亮 + 黄金金句' }, bullet_points: [{ point_title: '粉绿高明度配色', point_desc: '利用视觉抓手在前 0.5 秒吸引注意力。' }], takeaway_quote: '高颜值视觉卡片是小红书涨粉最强法宝。' }
+      ],
+      es: [
+        { subtitle: '💼 LIDERAZGO EJECUTIVO', title: 'Guía de $10K ARR: Estrategias de Crecimiento Viral', key_metric: { value: '10x', label: 'Alcance Orgánico' }, bullet_points: [{ point_title: 'Validar Demanda', point_desc: 'Resuelve puntos de dolor de opiniones de 1 estrella.' }], takeaway_quote: 'El contenido estructurado convierte a los lectores en clientes.' },
+        { subtitle: '📊 COMPARACIÓN VISUAL', title: 'Carrusel Interactivo vs Texto Largo', diagram_type: 'versus', versus_comparison: { old_way: 'Bloques de texto sin impacto visual', new_way: 'Tarjetas con métricas y diseño de alta conversión' }, bullet_points: [{ point_title: 'Diseño Prompt-Driven', point_desc: 'Captura atención en los primeros 0.5 segundos.' }], takeaway_quote: '📌 ¡Guarda esta publicación para más tarde!' }
+      ],
+      pt: [
+        { subtitle: '💼 LIDERANÇA DE PENSAMENTO', title: 'Guia de $10K ARR: Estratégias de Crescimento B2B', key_metric: { value: '10x', label: 'Alcance Orgânico' }, bullet_points: [{ point_title: 'Validar Demanda', point_desc: 'Resolva pontos de dor de avaliações de 1 estrela.' }], takeaway_quote: 'Conteúdo visual estruturado converte leitores em clientes.' }
+      ],
+      ru: [
+        { subtitle: '💼 РУКОВОДСТВО РОСТА', title: 'Как достичь $10K ARR за 30 дней (Пошагово)', key_metric: { value: '10x', label: 'Вирусный Охват' }, bullet_points: [{ point_title: 'Решение болей клиентов', point_desc: 'Превратите отзывы в 1 звезду в ваше преимущество.' }], takeaway_quote: '📌 Сохраните этот пост и поделитесь с коллегами!' }
+      ],
+      ja: [
+        { subtitle: '🐦 バズスレッドの鉄則', title: '個人開発者が30日で月商1万ドルを達成した3つの法則', key_metric: { value: '10x', label: 'リツイート拡散率' }, bullet_points: [{ point_title: '最初の0.5秒で惹きつける', point_desc: '視覚的インパクトのあるカードでスクロールを止める。' }], takeaway_quote: '📌 後で見返せるように保存＆リツイート！' },
+        { subtitle: '📊 視覚的ビフォーアフター', title: '視覚的カルーセル vs 通常の長文テキスト', diagram_type: 'versus', versus_comparison: { old_way: '読みにくい長文テキストで離脱率が高い', new_way: '視覚的カード + ハイライトデータ + 黄金の名言' }, bullet_points: [{ point_title: 'プロンプト駆動型デザイン', point_desc: 'ブランドに合わせた独創的なスタイルを瞬時に適用。' }], takeaway_quote: '洗練されたカルーセルカードがバズを生む最強の武器。' }
+      ],
+      ko: [
+        { subtitle: '💼 바이럴 공략법', title: '인디 개발자가 30일 만에 $10k ARR을 달성한 3가지 법칙', key_metric: { value: '10x', label: '도달률 상승' }, bullet_points: [{ point_title: '첫 0.5초 시선 사로잡기', point_desc: '강렬한 비주얼 카드로 스크롤을 멈추게 만드세요.' }], takeaway_quote: '📌 나중에 다시 보려면 지금 저장하세요!' }
+      ],
+      fr: [
+        { subtitle: '💼 GUIDE DE CROISSANCE', title: 'Comment atteindre 10k$ ARR en 30 Jours', key_metric: { value: '10x', label: 'Portée Virale' }, bullet_points: [{ point_title: 'Résoudre les Problèmes', point_desc: 'Transformez les avis 1 étoile en avantages concurrentiels.' }], takeaway_quote: '📌 Enregistrez ce post et partagez-le !' }
+      ],
+      de: [
+        { subtitle: '💼 LEITFADEN FÜR WACHSTUM', title: 'Wie man $10K ARR in 30 Tagen erreicht', key_metric: { value: '10x', label: 'Organische Reichweite' }, bullet_points: [{ point_title: 'Schmerzpunkte Lösen', point_desc: 'Verwandeln Sie 1-Stern-Bewertungen in Ihren Vorteil.' }], takeaway_quote: '📌 Speichern Sie diesen Beitrag für später!' }
+      ]
+    };
+
     const DYNAMIC_PLATFORMS = {
       zh: [
         { id: 'xiaohongshu', name: '📕 小红书爆款', ratio: '3:4', preset: 'xhs' },
@@ -948,13 +982,9 @@
 
     // Localized Sandbox Demo Loader for All Languages
     function loadSandboxDemo(demoId) {
-      const langDemos = SANDBOX_DEMOS[selectedLang] || SANDBOX_DEMOS[selectedLang === 'zh' ? 'zh' : 'en'];
-      const demo = langDemos ? demo.hacker ? demo[demoId] : SANDBOX_DEMOS.en[demoId] : SANDBOX_DEMOS.en[demoId];
-      
-      const defaultDemoObj = (SANDBOX_DEMOS[selectedLang] && SANDBOX_DEMOS[selectedLang][demoId]) 
-        || (selectedLang === 'zh' ? SANDBOX_DEMOS.zh[demoId] : SANDBOX_DEMOS.en[demoId]);
-
-      if (!defaultDemoObj) return;
+      const defaultDemoObj = (LOCALIZED_DEFAULT_SLIDES[selectedLang] && LOCALIZED_DEFAULT_SLIDES[selectedLang][0])
+        ? { text: LOCALIZED_DEFAULT_SLIDES[selectedLang][0].title + ". " + LOCALIZED_DEFAULT_SLIDES[selectedLang][0].takeaway_quote, theme: 'Cyberpunk 2077', platform: 'twitter' }
+        : { text: "How 1 Indie Hacker Reached $10k ARR in 30 Days", theme: 'Cyberpunk 2077', platform: 'twitter' };
 
       document.getElementById('inputText').value = defaultDemoObj.text;
       updateCharCount();
@@ -962,7 +992,6 @@
       applyThemePrompt(defaultDemoObj.theme);
       selectPlatform(defaultDemoObj.platform, 'cyber', '16:9');
       
-      const dict = I18N_DICT[selectedLang] || I18N_DICT.en;
       showToast(`⚡ Demo Loaded: "${defaultDemoObj.theme}" ready!`);
       trackAnalyticsEvent('sandbox_demo_clicked', { demo: demoId, lang: selectedLang });
     }
@@ -1059,7 +1088,7 @@
       });
     }
 
-    // FULL 9-LANGUAGE SWITCHER
+    // FULL 9-LANGUAGE SWITCHER (INSTANT NATIVE RE-RENDER)
     function handleLangChange(lang) {
       selectedLang = lang;
       const matrix = DYNAMIC_PLATFORMS[lang] || DYNAMIC_PLATFORMS.en;
@@ -1067,6 +1096,9 @@
         selectedPlatform = matrix[0].id;
         currentPreset = matrix[0].preset;
       }
+      
+      // Clear cache when language changes so fresh localized slides render
+      currentResponseData = null;
       applyTranslations();
       trackAnalyticsEvent('lang_changed', { lang });
     }
@@ -1122,7 +1154,7 @@
       } else if (inputVal.length >= 10) {
         generateContent(false);
       } else {
-        const platformDefaults = PLATFORM_DEFAULT_SLIDES[id] || (I18N_DICT[selectedLang] || I18N_DICT.en).defaultCarouselSlides || PLATFORM_DEFAULT_SLIDES.twitter;
+        const platformDefaults = LOCALIZED_DEFAULT_SLIDES[selectedLang] || LOCALIZED_DEFAULT_SLIDES.en;
         renderSlides(platformDefaults, '⚡️ Cardify.ai');
         switchTab(selectedPlatform);
       }
@@ -1184,8 +1216,9 @@
       document.getElementById('txtModalActivate').innerText = dict.modalActivate;
       document.getElementById('txtModalBuy').innerText = dict.modalBuy;
 
+      // INSTANTLY RE-RENDER RIGHT-SIDE PREVIEW CARDS IN TARGET LANGUAGE!
       if (!currentResponseData) {
-        const platformDefaults = PLATFORM_DEFAULT_SLIDES[selectedPlatform] || dict.defaultCarouselSlides || PLATFORM_DEFAULT_SLIDES.twitter;
+        const platformDefaults = LOCALIZED_DEFAULT_SLIDES[selectedLang] || LOCALIZED_DEFAULT_SLIDES.en;
         if (currentMode === 'single') {
           renderSlides([platformDefaults[0]], isProUser ? '⚡️ Cardify Pro' : '⚡️ Made with Cardify.ai');
         } else {
@@ -1564,8 +1597,6 @@
         console.error(e);
         showToast('Clipboard copy not supported by browser. Downloading PNG instead.');
         exportCurrentCard();
-      } font-medium {
-        exportCurrentCard();
       } finally {
         setTimeout(() => {
           btn.disabled = false;
@@ -1582,7 +1613,7 @@
         return;
       }
 
-      const slidesCount = (currentResponseData?.slides?.length) || (I18N_DICT[selectedLang] || I18N_DICT.en).defaultCarouselSlides.length;
+      const slidesCount = (currentResponseData?.slides?.length) || (LOCALIZED_DEFAULT_SLIDES[selectedLang] || LOCALIZED_DEFAULT_SLIDES.en).length;
       const btn = document.getElementById('btnExportPdf');
       const txt = document.getElementById('txtExportPdfBtn');
 
@@ -1626,7 +1657,7 @@
         return;
       }
 
-      const slidesCount = (currentResponseData?.slides?.length) || (I18N_DICT[selectedLang] || I18N_DICT.en).defaultCarouselSlides.length;
+      const slidesCount = (currentResponseData?.slides?.length) || (LOCALIZED_DEFAULT_SLIDES[selectedLang] || LOCALIZED_DEFAULT_SLIDES.en).length;
       const btn = document.getElementById('btnExportAll');
       const txt = document.getElementById('exportAllBtnText');
 
