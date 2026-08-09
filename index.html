@@ -148,7 +148,7 @@
         <div>
           <span class="text-xl font-extrabold font-outfit tracking-tight text-white flex items-center gap-2">
             Cardify<span class="text-purple-400">.ai</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v4.2 Auto-PDF Magic</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v4.3 Clean PDF Chip</span>
           </span>
         </div>
       </div>
@@ -274,7 +274,7 @@
         <!-- Textarea -->
         <div class="relative">
           <textarea id="inputText" rows="6" oninput="updateCharCount()" 
-            placeholder="Paste your long article, product overview, blog draft, or drop a PDF file here..."
+            placeholder="Paste your article, blog draft, or type custom instructions (e.g. 'Focus on chapter 3 for Twitter'). Or drop a PDF file..."
             class="w-full bg-gray-950/80 border border-gray-800 rounded-xl p-4 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all resize-none"></textarea>
           
           <!-- PDF Upload Overlay Button -->
@@ -285,6 +285,22 @@
               <span id="txtUploadPdf">Upload PDF</span>
             </button>
           </div>
+        </div>
+
+        <!-- Attached PDF Document Chip Badge (Clean Attachment UX) -->
+        <div id="pdfChipContainer" class="hidden p-3 rounded-xl bg-purple-950/60 border border-purple-500/50 flex items-center justify-between transition-all">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-purple-600/30 border border-purple-500/50 flex items-center justify-center">
+              <i data-lucide="file-text" class="w-4 h-4 text-purple-300"></i>
+            </div>
+            <div>
+              <div id="pdfFileName" class="text-xs font-bold text-white font-mono">document.pdf</div>
+              <div id="pdfMetaText" class="text-[10px] text-purple-300 opacity-80">12 Pages Extracted • Ready for AI Fusion</div>
+            </div>
+          </div>
+          <button onclick="removeUploadedPdf()" title="Remove attached PDF" class="p-1.5 rounded-lg hover:bg-purple-900/80 text-purple-300 hover:text-white transition-all">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
         </div>
 
         <!-- Dynamic Platform Matrix Selector (Languages-dependent) -->
@@ -514,6 +530,7 @@
     let currentResponseData = null;
     let swiperInstance = null;
     let remainingFreeQuota = 3;
+    let uploadedPdfData = null;
 
     // LOCALIZED DEFAULT SLIDE DECKS FOR ALL 9 LANGUAGES
     const LOCALIZED_DEFAULT_SLIDES = {
@@ -1444,17 +1461,38 @@
           fullText += pageStrings.join(' ') + '\n\n';
         }
 
-        document.getElementById('inputText').value = fullText.trim();
-        updateCharCount();
-        showToast(`✨ PDF Extracted (${pdf.numPages} pages)! Auto-generating AI Visual Cards...`);
-        trackAnalyticsEvent('pdf_uploaded', { pages: pdf.numPages });
+        uploadedPdfData = {
+          name: file.name,
+          pages: pdf.numPages,
+          text: fullText.trim()
+        };
 
-        // AUTO-TRIGGER GENERATION IMMEDIATELY ON PDF UPLOAD!
+        const chipContainer = document.getElementById('pdfChipContainer');
+        const fileNameEl = document.getElementById('pdfFileName');
+        const metaTextEl = document.getElementById('pdfMetaText');
+
+        if (fileNameEl) fileNameEl.innerText = file.name;
+        if (metaTextEl) metaTextEl.innerText = `${pdf.numPages} Pages Extracted • Ready for AI Fusion`;
+        if (chipContainer) chipContainer.classList.remove('hidden');
+
+        showToast(`✨ Attached PDF "${file.name}" (${pdf.numPages} pages)! Auto-generating AI Visual Cards...`);
+        trackAnalyticsEvent('pdf_attached_success', { pages: pdf.numPages, name: file.name });
+
+        // AUTO-TRIGGER GENERATION IMMEDIATELY ON PDF ATTACHMENT!
         generateContent(true);
       } catch (e) {
         console.error(e);
         showToast('Failed to parse PDF file.', true);
       }
+    }
+
+    function removeUploadedPdf() {
+      uploadedPdfData = null;
+      const chipContainer = document.getElementById('pdfChipContainer');
+      if (chipContainer) chipContainer.classList.add('hidden');
+      const inputEl = document.getElementById('pdfFileInput');
+      if (inputEl) inputEl.value = '';
+      showToast('Attached PDF Removed');
     }
 
     async function handlePdfUpload(event) {
@@ -1463,10 +1501,22 @@
     }
 
     async function generateContent(forceRegenerate = false) {
-      const text = document.getElementById('inputText').value.trim();
-      if (!text || text.length < 2) {
-        showToast('Please enter a topic, sentence, or upload a PDF.', true);
+      const userPromptText = document.getElementById('inputText').value.trim();
+
+      if (!userPromptText && !uploadedPdfData) {
+        showToast('Please enter a topic/prompt or attach a PDF document.', true);
         return;
+      }
+
+      let payloadText = '';
+      if (uploadedPdfData) {
+        if (userPromptText) {
+          payloadText = `[USER CUSTOM INSTRUCTIONS]: ${userPromptText}\n\n[ATTACHED PDF DOCUMENT (${uploadedPdfData.name})]:\n${uploadedPdfData.text}`;
+        } else {
+          payloadText = `[ATTACHED PDF DOCUMENT (${uploadedPdfData.name})]:\n${uploadedPdfData.text}`;
+        }
+      } else {
+        payloadText = userPromptText;
       }
 
       const customKeyEl = document.getElementById('userApiKey');
@@ -1477,7 +1527,7 @@
         customKey = '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';
       }
 
-      const cacheKey = `${selectedPlatform}_${currentMode}_${selectedLang}_${text.slice(0, 50)}`;
+      const cacheKey = `${selectedPlatform}_${currentMode}_${selectedLang}_${payloadText.slice(0, 50)}`;
 
       if (!forceRegenerate && platformCacheStore[cacheKey]) {
         currentResponseData = platformCacheStore[cacheKey];
@@ -1498,7 +1548,7 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            input_text: text,
+            input_text: payloadText,
             target_style: currentPreset,
             target_lang: selectedLang,
             mode_preference: currentMode,
