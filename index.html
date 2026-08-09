@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cardify.ai 3.1 Commercial — High-DPI Visual Carousel & AI Growth Studio</title>
-  <meta name="description" content="Turn any article or PDF into viral Xiaohongshu Carousel slides, LinkedIn posts, Twitter threads, Instagram Carousels, and YouTube Shorts scripts with Retina 3x export, PDF LinkedIn Carousel support, and smart quota control.">
+  <title>Cardify.ai 3.2 — AI Visual Art & Prompt-Driven Infographic Engine</title>
+  <meta name="description" content="Turn any text or PDF into unique Prompt-Driven visual carousels, Infographic diagrams, LinkedIn PDF slide decks, and viral social matrix posts.">
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -33,10 +33,10 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <!-- Google Fonts: Outfit & Inter -->
+  <!-- Google Fonts: Outfit & Inter & Fira Code -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=Fira+Code:wght@500;700&display=swap" rel="stylesheet">
 
   <style>
     body {
@@ -45,6 +45,7 @@
       color: #f3f4f6;
     }
     .font-outfit { font-family: 'Outfit', sans-serif; }
+    .font-mono-code { font-family: 'Fira Code', monospace; }
     
     /* Glassmorphism utility */
     .glass-panel {
@@ -54,7 +55,7 @@
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
-    /* ================= DYNAMIC HIGH-CONTRAST THEMES ================= */
+    /* ================= DYNAMIC THEME ENGINE ================= */
     .theme-cyber {
       background: linear-gradient(135deg, rgba(30, 41, 59, 0.98) 0%, rgba(15, 23, 42, 0.99) 100%);
       border: 1px solid rgba(139, 92, 246, 0.35);
@@ -140,7 +141,7 @@
         <div>
           <span class="text-xl font-extrabold font-outfit tracking-tight text-white flex items-center gap-2">
             Cardify<span class="text-purple-400">.ai</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v3.1 PRO</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v3.2 Visual Art Engine</span>
           </span>
         </div>
       </div>
@@ -185,7 +186,7 @@
     <!-- ================= LEFT PANEL: CONTROL & GENERATION (7 cols) ================= -->
     <section class="lg:col-span-7 flex flex-col gap-5">
       
-      <!-- Input Box + Mode Toggle + One-Click Presets + Drag Drop PDF -->
+      <!-- Input Box + Mode Toggle + Prompt Visual Injector + One-Click Presets -->
       <div class="glass-panel rounded-2xl p-5 border border-gray-800 flex flex-col gap-4">
         
         <!-- Mode Toggle Switch: Single vs Carousel -->
@@ -199,6 +200,32 @@
             </button>
           </div>
           <span class="text-xs text-gray-400" id="charCount">0 / 15,000</span>
+        </div>
+
+        <!-- 🎨 PROMPT-DRIVEN VISUAL THEME ENGINE (Custom Visual Identity) -->
+        <div class="p-3.5 rounded-xl bg-gradient-to-r from-purple-950/40 via-gray-950 to-indigo-950/40 border border-purple-500/30 flex flex-col gap-2.5">
+          <div class="flex items-center justify-between">
+            <label class="text-xs font-bold text-purple-300 flex items-center gap-1.5">
+              <i data-lucide="palette" class="w-4 h-4 text-purple-400"></i>
+              🎨 Prompt-Driven Visual Theme (独一无二的个人 IP 视觉引擎)
+            </label>
+            <span class="text-[10px] text-purple-300 bg-purple-900/40 px-2 py-0.5 rounded-full font-mono border border-purple-700/40">Prompt-to-CSS</span>
+          </div>
+
+          <div class="relative">
+            <input type="text" id="customThemePromptInput" onchange="applyPromptThemeFromInput()" placeholder="Type any aesthetic... e.g. 'Cyberpunk 2077', 'Morandi Soft', 'Matrix Green', 'Apple Minimalist', 'Vaporwave Sunset'..."
+              class="w-full bg-gray-900 border border-purple-800/50 rounded-lg px-3 py-2 text-xs text-purple-200 placeholder-gray-500 focus:outline-none focus:border-purple-400 transition-all font-mono">
+          </div>
+
+          <!-- Quick Theme Prompt Preset Badges -->
+          <div class="flex flex-wrap gap-1.5">
+            <button onclick="applyThemePrompt('Cyberpunk 2077')" class="px-2.5 py-1 rounded-md bg-purple-950/80 hover:bg-purple-900 text-[11px] font-mono text-purple-300 border border-purple-700/40">⚡️ Cyberpunk 2077</button>
+            <button onclick="applyThemePrompt('Apple Minimalist')" class="px-2.5 py-1 rounded-md bg-slate-900 hover:bg-slate-800 text-[11px] font-mono text-slate-200 border border-slate-700">🍏 Apple Minimalist</button>
+            <button onclick="applyThemePrompt('Morandi Soft')" class="px-2.5 py-1 rounded-md bg-rose-950/60 hover:bg-rose-900/60 text-[11px] font-mono text-rose-300 border border-rose-800/40">🎨 Morandi Soft</button>
+            <button onclick="applyThemePrompt('Matrix Green')" class="px-2.5 py-1 rounded-md bg-emerald-950/80 hover:bg-emerald-900 text-[11px] font-mono text-emerald-300 border border-emerald-700/40">💻 Matrix Green</button>
+            <button onclick="applyThemePrompt('Vaporwave Sunset')" class="px-2.5 py-1 rounded-md bg-pink-950/80 hover:bg-pink-900 text-[11px] font-mono text-pink-300 border border-pink-700/40">🌅 Vaporwave 80s</button>
+            <button onclick="applyThemePrompt('Luxury Gold')" class="px-2.5 py-1 rounded-md bg-amber-950/80 hover:bg-amber-900 text-[11px] font-mono text-amber-300 border border-amber-700/40">👑 Luxury Dark Gold</button>
+          </div>
         </div>
 
         <!-- One-Click Preset Hooks (Quick Tags) -->
@@ -230,38 +257,6 @@
           <label class="block text-xs font-medium text-gray-400 mb-2" id="txtPlatformMatrixLabel">🎯 Dynamic Platform Matrix</label>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="platformMatrixContainer">
             <!-- Dynamically populated based on selected Language -->
-          </div>
-        </div>
-
-        <!-- Preset Scene Templates Selection (Level 1: Pure CSS Theme Switch, 0 Cost) -->
-        <div>
-          <div class="flex items-center justify-between mb-2">
-            <label class="block text-xs font-medium text-gray-400" id="txtPresetLabel">Preset Visual Theme (Pure CSS Theme Switch, 0 Cost)</label>
-            <span class="text-[10px] text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded-md font-mono border border-emerald-800/40">⚡ 0 API Cost</span>
-          </div>
-          <div class="grid grid-cols-3 gap-2">
-            
-            <button onclick="selectPresetTheme('xhs')" id="preset-xhs" class="preset-btn p-3 rounded-xl border border-rose-500/40 bg-rose-950/20 hover:bg-rose-900/30 text-left transition-all flex flex-col gap-1">
-              <div class="text-xs font-bold text-rose-300 flex items-center gap-1">
-                <span id="txtPresetXhs">📕 Xiaohongshu Viral</span>
-              </div>
-              <span class="text-[10px] text-rose-200/70" id="txtPresetXhsDesc">Vibrant & Pain Points</span>
-            </button>
-
-            <button onclick="selectPresetTheme('linkedin')" id="preset-linkedin" class="preset-btn p-3 rounded-xl border border-sky-500/30 bg-sky-950/20 hover:bg-sky-900/30 text-left transition-all flex flex-col gap-1">
-              <div class="text-xs font-bold text-sky-300 flex items-center gap-1">
-                <span id="txtPresetLinkedin">💼 LinkedIn Executive</span>
-              </div>
-              <span class="text-[10px] text-sky-200/70" id="txtPresetLinkedinDesc">Clean & Data ROI</span>
-            </button>
-
-            <button onclick="selectPresetTheme('cyber')" id="preset-cyber" class="preset-btn active p-3 rounded-xl border border-purple-500/50 bg-purple-950/40 text-left transition-all flex flex-col gap-1 ring-2 ring-purple-500/50">
-              <div class="text-xs font-bold text-purple-300 flex items-center gap-1">
-                <span id="txtPresetCyber">🚀 Twitter Tech</span>
-              </div>
-              <span class="text-[10px] text-purple-200/70" id="txtPresetCyberDesc">Dark Glass & Viral Hook</span>
-            </button>
-
           </div>
         </div>
 
@@ -348,27 +343,23 @@
           </div>
         </div>
 
-        <!-- Commercial High-DPI & Multi-Format Export Toolbar (With Interactive Loading States) -->
+        <!-- Commercial High-DPI & Multi-Format Export Toolbar -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">
-          <!-- 1. Copy Image to Clipboard -->
           <button id="btnCopyImg" onclick="copyCardImageToClipboard()" title="Copy current HD slide image directly to clipboard" class="py-2.5 px-2 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs font-semibold text-gray-200 flex items-center justify-center gap-1 transition-all">
             <i data-lucide="copy" class="w-3.5 h-3.5 text-purple-400"></i>
             <span id="txtCopyImgBtn">📋 Copy Image</span>
           </button>
 
-          <!-- 2. Export Current PNG (Retina 3x) -->
           <button id="btnExportCurrent" onclick="exportCurrentCard()" title="Export high resolution 3x Retina PNG" class="py-2.5 px-2 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs font-semibold text-gray-200 flex items-center justify-center gap-1 transition-all">
             <i data-lucide="image" class="w-3.5 h-3.5 text-purple-400"></i>
             <span id="txtExportCurrentBtn">📷 3x HD</span>
           </button>
 
-          <!-- 3. Export LinkedIn PDF Carousel -->
           <button id="btnExportPdf" onclick="exportLinkedInPdf()" title="Export multi-page PDF for LinkedIn Carousel posts" class="py-2.5 px-2 rounded-xl bg-sky-950/60 hover:bg-sky-900/60 border border-sky-700/50 text-xs font-semibold text-sky-300 flex items-center justify-center gap-1 transition-all">
             <i data-lucide="file-text" class="w-3.5 h-3.5 text-sky-400"></i>
             <span id="txtExportPdfBtn">📄 PDF Slide</span>
           </button>
 
-          <!-- 4. Export All Package (ZIP / Batch PNG) -->
           <button id="btnExportAll" onclick="exportAllCards()" title="Batch export all carousel slides" class="py-2.5 px-2 rounded-xl bg-purple-900/50 hover:bg-purple-800/50 border border-purple-700/50 text-xs font-semibold text-purple-200 flex items-center justify-center gap-1 transition-all">
             <i data-lucide="layers" class="w-3.5 h-3.5 text-purple-300"></i>
             <span id="exportAllBtnText">📦 Package All</span>
@@ -397,7 +388,7 @@
     </div>
   </footer>
 
-  <!-- ================= DODO PAYMENTS / PRO MODAL (WITH PRICE ANCHORING & PRO WATERMARK OPTION) ================= -->
+  <!-- ================= DODO PAYMENTS / PRO MODAL ================= -->
   <div id="upgradeModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
     <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-purple-500/30 flex flex-col gap-5 relative">
       <button onclick="closeUpgradeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
@@ -422,7 +413,7 @@
 
       <div class="bg-gray-950 p-4 rounded-xl border border-gray-800 flex flex-col gap-2.5 text-xs text-gray-300">
         <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span id="txtModalFeat1">Unlimited Single & Carousel Cards</span></div>
-        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span id="txtModalFeat2">Unlock Xiaohongshu & LinkedIn Premium Styles</span></div>
+        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span id="txtModalFeat2">Unlock Prompt-Driven Visual Styles</span></div>
         <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span>Remove 'Made with Cardify.ai' Watermark / Add Custom Branding</span></div>
         <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span id="txtModalFeat3">Priority Groq Llama-3 70B & Gemini Flash</span></div>
       </div>
@@ -473,13 +464,15 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
-  <!-- ================= CORE APPLICATION LOGIC & COMMERCIAL ENGINE ================= -->
+  <!-- ================= CORE APPLICATION LOGIC & VISUAL ART ENGINE ================= -->
   <script>
     let currentMode = 'carousel'; // 'single' | 'carousel'
-    let currentPreset = 'cyber'; // 'cyber' | 'xhs' | 'linkedin'
-    let selectedLang = 'en'; // DEFAULT EN (English) per user request!
+    let currentPreset = 'cyber'; // 'cyber' | 'custom'
+    let selectedLang = 'en'; // DEFAULT EN
     let selectedPlatform = 'twitter';
     let selectedHookTag = '';
+    let customThemePrompt = '';
+    let customThemeStyleCss = null;
     let userApiKey = '';
     let licenseKey = localStorage.getItem('cardify_license_key') || '';
     let isProUser = false;
@@ -487,10 +480,90 @@
     let swiperInstance = null;
     let remainingFreeQuota = 3;
 
-    // Smart Memory Cache Store (Key: ${platform}_${mode}_${lang}, Value: JSON response)
+    // Pre-computed Dynamic Style Presets
+    const PROMPT_THEME_PRESETS = {
+      'Cyberpunk 2077': {
+        bg: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
+        titleColor: '#00ffcc',
+        subtitleColor: '#ff007f',
+        metricBg: 'rgba(15, 12, 41, 0.9)',
+        metricValueColor: '#00ffcc',
+        quoteBg: 'rgba(255, 0, 127, 0.15)',
+        quoteBorder: '1px solid rgba(255, 0, 127, 0.4)',
+        quoteTextColor: '#ff80bf',
+        border: '1px solid rgba(0, 255, 204, 0.4)',
+        textColor: '#e2e8f0',
+        fontFamily: "'Fira Code', monospace"
+      },
+      'Apple Minimalist': {
+        bg: 'linear-gradient(135deg, #fbfbfd 0%, #f2f2f7 100%)',
+        titleColor: '#1d1d1f',
+        subtitleColor: '#86868b',
+        metricBg: '#ffffff',
+        metricValueColor: '#0071e3',
+        quoteBg: '#f5f5f7',
+        quoteBorder: '1px solid #d2d2d7',
+        quoteTextColor: '#1d1d1f',
+        border: '1px solid #e5e5ea',
+        textColor: '#1d1d1f',
+        fontFamily: "'Inter', sans-serif"
+      },
+      'Morandi Soft': {
+        bg: 'linear-gradient(135deg, #e8e5e1 0%, #d8d3cd 100%)',
+        titleColor: '#4a443e',
+        subtitleColor: '#8c827a',
+        metricBg: '#f4f1ea',
+        metricValueColor: '#7a8b7b',
+        quoteBg: '#ede9e3',
+        quoteBorder: '1px solid #c8c2bc',
+        quoteTextColor: '#5c544d',
+        border: '1px solid #c8c2bc',
+        textColor: '#3d3834',
+        fontFamily: "'Inter', sans-serif"
+      },
+      'Matrix Green': {
+        bg: 'linear-gradient(135deg, #001100 0%, #002200 100%)',
+        titleColor: '#00ff66',
+        subtitleColor: '#33cc66',
+        metricBg: 'rgba(0, 30, 0, 0.85)',
+        metricValueColor: '#00ff66',
+        quoteBg: 'rgba(0, 50, 0, 0.5)',
+        quoteBorder: '1px solid rgba(0, 255, 102, 0.4)',
+        quoteTextColor: '#99ffbb',
+        border: '1px solid rgba(0, 255, 102, 0.5)',
+        textColor: '#ccffdd',
+        fontFamily: "'Fira Code', monospace"
+      },
+      'Vaporwave Sunset': {
+        bg: 'linear-gradient(135deg, #2b1055 0%, #7597de 100%)',
+        titleColor: '#ffe53b',
+        subtitleColor: '#ff2525',
+        metricBg: 'rgba(43, 16, 85, 0.7)',
+        metricValueColor: '#ffe53b',
+        quoteBg: 'rgba(255, 37, 37, 0.15)',
+        quoteBorder: '1px solid rgba(255, 229, 59, 0.4)',
+        quoteTextColor: '#ffffff',
+        border: '1px solid rgba(255, 37, 37, 0.4)',
+        textColor: '#ffffff',
+        fontFamily: "'Outfit', sans-serif"
+      },
+      'Luxury Gold': {
+        bg: 'linear-gradient(135deg, #141414 0%, #0a0a0a 100%)',
+        titleColor: '#d4af37',
+        subtitleColor: '#f3e5ab',
+        metricBg: '#1f1f1f',
+        metricValueColor: '#d4af37',
+        quoteBg: '#181818',
+        quoteBorder: '1px solid #d4af37',
+        quoteTextColor: '#f3e5ab',
+        border: '1px solid rgba(212, 175, 55, 0.4)',
+        textColor: '#e5e5e5',
+        fontFamily: "'Outfit', sans-serif"
+      }
+    };
+
     const platformCacheStore = {};
 
-    // Dynamic Platform Matrix Definitions
     const DYNAMIC_PLATFORMS = {
       zh: [
         { id: 'xiaohongshu', name: '📕 小红书爆款', ratio: '3:4', preset: 'xhs' },
@@ -506,29 +579,21 @@
       ]
     };
 
-    // Dedicated Platform Default Placeholder Content
     const PLATFORM_DEFAULT_SLIDES = {
       xiaohongshu: [
         { subtitle: '📕 小红书爆款指南', title: '避坑指南：独立开发者必看的 3 个涨粉变现法则', key_metric: { value: '10x', label: '笔记爆款率提升' }, bullet_points: [{ point_title: '建立情绪共鸣', point_desc: '小红书用户要的是解决痛点与可执行的干货清单！' }], takeaway_quote: '📌 建议点赞收藏，随时翻看避坑！' },
-        { subtitle: '📊 视觉对比', title: '卡片式排版 vs 普通长图文', key_metric: { value: '400%', label: '收藏与转发提升' }, bullet_points: [{ point_title: '粉绿高明度配色', point_desc: '利用视觉抓手在前 0.5 秒吸引注意力。' }], takeaway_quote: '高颜值视觉卡片是小红书涨粉最强法宝。' }
+        { subtitle: '📊 视觉对比', title: '卡片式排版 vs 普通长图文', diagram_type: 'versus', versus_comparison: { old_way: '大段文本排版紧密，缺乏情绪抓手', new_way: '视觉卡片 + 数据高亮 + 黄金金句' }, bullet_points: [{ point_title: '粉绿高明度配色', point_desc: '利用视觉抓手在前 0.5 秒吸引注意力。' }], takeaway_quote: '高颜值视觉卡片是小红书涨粉最强法宝。' }
       ],
       linkedin: [
         { subtitle: '💼 EXECUTIVE THOUGHT LEADERSHIP', title: 'The $10K ARR Playbook: B2B Growth & ROI Insights', key_metric: { value: '$10K+', label: 'Monthly Recurring Revenue' }, bullet_points: [{ point_title: 'Validate Enterprise Specs', point_desc: 'Target pre-validated B2B tracks with existing high willingness to pay.' }], takeaway_quote: 'Authority and ROI data drive decision-makers to convert.' },
-        { subtitle: '📊 DATA-DRIVEN BENCHMARKS', title: 'Proven B2B Content Performance', key_metric: { value: '350%', label: 'Organic Engagement Lift' }, bullet_points: [{ point_title: 'Fix Competitor Pain Points', point_desc: 'Turn 1-star G2/Capterra reviews into your core differentiator.' }], takeaway_quote: 'Structured thought-leadership posts position you as an industry authority.' }
+        { subtitle: '📊 DATA-DRIVEN BENCHMARKS', title: 'Proven B2B Content Performance', diagram_type: 'versus', versus_comparison: { old_way: 'Generic marketing speak & text blocks', new_way: 'Structured infographic diagrams & ROI stats' }, bullet_points: [{ point_title: 'Fix Competitor Pain Points', point_desc: 'Turn 1-star G2/Capterra reviews into your core differentiator.' }], takeaway_quote: 'Structured thought-leadership posts position you as an industry authority.' }
       ],
       twitter: [
         { subtitle: '🐦 VIRAL THREAD HOOK', title: 'How 1 Indie Hacker Reached $10k ARR in 30 Days (Step-by-Step)', key_metric: { value: '10x', label: 'Retweet Potential' }, bullet_points: [{ point_title: 'Front-load Hard Truths', point_desc: 'Stop the scroll with bold contrarian claims in <10 words.' }], takeaway_quote: 'Content that makes people look smart gets retweeted endlessly.' },
-        { subtitle: '📊 PROVEN TACTICS', title: 'Organic Social Currency Strategy', key_metric: { value: '4x', label: 'Engagement Amplification' }, bullet_points: [{ point_title: 'Repurpose Articles', point_desc: 'Turn dry blog posts into multi-slide viral carousels.' }], takeaway_quote: '📌 Save this thread for later & RT to share with your audience!' }
-      ],
-      instagram: [
-        { subtitle: '📸 INSTAGRAM CAROUSEL STORY', title: 'Swipe to Unlock 3 Growth Secrets 👉', key_metric: { value: '4x', label: 'Save-to-Bookmark Rate' }, bullet_points: [{ point_title: 'Visual Story Progression', point_desc: 'Each slide guides the reader seamless to the next.' }], takeaway_quote: 'Double tap if this resonated & Share with a builder!' }
-      ],
-      youtube_script: [
-        { subtitle: '📺 YOUTUBE SHORTS STORYBOARD', title: 'Scene 1: Hook (0:00 - 0:05)', key_metric: { value: '98%', label: 'Audience Retention' }, bullet_points: [{ point_title: 'Visual Hook Scene', point_desc: 'Show immediate problem before revealing solution.' }], takeaway_quote: 'Subscribe for part 2 & Drop your thoughts in the comments!' }
+        { subtitle: '📊 PROVEN TACTICS', title: 'Organic Social Currency Strategy', diagram_type: 'flow', bullet_points: [{ point_title: '1. Repurpose Articles', point_desc: 'Turn dry blog posts into multi-slide viral carousels.' }, { point_title: '2. Multi-Platform Push', point_desc: 'Post to Twitter, LinkedIn, Instagram, Xiaohongshu.' }], takeaway_quote: '📌 Save this thread for later & RT to share with your audience!' }
       ]
     };
 
-    // One-Click Preset Hook Tags
     const HOOK_TAGS = {
       zh: [
         { id: 'viral_title', label: '🔥 爆款吸睛标题', hook: '请生成极具情绪吸引力与数字痛点的爆款标题' },
@@ -544,7 +609,6 @@
       ]
     };
 
-    // Full Internationalization Dictionary
     const I18N_DICT = {
       en: {
         quotaText: '✦ 3 Free Left',
@@ -555,13 +619,7 @@
         platformMatrixLabel: '🎯 Dynamic Platform Matrix',
         inputPlaceholder: "Paste your long article, product overview, blog draft, or drop a PDF file here... e.g. '3 Rules for Indie Hackers to reach $10k ARR in 30 Days' or 'How to write viral content in 5 minutes'...",
         uploadPdf: 'Upload PDF',
-        presetLabel: 'Preset Visual Theme (Pure CSS Theme Switch, 0 Cost)',
-        presetXhs: '📕 Xiaohongshu Viral',
-        presetXhsDesc: 'Vibrant & Pain Points',
-        presetLinkedin: '💼 LinkedIn Executive',
-        presetLinkedinDesc: 'Clean & Data ROI',
-        presetCyber: '🚀 Twitter Tech',
-        presetCyberDesc: 'Dark Glass & Viral Hook',
+        presetLabel: 'Preset Visual Theme',
         keyLabel: 'Bypass limits with custom Groq / Gemini Key',
         generateBtnSingle: 'Generate Single Card & Post',
         generateBtnCarousel: 'Generate Carousel Pack & Post',
@@ -576,43 +634,12 @@
         modalTitle: 'Upgrade to Cardify Pro',
         modalDesc: 'Unlock unlimited AI generations, custom watermarks, and high-converting viral templates.',
         modalFeat1: 'Unlimited Single & Carousel Cards',
-        modalFeat2: 'Unlock Xiaohongshu & LinkedIn Premium Styles',
+        modalFeat2: 'Unlock Prompt-Driven Visual Styles',
         modalFeat3: 'Priority Groq Llama-3 70B & Gemini Flash',
         modalLicLabel: 'Have a Pro License Key?',
         modalActivate: 'Activate',
         modalBuy: 'Buy Pro License ($9.9/mo)',
-        defaultCarouselSlides: [
-          {
-            subtitle: '🔥 INDIE HACKER BLUEPRINT',
-            title: '3 Rules for Indie Hackers to Reach $10k ARR in 30 Days',
-            key_metric: { value: '$10K+', label: 'Monthly Recurring Revenue (MRR)' },
-            bullet_points: [
-              { point_title: 'Hook Immediate Attention', point_desc: 'Users don\'t buy raw features—they buy social currency and monetization speed.' }
-            ],
-            takeaway_quote: 'Deliver high-impact visual carousels that users love to screenshot & share.'
-          },
-          {
-            subtitle: '📊 PROVEN DATA & IMPACT',
-            title: 'Viral Organic Reach & Conversion',
-            key_metric: { value: '350%', label: 'Social Engagement Lift' },
-            bullet_points: [
-              { point_title: 'Validate Demand First', point_desc: 'Pick validated tracks with existing $10k+ MRR competitors.' },
-              { point_title: 'Fix 1-Star Review Pain Points', point_desc: 'Turn competitor complaints into your killer feature.' }
-            ],
-            takeaway_quote: 'Carousel slides outperform single-card posts by 4x on LinkedIn & Instagram.'
-          },
-          {
-            subtitle: '🛠 ACTION PLAYBOOK & CTA',
-            title: '3 Steps to Scale Your Product Today',
-            key_metric: null,
-            bullet_points: [
-              { point_title: '1. Repurpose Content', point_desc: 'Convert articles into multi-slide visual story packs.' },
-              { point_title: '2. Multi-Platform Distribution', point_desc: 'Post carousels across Reddit, LinkedIn, Instagram, Xiaohongshu.' },
-              { point_title: '3. Built-in Viral Loop', point_desc: 'Let clean card watermarks drive organic traffic back to your app.' }
-            ],
-            takeaway_quote: '📌 Save this post for later & Follow for more growth hacks!'
-          }
-        ]
+        defaultCarouselSlides: PLATFORM_DEFAULT_SLIDES.twitter
       },
       zh: {
         quotaText: '✦ 剩余 3 次免费',
@@ -623,13 +650,7 @@
         platformMatrixLabel: '🎯 动态目标平台矩阵',
         inputPlaceholder: "粘贴你的文章、草稿或拖入 PDF 文件...例如：'独立开发者 30 天做成 1 万刀 ARR 的 3 个法则' 或 '如何用 ChatGPT 5 分钟写出爆款小红书文案'...",
         uploadPdf: '上传 PDF',
-        presetLabel: '爆款视觉风格预设 (纯前端即时换色/换主题)',
-        presetXhs: '📕 小红书爆款风',
-        presetXhsDesc: '粉红明亮 + 抓人痛点',
-        presetLinkedin: '💼 LinkedIn 商务高管',
-        presetLinkedinDesc: '极简蓝白 + 强调 ROI',
-        presetCyber: '🚀 Twitter 极客风',
-        presetCyberDesc: '暗黑玻璃 + 爆款钩子',
+        presetLabel: '爆款视觉风格预设',
         keyLabel: '使用自定义 Groq / Gemini Key 突破限制',
         generateBtnSingle: '一键生成单图精炼卡片与贴文',
         generateBtnCarousel: '一键生成爆款连载卡包与贴文',
@@ -644,43 +665,12 @@
         modalTitle: '升级到 Cardify Pro',
         modalDesc: '解锁无限次 AI 生成、自定义水印以及所有爆款高转化模板。',
         modalFeat1: '无限生成单图与连载切片卡包',
-        modalFeat2: '解锁小红书与 LinkedIn 高级风格',
+        modalFeat2: '解锁 Prompt 驱动的独一无二视觉主题',
         modalFeat3: '优先 Groq Llama-3 70B & Gemini Flash',
         modalLicLabel: '已有 Pro 激活码？',
         modalActivate: '立即激活',
         modalBuy: '购买 Pro 授权 ($9.9/月)',
-        defaultCarouselSlides: [
-          {
-            subtitle: '🔥 独立开发者爆款法则',
-            title: '独立开发者 30 天做成 1 万刀 ARR 的 3 个法则',
-            key_metric: { value: '$10K+', label: '月经常性收入 (MRR)' },
-            bullet_points: [
-              { point_title: '抓人情绪痛点', point_desc: '用户不是为了功能买单，而是为了社交货币与变现效率买单！' }
-            ],
-            takeaway_quote: '爆款切片卡包能够带来传统单图 4 倍以上的点赞与收藏。'
-          },
-          {
-            subtitle: '📊 核心数据与突破点',
-            title: '增长数据与社群传播力',
-            key_metric: { value: '350%', label: '社交裂变增幅' },
-            bullet_points: [
-              { point_title: '锁定验证赛道', point_desc: '选择海外月入 $10k+ 已验证的高需求竞品。' },
-              { point_title: '击中差评痛点', point_desc: '翻看竞品差评，直接把他们的短板背刺修改成你的主打卖点。' }
-            ],
-            takeaway_quote: '连载滑动卡片在小红书、LinkedIn 与 Instagram 拥有极强黏性。'
-          },
-          {
-            subtitle: '🛠 实操指南 & 引导',
-            title: '今日落地 3 大步骤',
-            key_metric: null,
-            bullet_points: [
-              { point_title: '1. 重构源内容', point_desc: '把干文/PDF一键重构为多平台视觉切片卡包。' },
-              { point_title: '2. 多平台发布', point_desc: '同步分发至小红书、LinkedIn、Instagram 与 Reddit。' },
-              { point_title: '3. 自带裂变水印', point_desc: '高清卡片底部保留品牌标记，让每一位用户帮你免费宣传。' }
-            ],
-            takeaway_quote: '📌 建议点赞收藏备用，关注获取更多独立开发干货！'
-          }
-        ]
+        defaultCarouselSlides: PLATFORM_DEFAULT_SLIDES.xiaohongshu
       }
     };
 
@@ -695,7 +685,6 @@
       fetchQuota();
       applyTranslations();
 
-      // Check Dodo Payments Redirect URL Key (e.g. ?license_key=CARDIFY-PRO-XXXX)
       const urlParams = new URLSearchParams(window.location.search);
       const urlKey = urlParams.get('license_key') || urlParams.get('key');
       if (urlKey) {
@@ -710,6 +699,78 @@
       console.log(`[Analytics Track] ${eventName}:`, eventProps);
       if (window.posthog) {
         window.posthog.capture(eventName, eventProps);
+      }
+    }
+
+    // Prompt-Driven Theme Engine Functionality
+    function applyThemePrompt(promptName) {
+      document.getElementById('customThemePromptInput').value = promptName;
+      customThemePrompt = promptName;
+      const preset = PROMPT_THEME_PRESETS[promptName];
+
+      if (preset) {
+        customThemeStyleCss = preset;
+        applyCustomCssToCards(preset);
+        showToast(`🎨 Applied Prompt Visual Style: ${promptName}`);
+        trackAnalyticsEvent('theme_prompt_applied', { prompt: promptName });
+      }
+    }
+
+    function applyPromptThemeFromInput() {
+      const text = document.getElementById('customThemePromptInput').value.trim();
+      if (!text) return;
+      customThemePrompt = text;
+
+      // Fallback matching or generate pseudo theme
+      const preset = PROMPT_THEME_PRESETS[text] || {
+        bg: 'linear-gradient(135deg, #111827 0%, #1f2937 100%)',
+        titleColor: '#c084fc',
+        subtitleColor: '#a78bfa',
+        metricBg: '#1f2937',
+        metricValueColor: '#c084fc',
+        quoteBg: '#111827',
+        quoteBorder: '1px solid #7c3aed',
+        quoteTextColor: '#e9d5ff',
+        border: '1px solid #7c3aed',
+        textColor: '#f3f4f6',
+        fontFamily: "'Outfit', sans-serif"
+      };
+
+      customThemeStyleCss = preset;
+      applyCustomCssToCards(preset);
+      showToast(`🎨 Applied Custom Theme: "${text}"`);
+    }
+
+    function applyCustomCssToCards(cssObj) {
+      for (let i = 1; i <= 10; i++) {
+        const card = document.getElementById(`card-${i}`);
+        if (card) {
+          card.style.background = cssObj.bg || '';
+          card.style.border = cssObj.border || '';
+          card.style.fontFamily = cssObj.fontFamily || '';
+          card.style.color = cssObj.textColor || '';
+
+          const title = card.querySelector('.card-title');
+          if (title) title.style.color = cssObj.titleColor || '';
+
+          const subtitle = card.querySelector('.card-subtitle');
+          if (subtitle) subtitle.style.color = cssObj.subtitleColor || '';
+
+          const metricBox = card.querySelector('.card-metric-box');
+          if (metricBox) metricBox.style.background = cssObj.metricBg || '';
+
+          const metricValue = card.querySelector('.card-metric-value');
+          if (metricValue) metricValue.style.color = cssObj.metricValueColor || '';
+
+          const quoteBox = card.querySelector('.card-quote-box');
+          if (quoteBox) {
+            quoteBox.style.background = cssObj.quoteBg || '';
+            quoteBox.style.border = cssObj.quoteBorder || '';
+          }
+
+          const quoteText = card.querySelector('.card-quote-text');
+          if (quoteText) quoteText.style.color = cssObj.quoteTextColor || '';
+        }
       }
     }
 
@@ -772,7 +833,6 @@
 
     function selectPlatform(id, preset, ratio) {
       selectedPlatform = id;
-      selectPresetTheme(preset);
 
       const aspectBadge = document.getElementById('aspectBadge');
       if (aspectBadge) aspectBadge.innerText = `📐 ${ratio} Ratio`;
@@ -806,22 +866,6 @@
       trackAnalyticsEvent('hook_tag_clicked', { tag: id });
     }
 
-    function selectPresetTheme(theme) {
-      currentPreset = theme;
-      document.querySelectorAll('.preset-btn').forEach(btn => {
-        btn.classList.remove('ring-2', 'ring-purple-500/50', 'ring-rose-500/50', 'ring-sky-500/50', 'active');
-      });
-      const activeBtn = document.getElementById(`preset-${theme}`);
-      if (activeBtn) activeBtn.classList.add('ring-2', 'ring-purple-500/50', 'active');
-
-      for (let i = 1; i <= 10; i++) {
-        const card = document.getElementById(`card-${i}`);
-        if (card) {
-          card.className = `theme-${theme} rounded-2xl p-6 min-h-[430px] flex flex-col justify-between relative overflow-hidden transition-all duration-300`;
-        }
-      }
-    }
-
     function applyTranslations() {
       const lang = selectedLang;
       const dict = I18N_DICT[lang] || I18N_DICT.en;
@@ -838,14 +882,6 @@
       document.getElementById('txtPlatformMatrixLabel').innerText = dict.platformMatrixLabel;
       document.getElementById('inputText').placeholder = dict.inputPlaceholder;
       document.getElementById('txtUploadPdf').innerText = dict.uploadPdf;
-      document.getElementById('txtPresetLabel').innerText = dict.presetLabel;
-      document.getElementById('txtPresetXhs').innerText = dict.presetXhs;
-      document.getElementById('txtPresetXhsDesc').innerText = dict.presetXhsDesc;
-      document.getElementById('txtPresetLinkedin').innerText = dict.presetLinkedin;
-      document.getElementById('txtPresetLinkedinDesc').innerText = dict.presetLinkedinDesc;
-      document.getElementById('txtPresetCyber').innerText = dict.presetCyber;
-      document.getElementById('txtPresetCyberDesc').innerText = dict.presetCyberDesc;
-      document.getElementById('keyLabel').innerText = dict.keyLabel;
 
       document.getElementById('generateBtnText').innerText = (currentMode === 'single') ? dict.generateBtnSingle : dict.generateBtnCarousel;
       document.getElementById('txtRegenerateBtn').innerText = dict.regenerateBtn;
@@ -1003,7 +1039,7 @@
 
       const btn = document.getElementById('generateBtn');
       btn.disabled = true;
-      btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Generating ${selectedPlatform} Viral Pack...`;
+      btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Generating ${selectedPlatform} Visual Pack...`;
       lucide.createIcons();
 
       try {
@@ -1017,6 +1053,7 @@
             mode_preference: currentMode,
             platform: selectedPlatform,
             preset_hook: selectedHookTag,
+            custom_theme_prompt: customThemePrompt,
             userApiKey: customKey,
             licenseKey: licenseKey
           })
@@ -1034,8 +1071,22 @@
         currentResponseData = json.data;
         platformCacheStore[cacheKey] = json.data;
 
+        // Apply LLM returned CSS theme if present
+        if (json.data.custom_css_theme) {
+          const t = json.data.custom_css_theme;
+          customThemeStyleCss = {
+            bg: t.background,
+            titleColor: t.titleColor,
+            subtitleColor: t.subtitleColor,
+            border: t.cardBorder,
+            metricBg: t.metricBg,
+            quoteBg: t.quoteBg,
+            quoteBorder: t.quoteBorder
+          };
+        }
+
         renderGeneratedResults(json.data);
-        showToast(`✨ Generated Fresh Output for ${selectedPlatform}!`);
+        showToast(`✨ Generated Fresh Visual Suite for ${selectedPlatform}!`);
         fetchQuota();
         trackAnalyticsEvent('ai_generated_success', { platform: selectedPlatform, mode: currentMode });
 
@@ -1057,6 +1108,7 @@
       renderSlides(slides, watermarkText);
     }
 
+    // Render Infographic Diagrams (Matrix / Versus Comparison / Step-by-Step Flowchart)
     function renderSlides(slides, footerText = '⚡️ Made with Cardify.ai') {
       const wrapper = document.getElementById('swiperWrapper');
       wrapper.innerHTML = '';
@@ -1067,6 +1119,21 @@
         const slideDiv = document.createElement('div');
         slideDiv.className = 'swiper-slide';
 
+        // 1. Versus Diagram Component
+        const versusHtml = (slide.diagram_type === 'versus' || slide.versus_comparison) ? `
+          <div class="my-3 grid grid-cols-2 gap-2 text-[11px]">
+            <div class="p-2.5 rounded-xl bg-red-950/40 border border-red-500/30 text-red-200">
+              <div class="font-bold text-[10px] uppercase text-red-400 mb-1 flex items-center gap-1">❌ Old Mistake Trap</div>
+              <div>${slide.versus_comparison?.old_way || 'Generic text block with zero hook'}</div>
+            </div>
+            <div class="p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-200">
+              <div class="font-bold text-[10px] uppercase text-emerald-400 mb-1 flex items-center gap-1">⚡️ Viral Breakthrough</div>
+              <div>${slide.versus_comparison?.new_way || 'Visual Infographic Diagram + Data ROI'}</div>
+            </div>
+          </div>
+        ` : '';
+
+        // 2. Metric Box
         const metricHtml = (slide.key_metric && slide.key_metric.value) ? `
           <div class="card-metric-box bg-gray-900/80 border border-gray-800 rounded-xl p-3 text-center mb-3">
             <div class="card-metric-value text-xl font-extrabold font-outfit">${slide.key_metric.value}</div>
@@ -1074,6 +1141,7 @@
           </div>
         ` : '';
 
+        // 3. Flowchart Steps or Bullet Matrix
         const bulletsHtml = (Array.isArray(slide.bullet_points) && slide.bullet_points.length > 0) ? `
           <div class="flex flex-col gap-2 mb-3">
             ${slide.bullet_points.map((b, i) => `
@@ -1087,6 +1155,7 @@
           </div>
         ` : '';
 
+        // 4. Quote Box
         const quoteHtml = slide.takeaway_quote ? `
           <div class="card-quote-box rounded-xl p-3 mb-3">
             <p class="card-quote-text text-xs italic leading-relaxed">"${slide.takeaway_quote}"</p>
@@ -1098,6 +1167,7 @@
             <div>
               <div class="card-subtitle text-[10px] font-bold uppercase tracking-widest opacity-75 mb-2">${slide.subtitle || '🔥 HIGHLIGHTS'}</div>
               <h3 class="card-title text-lg font-extrabold font-outfit leading-snug mb-3">${slide.title || ''}</h3>
+              ${versusHtml}
               ${metricHtml}
               ${bulletsHtml}
               ${quoteHtml}
@@ -1113,6 +1183,10 @@
       });
 
       initSwiper();
+
+      if (customThemeStyleCss) {
+        applyCustomCssToCards(customThemeStyleCss);
+      }
 
       const exportAllBtn = document.getElementById('exportAllBtnText');
       const dict = I18N_DICT[selectedLang] || I18N_DICT.en;
@@ -1159,7 +1233,6 @@
       trackAnalyticsEvent('copy_post_text');
     }
 
-    // Commercial High-DPI 3x Retina PNG Export (With Loading State)
     async function exportCurrentCard() {
       const activeIndex = swiperInstance.activeIndex || 0;
       const targetCard = document.getElementById(`card-${activeIndex + 1}`) || document.getElementById('card-1');
@@ -1186,7 +1259,6 @@
       }
     }
 
-    // Commercial Direct Copy Image to Clipboard (With Loading State)
     async function copyCardImageToClipboard() {
       const activeIndex = swiperInstance.activeIndex || 0;
       const targetCard = document.getElementById(`card-${activeIndex + 1}`) || document.getElementById('card-1');
@@ -1222,7 +1294,6 @@
       }
     }
 
-    // Commercial Multi-Page PDF Export (LinkedIn Carousel) (With Loading State)
     async function exportLinkedInPdf() {
       const slidesCount = (currentResponseData?.slides?.length) || (I18N_DICT[selectedLang] || I18N_DICT.en).defaultCarouselSlides.length;
       const btn = document.getElementById('btnExportPdf');

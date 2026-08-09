@@ -1,8 +1,8 @@
-// /api/generate.js — Cardify AI v3.0 Commercial Engine
-// Multi-Provider Failover & Usage Entitlement & Dodo License Verification
+// /api/generate.js — Cardify AI v3.2 Prompt-to-Theme & Infographic Engine
+// Dynamic CSS Theme Injector & Visual Infographic Structuring Engine
 
 const rateLimitStore = new Map();
-const DAILY_FREE_LIMIT = 3; // 3 free runs per IP per day for free tier
+const DAILY_FREE_LIMIT = 3;
 
 function getClientIp(req) {
   return req.headers['x-forwarded-for']?.split(',')[0]?.trim()
@@ -73,9 +73,10 @@ const PLATFORM_INJECTORS = {
 const BASE_MASTER_PROMPT = `You are a World-Class Visual Content Architect and Viral Growth Specialist.
 Your task is to take raw user text and output ONLY valid JSON according to the schema.
 
-### EXECUTION MODE
-- If mode is "single": Output 1 highly concentrated visual card.
-- If mode is "carousel": Output a 3 to 5 slide sequence for carousel posts.
+### EXECUTION MODE & INFOGRAPHIC VISUAL STRUCTURING
+- Extract a scroll-stopping Viral Hook Title for Slide 1.
+- Structure content into Infographic Visual Diagrams (e.g., 'versus' comparison, 'flow' step-by-step, or 'matrix' takeaways).
+- Generate a dynamic CSS Theme based on the user's requested style/prompt.
 
 ### STRICT OUTPUT RULES
 1. Output MUST be ONLY valid JSON.
@@ -88,15 +89,32 @@ Your task is to take raw user text and output ONLY valid JSON according to the s
   "language": "string",
   "mode": "string ('single' | 'carousel')",
   "total_slides": 3,
+  "custom_css_theme": {
+    "themeName": "string",
+    "background": "string (CSS gradient or color, e.g., 'linear-gradient(135deg, #0f0c29, #302b63, #24243e)')",
+    "textColor": "string (CSS hex, e.g., '#f8fafc')",
+    "titleColor": "string (CSS hex, e.g., '#00ffcc')",
+    "subtitleColor": "string (CSS hex, e.g., '#ff007f')",
+    "cardBorder": "string (CSS border, e.g., '1px solid rgba(0, 255, 204, 0.4)')",
+    "boxShadow": "string (CSS box-shadow)",
+    "metricBg": "string (CSS rgba background)",
+    "quoteBg": "string (CSS rgba background)",
+    "quoteBorder": "string (CSS rgba border)"
+  },
   "slides": [
     {
       "slide_index": 1,
       "slide_type": "string ('hook' | 'content' | 'action')",
+      "diagram_type": "string ('matrix' | 'versus' | 'flow')",
       "title": "string (Scroll-stopping headline for this platform)",
       "subtitle": "string (Context or transition)",
       "key_metric": {
         "value": "string (Optional bold number, e.g., '10x', '$10K+', '85%')",
         "label": "string (Short description of the impact)"
+      },
+      "versus_comparison": {
+        "old_way": "string (Common mistake or old paradigm)",
+        "new_way": "string (Viral breakthrough approach)"
       },
       "bullet_points": [
         {
@@ -222,7 +240,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'METHOD_NOT_ALLOWED' });
   }
 
-  const { input_text, target_style, target_lang, mode_preference, platform, preset_hook, userApiKey, licenseKey } = req.body || {};
+  const { input_text, target_style, target_lang, mode_preference, platform, preset_hook, custom_theme_prompt, userApiKey, licenseKey } = req.body || {};
 
   if (!input_text || typeof input_text !== 'string' || input_text.trim().length < 10) {
     return res.status(400).json({ error: 'INPUT_TOO_SHORT', message: 'Input text must be at least 10 characters long.' });
@@ -251,14 +269,15 @@ export default async function handler(req, res) {
     keyUsedType = 'free';
   }
 
-  const targetLangCode = LANG_NAMES[target_lang] || 'zh-CN';
+  const targetLangCode = LANG_NAMES[target_lang] || 'en-US';
   const modeVal = mode_preference === 'single' ? 'single' : 'carousel';
-  const platformKey = platform || 'xiaohongshu';
-  const platformInjector = PLATFORM_INJECTORS[platformKey] || PLATFORM_INJECTORS.xiaohongshu;
+  const platformKey = platform || 'twitter';
+  const platformInjector = PLATFORM_INJECTORS[platformKey] || PLATFORM_INJECTORS.twitter;
 
   const finalSystemPrompt = `${BASE_MASTER_PROMPT}\n\n[TARGET LANGUAGE]: ${targetLangCode}\n[TARGET PLATFORM]: ${platformKey}\n\n${platformInjector}`;
 
   let userPrompt = `[Target Language]: ${targetLangCode}\n[Mode Preference]: ${modeVal}\n[Platform]: ${platformKey}\n[Style Profile]: ${target_style || 'cyber'}`;
+  if (custom_theme_prompt) userPrompt += `\n[Custom Prompt Visual Theme]: ${custom_theme_prompt}`;
   if (preset_hook) userPrompt += `\n[Viral Hook Focus]: ${preset_hook}`;
   userPrompt += `\n[Raw Content]:\n${input_text.trim()}`;
 
