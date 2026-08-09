@@ -148,7 +148,7 @@
         <div>
           <span class="text-xl font-extrabold font-outfit tracking-tight text-white flex items-center gap-2">
             Cardify<span class="text-purple-400">.ai</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v4.3 Clean PDF Chip</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v5.0 Commercial Matrix</span>
           </span>
         </div>
       </div>
@@ -529,7 +529,7 @@
     let isProUser = false;
     let currentResponseData = null;
     let swiperInstance = null;
-    let remainingFreeQuota = 3;
+    let remainingFreeQuota = 10;
     let uploadedPdfData = null;
 
     // LOCALIZED DEFAULT SLIDE DECKS FOR ALL 9 LANGUAGES
@@ -653,7 +653,7 @@
 
     const I18N_DICT = {
       en: {
-        quotaText: '✦ 3 Free Left',
+        quotaText: '✦ 10 Free Left / Day',
         upgradeHeader: 'Upgrade Pro ($9.9/mo)',
         sandboxHeader: '⚡ 3-Second Aha Moment: 1-Click Sandbox Demos (Instant Hollywood Visual Cards)',
         demo1Title: '🚀 1-Click Try: $10k ARR Playbook',
@@ -664,9 +664,9 @@
         modeCarousel: '📚 Carousel Pack',
         hookTagsLabel: '⚡ One-Click Hook Tags (Click to inject viral focus)',
         platformMatrixLabel: '🎯 Dynamic Platform Matrix',
-        inputPlaceholder: "Paste your long article, product overview, blog draft, or drop a PDF file here...",
+        inputPlaceholder: "Paste your article, blog draft, or type custom instructions (e.g. 'Focus on chapter 3 for Twitter'). Or drop a PDF file...",
         uploadPdf: 'Upload PDF',
-        keyLabel: 'Bypass limits with custom Groq / Gemini Key',
+        keyLabel: '🔑 Bypass daily limits with your own Groq / Gemini Key',
         generateBtnSingle: 'Generate Single Card & Post',
         generateBtnCarousel: 'Generate Carousel Pack & Post',
         regenerateBtn: '⚡️ Regenerate',
@@ -688,7 +688,7 @@
         toastCopiedClipboard: 'Copied to Clipboard! Ready to paste!'
       },
       zh: {
-        quotaText: '✦ 剩余 3 次免费',
+        quotaText: '✦ 剩余 10 次免费/天',
         upgradeHeader: '升级 Pro 版 ($9.9/月)',
         sandboxHeader: '⚡ 3秒惊叹时刻：一键爆款沙盒 (点击直接变幻好莱坞级卡牌)',
         demo1Title: '🚀 一键试用：1万刀 ARR 独立开发法则',
@@ -701,7 +701,7 @@
         platformMatrixLabel: '🎯 动态目标平台矩阵',
         inputPlaceholder: "粘贴你的文章、草稿或拖入 PDF 文件...",
         uploadPdf: '上传 PDF',
-        keyLabel: '使用自定义 Groq / Gemini Key 突破限制',
+        keyLabel: '🔑 使用自定义 Key 突破每日限制 (BYOK 模式)',
         generateBtnSingle: '一键生成单图精炼卡片与贴文',
         generateBtnCarousel: '一键生成爆款连载卡包与贴文',
         regenerateBtn: '⚡️ 换一换',

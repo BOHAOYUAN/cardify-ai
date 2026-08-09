@@ -2,7 +2,7 @@
 // Failover Chain: Custom Key -> Groq Llama-3 70B -> Gemini 1.5 Flash REST -> Robust Fallback JSON
 
 const rateLimitStore = new Map();
-const DAILY_FREE_LIMIT = 3;
+const DAILY_FREE_LIMIT = 10;
 
 function getClientIp(req) {
   return req.headers['x-forwarded-for']?.split(',')[0]?.trim()
@@ -296,7 +296,10 @@ export default async function handler(req, res) {
   const ip = getClientIp(req);
   let keyUsedType = 'free';
 
-  if (typeof userApiKey === 'string' && userApiKey.trim().length > 10) {
+  const customHeaderKey = req.headers['x-custom-key'];
+  const effectiveUserKey = (typeof userApiKey === 'string' && userApiKey.trim().length > 10) ? userApiKey.trim() : (customHeaderKey || '');
+
+  if (effectiveUserKey) {
     keyUsedType = 'user';
   } else if (typeof licenseKey === 'string' && licenseKey.trim().length >= 5) {
     keyUsedType = 'official_vip';
@@ -305,7 +308,7 @@ export default async function handler(req, res) {
     if (!limitCheck.allowed) {
       return res.status(429).json({
         error: 'DAILY_LIMIT_EXCEEDED',
-        message: 'Daily free limit reached (3/3). Please upgrade to Pro or provide your own Groq/Gemini API Key.',
+        message: 'Daily free limit reached (10/10). Please upgrade to Pro or provide your own Groq/Gemini API Key.',
         key_used: 'none'
       });
     }
