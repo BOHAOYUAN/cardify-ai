@@ -86,6 +86,7 @@ Your task is to take raw user text and output ONLY valid JSON according to the s
 - Extract a scroll-stopping Viral Hook Title for Slide 1.
 - Structure content into Infographic Visual Diagrams (e.g., 'versus' comparison, 'flow' step-by-step, or 'matrix' takeaways).
 - Generate a dynamic CSS Theme based on the user's requested style/prompt.
+- CREATIVE EXPANSION: If the input text is a short topic or single sentence (e.g. "DeepSeek AI", "SaaS Growth"), automatically expand it into a rich, professional 3-slide viral carousel deck with realistic metrics and actionable insights.
 
 ### STRICT OUTPUT RULES
 1. Output MUST be ONLY valid JSON.
@@ -288,8 +289,8 @@ export default async function handler(req, res) {
 
   const { input_text, target_style, target_lang, mode_preference, platform, preset_hook, custom_theme_prompt, userApiKey, licenseKey } = req.body || {};
 
-  if (!input_text || typeof input_text !== 'string' || input_text.trim().length < 5) {
-    return res.status(400).json({ error: 'INPUT_TOO_SHORT', message: 'Input text must be at least 5 characters long.' });
+  if (!input_text || typeof input_text !== 'string' || input_text.trim().length < 2) {
+    return res.status(400).json({ error: 'INPUT_TOO_SHORT', message: 'Input text must be at least 2 characters long.' });
   }
 
   const ip = getClientIp(req);

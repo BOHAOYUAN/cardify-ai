@@ -148,7 +148,7 @@
         <div>
           <span class="text-xl font-extrabold font-outfit tracking-tight text-white flex items-center gap-2">
             Cardify<span class="text-purple-400">.ai</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v4.1 AI LIVE</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v4.2 Auto-PDF Magic</span>
           </span>
         </div>
       </div>
@@ -1056,6 +1056,23 @@
       fetchQuota();
       applyTranslations();
 
+      // Enable Drag & Drop PDF support directly onto Textarea
+      const textareaEl = document.getElementById('inputText');
+      if (textareaEl) {
+        textareaEl.addEventListener('dragover', (e) => { e.preventDefault(); textareaEl.classList.add('border-purple-500', 'bg-purple-950/20'); });
+        textareaEl.addEventListener('dragleave', (e) => { e.preventDefault(); textareaEl.classList.remove('border-purple-500', 'bg-purple-950/20'); });
+        textareaEl.addEventListener('drop', (e) => {
+          e.preventDefault();
+          textareaEl.classList.remove('border-purple-500', 'bg-purple-950/20');
+          if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            const file = e.dataTransfer.files[0];
+            if (file.type === 'application/pdf') {
+              handlePdfUploadFileObj(file);
+            }
+          }
+        });
+      }
+
       const urlParams = new URLSearchParams(window.location.search);
       const urlKey = urlParams.get('license_key') || urlParams.get('key');
       if (urlKey) {
@@ -1408,14 +1425,13 @@
       }
     }
 
-    async function handlePdfUpload(event) {
-      const file = event.target.files[0];
+    async function handlePdfUploadFileObj(file) {
       if (!file || file.type !== 'application/pdf') {
         showToast('Please select a valid PDF file.', true);
         return;
       }
 
-      showToast('Reading & extracting PDF text...');
+      showToast('📄 Reading & extracting PDF text...');
       try {
         const arrayBuffer = await file.arrayBuffer();
         const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
@@ -1430,18 +1446,26 @@
 
         document.getElementById('inputText').value = fullText.trim();
         updateCharCount();
-        showToast(`Extracted ${pdf.numPages} pages from PDF!`);
+        showToast(`✨ PDF Extracted (${pdf.numPages} pages)! Auto-generating AI Visual Cards...`);
         trackAnalyticsEvent('pdf_uploaded', { pages: pdf.numPages });
+
+        // AUTO-TRIGGER GENERATION IMMEDIATELY ON PDF UPLOAD!
+        generateContent(true);
       } catch (e) {
         console.error(e);
         showToast('Failed to parse PDF file.', true);
       }
     }
 
+    async function handlePdfUpload(event) {
+      const file = event.target.files[0];
+      if (file) handlePdfUploadFileObj(file);
+    }
+
     async function generateContent(forceRegenerate = false) {
       const text = document.getElementById('inputText').value.trim();
-      if (!text || text.length < 5) {
-        showToast('Please enter at least 5 characters of content.', true);
+      if (!text || text.length < 2) {
+        showToast('Please enter a topic, sentence, or upload a PDF.', true);
         return;
       }
 
