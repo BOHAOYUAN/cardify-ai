@@ -36,6 +36,7 @@ const LANG_NAMES = {
   auto: 'Auto Detect (Preserve Native Input Language)',
   en: 'en-US',
   zh: 'zh-CN',
+  hi: 'hi-IN',
   es: 'es-ES',
   pt: 'pt-BR',
   ru: 'ru-RU',

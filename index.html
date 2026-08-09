@@ -148,7 +148,7 @@
         <div>
           <span class="text-xl font-extrabold font-outfit tracking-tight text-white flex items-center gap-2">
             Cardify<span class="text-purple-400">.ai</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v5.1 Smart Native Lang</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v5.2 Global 10-Lang</span>
           </span>
         </div>
       </div>
@@ -162,6 +162,7 @@
             <option value="auto" selected>🌐 自动感知母语 (Auto Detect)</option>
             <option value="en">🇺🇸 English (en-US)</option>
             <option value="zh">🇨🇳 简体中文 (zh-CN)</option>
+            <option value="hi">🇮🇳 हिन्दी (hi-IN)</option>
             <option value="es">🇪🇸 Español (es-ES)</option>
             <option value="pt">🇵🇹 Português (pt-BR)</option>
             <option value="ru">🇷🇺 Русский (ru-RU)</option>
@@ -563,6 +564,9 @@
       fr: [
         { subtitle: '💼 GUIDE DE CROISSANCE', title: 'Comment atteindre 10k$ ARR en 30 Jours', key_metric: { value: '10x', label: 'Portée Virale' }, bullet_points: [{ point_title: 'Résoudre les Problèmes', point_desc: 'Transformez les avis 1 étoile en avantages concurrentiels.' }], takeaway_quote: '📌 Enregistrez ce post et partagez-le !' }
       ],
+      hi: [
+        { subtitle: '💼 ग्रोथ गाइड', title: '30 दिनों में $10K ARR कैसे प्राप्त करें (चरण-दर-चरण)', key_metric: { value: '10x', label: 'वायरल पहुंच' }, bullet_points: [{ point_title: '1. हार्ड ट्रुथ्स', point_desc: 'पहले 0.5 सेकंड में ध्यान आकर्षित करने के लिए बोल्ड विजुअल कार्ड का उपयोग करें।' }], takeaway_quote: '📌 बाद के लिए सहेजें और अपने दर्शकों के साथ साझा करें!' }
+      ],
       de: [
         { subtitle: '💼 LEITFADEN FÜR WACHSTUM', title: 'Wie man $10K ARR in 30 Tagen erreicht', key_metric: { value: '10x', label: 'Organische Reichweite' }, bullet_points: [{ point_title: 'Schmerzpunkte Lösen', point_desc: 'Verwandeln Sie 1-Stern-Bewertungen in Ihren Vorteil.' }], takeaway_quote: '📌 Speichern Sie diesen Beitrag für später!' }
       ]
@@ -622,6 +626,12 @@
         { id: 'linkedin', name: '💼 LinkedIn Beitrag', ratio: '16:9', preset: 'linkedin' },
         { id: 'instagram', name: '📸 Instagram Karussell', ratio: '3:4', preset: 'xhs' },
         { id: 'youtube_script', name: '📺 YouTube Shorts Skript', ratio: '9:16', preset: 'cyber' }
+      ],
+      hi: [
+        { id: 'twitter', name: '🐦 Twitter/X थ्रेड', ratio: '16:9', preset: 'cyber' },
+        { id: 'linkedin', name: '💼 LinkedIn पोस्ट', ratio: '16:9', preset: 'linkedin' },
+        { id: 'instagram', name: '📸 Instagram कैरोसेल', ratio: '3:4', preset: 'xhs' },
+        { id: 'youtube_script', name: '📺 YouTube Shorts स्क्रिप्ट', ratio: '9:16', preset: 'cyber' }
       ]
     };
 
@@ -967,6 +977,41 @@
         modalActivate: 'Aktivieren',
         modalBuy: 'Pro Kaufen ($9.9/Monat)',
         toastCopiedClipboard: 'In Zwischenablage kopiert!'
+      },
+      hi: {
+        quotaText: '✦ 10 निःशुल्क शेष / दिन',
+        upgradeHeader: 'Pro में अपग्रेड करें ($9.9/महीना)',
+        sandboxHeader: '⚡ 3-सेकंड अहा पल: 1-क्लिक सैंडबॉक्स डेमो',
+        demo1Title: '🚀 1-क्लिक: $10k ARR गाइड',
+        demo2Title: '🧠 1-क्लिक: DeepSeek AI',
+        demo3Title: '📕 1-क्लिक: वायरल नियम',
+        themeLabel: '🎨 प्रोम्प्ट-संचालित विजुअल थीम',
+        modeSingle: '🎴 सिंगल कार्ड',
+        modeCarousel: '📚 हिंडोला पैक',
+        hookTagsLabel: '⚡ 1-क्लिक हुक टैग',
+        platformMatrixLabel: '🎯 डायनेमिक प्लेटफॉर्म मैट्रिक्स',
+        inputPlaceholder: "अपना लेख, ड्राफ्ट या PDF यहाँ ड्रॉप करें...",
+        uploadPdf: 'PDF अपलोड करें',
+        keyLabel: '🔑 कस्टम Key के साथ दैनिक सीमा को बायपास करें',
+        generateBtnSingle: 'सिंगल कार्ड और पोस्ट बनाएं',
+        generateBtnCarousel: 'हिंडोला पैक और पोस्ट बनाएं',
+        regenerateBtn: '⚡️ पुनः उत्पन्न करें',
+        copyBtn: 'कॉपी पोस्ट',
+        studioTitle: 'विजुअल स्टूडियो इंजन',
+        modeBadgeSingle: 'सिंगल कार्ड',
+        modeBadgeCarousel: 'हिंडोला पैक',
+        exportCurrentBtn: '📷 3x HD PNG',
+        exportAllBtnSingle: 'निर्यात कार्ड',
+        exportAllBtnCarousel: '📦 सभी पैक निर्यात',
+        modalTitle: 'Pro हिंडोला पैक अनलॉक करें',
+        modalDesc: 'असीमित AI जनरेशन और वॉटरमार्क हटाएं।',
+        modalFeat1: 'असीमित कार्ड और हिंडोला',
+        modalFeat2: 'विजुअल स्टाइल थीम',
+        modalFeat3: 'प्राथमिकता Groq Llama-3 70B और Gemini',
+        modalLicLabel: 'क्या आपके पास Pro लाइसेंस कुंजी है?',
+        modalActivate: 'सक्रिय करें',
+        modalBuy: 'Pro खरीदें ($9.9/महीना)',
+        toastCopiedClipboard: 'क्लिपबोर्ड पर कॉपी किया गया!'
       }
     };
 
