@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cardify.ai 3.0 Commercial — High-DPI Visual Carousel & AI Growth Studio</title>
+  <title>Cardify.ai 3.1 Commercial — High-DPI Visual Carousel & AI Growth Studio</title>
   <meta name="description" content="Turn any article or PDF into viral Xiaohongshu Carousel slides, LinkedIn posts, Twitter threads, Instagram Carousels, and YouTube Shorts scripts with Retina 3x export, PDF LinkedIn Carousel support, and smart quota control.">
   
   <!-- Tailwind CSS CDN -->
@@ -140,7 +140,7 @@
         <div>
           <span class="text-xl font-extrabold font-outfit tracking-tight text-white flex items-center gap-2">
             Cardify<span class="text-purple-400">.ai</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v3.0 PRO</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v3.1 PRO</span>
           </span>
         </div>
       </div>
@@ -148,11 +148,11 @@
       <!-- Controls & Upgrade CTA -->
       <div class="flex items-center gap-3">
         
-        <!-- Language Selector -->
+        <!-- Language Selector (DEFAULT: English en-US) -->
         <div class="relative">
           <select id="langSelect" onchange="handleLangChange(this.value)" class="bg-gray-900/90 text-gray-200 text-xs font-medium px-3 py-2 rounded-lg border border-gray-700/80 focus:outline-none focus:border-purple-500 transition-all cursor-pointer">
-            <option value="en">🇺🇸 English (en-US)</option>
-            <option value="zh" selected>🇨🇳 简体中文 (zh-CN)</option>
+            <option value="en" selected>🇺🇸 English (en-US)</option>
+            <option value="zh">🇨🇳 简体中文 (zh-CN)</option>
             <option value="es">🇪🇸 Español</option>
             <option value="pt">🇵🇹 Português</option>
             <option value="ru">🇷🇺 Русский</option>
@@ -192,10 +192,10 @@
         <div class="flex items-center justify-between border-b border-gray-800 pb-3">
           <div class="flex items-center gap-2 bg-gray-950 p-1 rounded-xl border border-gray-800">
             <button onclick="setMode('single')" id="mode-single" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-400 hover:text-white flex items-center gap-1.5">
-              <span id="txtModeSingle">🎴 单图卡片</span>
+              <span id="txtModeSingle">🎴 Single Card</span>
             </button>
             <button onclick="setMode('carousel')" id="mode-carousel" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-purple-300 bg-purple-600/30 border border-purple-500/40 flex items-center gap-1.5 shadow-sm">
-              <span id="txtModeCarousel">📚 连载切片</span>
+              <span id="txtModeCarousel">📚 Carousel Pack</span>
             </button>
           </div>
           <span class="text-xs text-gray-400" id="charCount">0 / 15,000</span>
@@ -203,7 +203,7 @@
 
         <!-- One-Click Preset Hooks (Quick Tags) -->
         <div>
-          <label class="block text-xs font-medium text-gray-400 mb-1.5" id="txtHookTagsLabel">⚡ 一键爆款钩子套件 (One-Click Hook Tags)</label>
+          <label class="block text-xs font-medium text-gray-400 mb-1.5" id="txtHookTagsLabel">⚡ One-Click Hook Tags (Click to inject viral focus)</label>
           <div class="flex flex-wrap gap-2" id="hookTagsContainer">
             <!-- Dynamically populated based on Language -->
           </div>
@@ -212,7 +212,7 @@
         <!-- Textarea -->
         <div class="relative">
           <textarea id="inputText" rows="6" oninput="updateCharCount()" 
-            placeholder="粘贴你的文章、草稿或拖入 PDF 文件...例如：'独立开发者 30 天做成 1 万刀 ARR 的 3 个法则' 或 '如何用 ChatGPT 5 分钟写出爆款小红书文案'..."
+            placeholder="Paste your long article, product overview, blog draft, or drop a PDF file here... e.g. '3 Rules for Indie Hackers to reach $10k ARR in 30 Days' or 'How to write viral content in 5 minutes'..."
             class="w-full bg-gray-950/80 border border-gray-800 rounded-xl p-4 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all resize-none"></textarea>
           
           <!-- PDF Upload Overlay Button -->
@@ -220,14 +220,14 @@
             <input type="file" id="pdfFileInput" accept="application/pdf" class="hidden" onchange="handlePdfUpload(event)">
             <button onclick="document.getElementById('pdfFileInput').click()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-gray-800/90 hover:bg-gray-700 text-xs text-gray-300 border border-gray-700 transition-all">
               <i data-lucide="upload" class="w-3.5 h-3.5 text-purple-400"></i>
-              <span id="txtUploadPdf">上传 PDF</span>
+              <span id="txtUploadPdf">Upload PDF</span>
             </button>
           </div>
         </div>
 
         <!-- Dynamic Platform Matrix Selector (Languages-dependent) -->
         <div>
-          <label class="block text-xs font-medium text-gray-400 mb-2" id="txtPlatformMatrixLabel">🎯 动态目标平台矩阵 (Dynamic Platform Matrix)</label>
+          <label class="block text-xs font-medium text-gray-400 mb-2" id="txtPlatformMatrixLabel">🎯 Dynamic Platform Matrix</label>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="platformMatrixContainer">
             <!-- Dynamically populated based on selected Language -->
           </div>
@@ -236,30 +236,30 @@
         <!-- Preset Scene Templates Selection (Level 1: Pure CSS Theme Switch, 0 Cost) -->
         <div>
           <div class="flex items-center justify-between mb-2">
-            <label class="block text-xs font-medium text-gray-400" id="txtPresetLabel">爆款视觉风格预设 (纯前端即时换色/换主题)</label>
+            <label class="block text-xs font-medium text-gray-400" id="txtPresetLabel">Preset Visual Theme (Pure CSS Theme Switch, 0 Cost)</label>
             <span class="text-[10px] text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded-md font-mono border border-emerald-800/40">⚡ 0 API Cost</span>
           </div>
           <div class="grid grid-cols-3 gap-2">
             
             <button onclick="selectPresetTheme('xhs')" id="preset-xhs" class="preset-btn p-3 rounded-xl border border-rose-500/40 bg-rose-950/20 hover:bg-rose-900/30 text-left transition-all flex flex-col gap-1">
               <div class="text-xs font-bold text-rose-300 flex items-center gap-1">
-                <span id="txtPresetXhs">📕 小红书爆款风</span>
+                <span id="txtPresetXhs">📕 Xiaohongshu Viral</span>
               </div>
-              <span class="text-[10px] text-rose-200/70" id="txtPresetXhsDesc">粉红明亮 + 抓人痛点</span>
+              <span class="text-[10px] text-rose-200/70" id="txtPresetXhsDesc">Vibrant & Pain Points</span>
             </button>
 
             <button onclick="selectPresetTheme('linkedin')" id="preset-linkedin" class="preset-btn p-3 rounded-xl border border-sky-500/30 bg-sky-950/20 hover:bg-sky-900/30 text-left transition-all flex flex-col gap-1">
               <div class="text-xs font-bold text-sky-300 flex items-center gap-1">
-                <span id="txtPresetLinkedin">💼 LinkedIn 商务高管</span>
+                <span id="txtPresetLinkedin">💼 LinkedIn Executive</span>
               </div>
-              <span class="text-[10px] text-sky-200/70" id="txtPresetLinkedinDesc">极简蓝白 + 强调 ROI</span>
+              <span class="text-[10px] text-sky-200/70" id="txtPresetLinkedinDesc">Clean & Data ROI</span>
             </button>
 
             <button onclick="selectPresetTheme('cyber')" id="preset-cyber" class="preset-btn active p-3 rounded-xl border border-purple-500/50 bg-purple-950/40 text-left transition-all flex flex-col gap-1 ring-2 ring-purple-500/50">
               <div class="text-xs font-bold text-purple-300 flex items-center gap-1">
-                <span id="txtPresetCyber">🚀 Twitter 极客风</span>
+                <span id="txtPresetCyber">🚀 Twitter Tech</span>
               </div>
-              <span class="text-[10px] text-purple-200/70" id="txtPresetCyberDesc">暗黑玻璃 + 爆款钩子</span>
+              <span class="text-[10px] text-purple-200/70" id="txtPresetCyberDesc">Dark Glass & Viral Hook</span>
             </button>
 
           </div>
@@ -270,7 +270,7 @@
           <button onclick="toggleApiKeyInput()" class="w-full flex items-center justify-between bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-xs text-gray-400 hover:text-gray-200 transition-all">
             <span id="keyStatusText" class="flex items-center gap-1.5">
               <i data-lucide="key" class="w-3.5 h-3.5 text-emerald-400"></i>
-              <span id="keyLabel">使用自定义 Groq / Gemini Key 突破限制</span>
+              <span id="keyLabel">Bypass limits with custom Groq / Gemini Key</span>
             </span>
             <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
           </button>
@@ -286,12 +286,12 @@
         <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
           <button id="generateBtn" onclick="generateContent(false)" class="sm:col-span-9 py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-sm flex items-center justify-center gap-2 glow-purple transition-all active:scale-[0.99]">
             <i data-lucide="wand-2" class="w-4 h-4"></i>
-            <span id="generateBtnText">一键生成爆款连载卡包与贴文</span>
+            <span id="generateBtnText">Generate Carousel Pack & Post</span>
           </button>
           
           <button onclick="generateContent(true)" title="Force regenerate AI content bypassing cache" class="sm:col-span-3 py-3.5 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-purple-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]">
             <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-            <span id="txtRegenerateBtn">⚡️ 换一换</span>
+            <span id="txtRegenerateBtn">⚡️ Regenerate</span>
           </button>
         </div>
 
@@ -309,7 +309,7 @@
           <!-- Copy Button -->
           <button onclick="copyCurrentTabContent()" class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-xs font-medium text-gray-200 transition-all border border-gray-700">
             <i data-lucide="copy" class="w-3.5 h-3.5 text-purple-400"></i>
-            <span id="copyBtnText">一键复制贴文</span>
+            <span id="copyBtnText">Copy Post</span>
           </button>
         </div>
 
@@ -330,11 +330,11 @@
         <div class="flex items-center justify-between">
           <h2 class="text-sm font-semibold text-gray-200 flex items-center gap-2" id="txtStudioTitle">
             <i data-lucide="layers" class="w-4 h-4 text-purple-400"></i>
-            视觉卡片渲染引擎
+            Visual Studio Engine
           </h2>
           <div class="flex items-center gap-2">
-            <span id="aspectBadge" class="text-[10px] bg-indigo-900/40 text-indigo-300 border border-indigo-700/40 px-2 py-0.5 rounded-full font-mono">📐 3:4 Ratio</span>
-            <span id="modeBadge" class="text-[10px] bg-purple-900/40 text-purple-300 border border-purple-700/40 px-2 py-0.5 rounded-full font-mono">连载切片卡包</span>
+            <span id="aspectBadge" class="text-[10px] bg-indigo-900/40 text-indigo-300 border border-indigo-700/40 px-2 py-0.5 rounded-full font-mono">📐 16:9 Ratio</span>
+            <span id="modeBadge" class="text-[10px] bg-purple-900/40 text-purple-300 border border-purple-700/40 px-2 py-0.5 rounded-full font-mono">Carousel Pack</span>
           </div>
         </div>
 
@@ -342,36 +342,36 @@
         <div class="w-full overflow-hidden py-2">
           <div class="swiper cardSwiper w-full max-w-[340px] sm:max-w-[380px] mx-auto">
             <div class="swiper-wrapper" id="swiperWrapper">
-              <!-- Swiper Slides dynamically rendered by renderDefaultPlaceholderSlides() or renderSlides() -->
+              <!-- Swiper Slides dynamically rendered -->
             </div>
             <div class="swiper-pagination mt-4"></div>
           </div>
         </div>
 
-        <!-- Commercial High-DPI & Multi-Format Export Toolbar -->
+        <!-- Commercial High-DPI & Multi-Format Export Toolbar (With Interactive Loading States) -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">
           <!-- 1. Copy Image to Clipboard -->
-          <button onclick="copyCardImageToClipboard()" title="Copy current HD slide image directly to clipboard" class="py-2.5 px-2 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs font-semibold text-gray-200 flex items-center justify-center gap-1 transition-all">
+          <button id="btnCopyImg" onclick="copyCardImageToClipboard()" title="Copy current HD slide image directly to clipboard" class="py-2.5 px-2 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs font-semibold text-gray-200 flex items-center justify-center gap-1 transition-all">
             <i data-lucide="copy" class="w-3.5 h-3.5 text-purple-400"></i>
-            <span id="txtCopyImgBtn">📋 复制图片</span>
+            <span id="txtCopyImgBtn">📋 Copy Image</span>
           </button>
 
           <!-- 2. Export Current PNG (Retina 3x) -->
-          <button onclick="exportCurrentCard()" title="Export high resolution 3x Retina PNG" class="py-2.5 px-2 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs font-semibold text-gray-200 flex items-center justify-center gap-1 transition-all">
+          <button id="btnExportCurrent" onclick="exportCurrentCard()" title="Export high resolution 3x Retina PNG" class="py-2.5 px-2 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs font-semibold text-gray-200 flex items-center justify-center gap-1 transition-all">
             <i data-lucide="image" class="w-3.5 h-3.5 text-purple-400"></i>
-            <span id="txtExportCurrentBtn">📷 3x 高清</span>
+            <span id="txtExportCurrentBtn">📷 3x HD</span>
           </button>
 
           <!-- 3. Export LinkedIn PDF Carousel -->
-          <button onclick="exportLinkedInPdf()" title="Export multi-page PDF for LinkedIn Carousel posts" class="py-2.5 px-2 rounded-xl bg-sky-950/60 hover:bg-sky-900/60 border border-sky-700/50 text-xs font-semibold text-sky-300 flex items-center justify-center gap-1 transition-all">
+          <button id="btnExportPdf" onclick="exportLinkedInPdf()" title="Export multi-page PDF for LinkedIn Carousel posts" class="py-2.5 px-2 rounded-xl bg-sky-950/60 hover:bg-sky-900/60 border border-sky-700/50 text-xs font-semibold text-sky-300 flex items-center justify-center gap-1 transition-all">
             <i data-lucide="file-text" class="w-3.5 h-3.5 text-sky-400"></i>
-            <span>📄 PDF 导图</span>
+            <span id="txtExportPdfBtn">📄 PDF Slide</span>
           </button>
 
           <!-- 4. Export All Package (ZIP / Batch PNG) -->
-          <button onclick="exportAllCards()" id="exportAllBtn" title="Batch export all carousel slides" class="py-2.5 px-2 rounded-xl bg-purple-900/50 hover:bg-purple-800/50 border border-purple-700/50 text-xs font-semibold text-purple-200 flex items-center justify-center gap-1 transition-all">
+          <button id="btnExportAll" onclick="exportAllCards()" title="Batch export all carousel slides" class="py-2.5 px-2 rounded-xl bg-purple-900/50 hover:bg-purple-800/50 border border-purple-700/50 text-xs font-semibold text-purple-200 flex items-center justify-center gap-1 transition-all">
             <i data-lucide="layers" class="w-3.5 h-3.5 text-purple-300"></i>
-            <span id="exportAllBtnText">📦 打包全套</span>
+            <span id="exportAllBtnText">📦 Package All</span>
           </button>
         </div>
 
@@ -397,7 +397,7 @@
     </div>
   </footer>
 
-  <!-- ================= DODO PAYMENTS / PRO MODAL ================= -->
+  <!-- ================= DODO PAYMENTS / PRO MODAL (WITH PRICE ANCHORING & PRO WATERMARK OPTION) ================= -->
   <div id="upgradeModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
     <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-purple-500/30 flex flex-col gap-5 relative">
       <button onclick="closeUpgradeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
@@ -409,12 +409,21 @@
           <i data-lucide="crown" class="w-6 h-6 text-amber-300"></i>
         </div>
         <h3 class="text-xl font-bold text-white font-outfit" id="txtModalTitle">Upgrade to Cardify Pro</h3>
+        
+        <!-- Price Anchoring Banner -->
+        <div class="bg-gradient-to-r from-purple-950/80 to-indigo-950/80 border border-purple-500/30 rounded-xl px-4 py-2.5 text-center my-1 w-full">
+          <div class="text-xs text-gray-400 line-through">Regular Price $19.9 / month</div>
+          <div class="text-lg font-extrabold text-amber-300 font-outfit">Limited Time 50% OFF: $9.9 / month</div>
+          <div class="text-[10px] text-purple-200 mt-0.5">✦ Less than a cup of coffee to save 20+ hours of visual creation monthly!</div>
+        </div>
+
         <p class="text-xs text-gray-400" id="txtModalDesc">Unlock unlimited AI generations, custom watermarks, and high-converting viral templates.</p>
       </div>
 
       <div class="bg-gray-950 p-4 rounded-xl border border-gray-800 flex flex-col gap-2.5 text-xs text-gray-300">
         <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span id="txtModalFeat1">Unlimited Single & Carousel Cards</span></div>
         <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span id="txtModalFeat2">Unlock Xiaohongshu & LinkedIn Premium Styles</span></div>
+        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span>Remove 'Made with Cardify.ai' Watermark / Add Custom Branding</span></div>
         <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span id="txtModalFeat3">Priority Groq Llama-3 70B & Gemini Flash</span></div>
       </div>
 
@@ -468,8 +477,8 @@
   <script>
     let currentMode = 'carousel'; // 'single' | 'carousel'
     let currentPreset = 'cyber'; // 'cyber' | 'xhs' | 'linkedin'
-    let selectedLang = 'zh'; // default zh
-    let selectedPlatform = 'xiaohongshu';
+    let selectedLang = 'en'; // DEFAULT EN (English) per user request!
+    let selectedPlatform = 'twitter';
     let selectedHookTag = '';
     let userApiKey = '';
     let licenseKey = localStorage.getItem('cardify_license_key') || '';
@@ -508,7 +517,8 @@
         { subtitle: '📊 DATA-DRIVEN BENCHMARKS', title: 'Proven B2B Content Performance', key_metric: { value: '350%', label: 'Organic Engagement Lift' }, bullet_points: [{ point_title: 'Fix Competitor Pain Points', point_desc: 'Turn 1-star G2/Capterra reviews into your core differentiator.' }], takeaway_quote: 'Structured thought-leadership posts position you as an industry authority.' }
       ],
       twitter: [
-        { subtitle: '🐦 VIRAL THREAD HOOK', title: 'How 1 Indie Hacker Reached $10k ARR in 30 Days (Step-by-Step)', key_metric: { value: '10x', label: 'Retweet Potential' }, bullet_points: [{ point_title: 'Front-load Hard Truths', point_desc: 'Stop the scroll with bold contrarian claims in <10 words.' }], takeaway_quote: 'Content that makes people look smart gets retweeted endlessly.' }
+        { subtitle: '🐦 VIRAL THREAD HOOK', title: 'How 1 Indie Hacker Reached $10k ARR in 30 Days (Step-by-Step)', key_metric: { value: '10x', label: 'Retweet Potential' }, bullet_points: [{ point_title: 'Front-load Hard Truths', point_desc: 'Stop the scroll with bold contrarian claims in <10 words.' }], takeaway_quote: 'Content that makes people look smart gets retweeted endlessly.' },
+        { subtitle: '📊 PROVEN TACTICS', title: 'Organic Social Currency Strategy', key_metric: { value: '4x', label: 'Engagement Amplification' }, bullet_points: [{ point_title: 'Repurpose Articles', point_desc: 'Turn dry blog posts into multi-slide viral carousels.' }], takeaway_quote: '📌 Save this thread for later & RT to share with your audience!' }
       ],
       instagram: [
         { subtitle: '📸 INSTAGRAM CAROUSEL STORY', title: 'Swipe to Unlock 3 Growth Secrets 👉', key_metric: { value: '4x', label: 'Save-to-Bookmark Rate' }, bullet_points: [{ point_title: 'Visual Story Progression', point_desc: 'Each slide guides the reader seamless to the next.' }], takeaway_quote: 'Double tap if this resonated & Share with a builder!' }
@@ -684,7 +694,16 @@
       initSwiper();
       fetchQuota();
       applyTranslations();
-      if (licenseKey) verifyLicenseKey(licenseKey);
+
+      // Check Dodo Payments Redirect URL Key (e.g. ?license_key=CARDIFY-PRO-XXXX)
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlKey = urlParams.get('license_key') || urlParams.get('key');
+      if (urlKey) {
+        document.getElementById('licenseKeyInput').value = urlKey;
+        verifyLicenseKey(urlKey, true);
+      } else if (licenseKey) {
+        verifyLicenseKey(licenseKey, false);
+      }
     });
 
     function trackAnalyticsEvent(eventName, eventProps = {}) {
@@ -717,7 +736,7 @@
 
     function renderDynamicMatrix() {
       const langKey = selectedLang === 'zh' ? 'zh' : 'en';
-      const matrix = DYNAMIC_PLATFORMS[langKey] || DYNAMIC_PLATFORMS.zh;
+      const matrix = DYNAMIC_PLATFORMS[langKey] || DYNAMIC_PLATFORMS.en;
       const matrixContainer = document.getElementById('platformMatrixContainer');
       const tabsHeader = document.getElementById('platformTabsHeader');
 
@@ -739,8 +758,7 @@
         `).join('');
       }
 
-      // Render Preset Hook Tags
-      const tags = HOOK_TAGS[langKey] || HOOK_TAGS.zh;
+      const tags = HOOK_TAGS[langKey] || HOOK_TAGS.en;
       const tagsContainer = document.getElementById('hookTagsContainer');
       if (tagsContainer) {
         tagsContainer.innerHTML = tags.map(t => `
@@ -752,7 +770,6 @@
       }
     }
 
-    // Level 3 Platform Selection & Dedicated Content Switch / Cache Lookup
     function selectPlatform(id, preset, ratio) {
       selectedPlatform = id;
       selectPresetTheme(preset);
@@ -789,7 +806,6 @@
       trackAnalyticsEvent('hook_tag_clicked', { tag: id });
     }
 
-    // Level 1 Visual Theme Switch (Pure CSS, Instant 0ms, Zero API Cost)
     function selectPresetTheme(theme) {
       currentPreset = theme;
       document.querySelectorAll('.preset-btn').forEach(btn => {
@@ -812,15 +828,12 @@
 
       renderDynamicMatrix();
 
-      // Header
       document.getElementById('quotaText').innerText = isProUser ? '✦ PRO UNLIMITED' : `✦ ${remainingFreeQuota} Free Left`;
       document.getElementById('txtUpgradeHeader').innerText = isProUser ? 'PRO Member ✨' : dict.upgradeHeader;
 
-      // Mode Buttons
       document.getElementById('txtModeSingle').innerText = dict.modeSingle;
       document.getElementById('txtModeCarousel').innerText = dict.modeCarousel;
 
-      // Input & Presets
       document.getElementById('txtHookTagsLabel').innerText = dict.hookTagsLabel;
       document.getElementById('txtPlatformMatrixLabel').innerText = dict.platformMatrixLabel;
       document.getElementById('inputText').placeholder = dict.inputPlaceholder;
@@ -834,19 +847,15 @@
       document.getElementById('txtPresetCyberDesc').innerText = dict.presetCyberDesc;
       document.getElementById('keyLabel').innerText = dict.keyLabel;
 
-      // Buttons
       document.getElementById('generateBtnText').innerText = (currentMode === 'single') ? dict.generateBtnSingle : dict.generateBtnCarousel;
       document.getElementById('txtRegenerateBtn').innerText = dict.regenerateBtn;
 
-      // Tabs & Copy
       document.getElementById('copyBtnText').innerText = dict.copyBtn;
 
-      // Right Studio Panel
       document.getElementById('txtStudioTitle').innerHTML = `<i data-lucide="layers" class="w-4 h-4 text-purple-400"></i> ${dict.studioTitle}`;
       document.getElementById('modeBadge').innerText = (currentMode === 'single') ? dict.modeBadgeSingle : dict.modeBadgeCarousel;
-      document.getElementById('exportCurrentBtnText').innerText = dict.exportCurrentBtn;
+      document.getElementById('txtExportCurrentBtn').innerText = dict.exportCurrentBtn;
 
-      // Modal
       document.getElementById('txtModalTitle').innerText = dict.modalTitle;
       document.getElementById('txtModalDesc').innerText = dict.modalDesc;
       document.getElementById('txtModalFeat1').innerText = dict.modalFeat1;
@@ -859,9 +868,9 @@
       if (!currentResponseData) {
         const platformDefaults = PLATFORM_DEFAULT_SLIDES[selectedPlatform] || dict.defaultCarouselSlides;
         if (currentMode === 'single') {
-          renderSlides([platformDefaults[0]], '⚡️ Cardify.ai');
+          renderSlides([platformDefaults[0]], isProUser ? '⚡️ Cardify Pro' : '⚡️ Made with Cardify.ai');
         } else {
-          renderSlides(platformDefaults, '⚡️ Cardify.ai');
+          renderSlides(platformDefaults, isProUser ? '⚡️ Cardify Pro' : '⚡️ Made with Cardify.ai');
         }
       }
 
@@ -967,7 +976,6 @@
       }
     }
 
-    // Commercial Generation Engine with Quota Intercept
     async function generateContent(forceRegenerate = false) {
       const text = document.getElementById('inputText').value.trim();
       if (!text || text.length < 10) {
@@ -977,7 +985,6 @@
 
       const customKey = document.getElementById('userApiKey').value.trim();
 
-      // 0 Free Left Intercept: If free quota is exhausted and user is not Pro / has no custom key
       if (!isProUser && !customKey && remainingFreeQuota <= 0) {
         openUpgradeModal();
         showToast('Daily free limit reached (0/3). Upgrade to Pro to continue!', true);
@@ -1045,11 +1052,12 @@
       document.getElementById('outputContainer').classList.remove('hidden');
       switchTab(selectedPlatform);
 
+      const watermarkText = isProUser ? (data.footer_text || '⚡️ Cardify Pro') : '⚡️ Made with Cardify.ai';
       const slides = data.slides || [];
-      renderSlides(slides, data.footer_text);
+      renderSlides(slides, watermarkText);
     }
 
-    function renderSlides(slides, footerText = '⚡️ Cardify.ai') {
+    function renderSlides(slides, footerText = '⚡️ Made with Cardify.ai') {
       const wrapper = document.getElementById('swiperWrapper');
       wrapper.innerHTML = '';
 
@@ -1096,7 +1104,7 @@
             </div>
 
             <div class="pt-3 border-t border-gray-800/60 flex items-center justify-between">
-              <span class="card-footer-brand text-[11px] font-bold font-mono">${footerText || '⚡️ Cardify.ai'}</span>
+              <span class="card-footer-brand text-[11px] font-bold font-mono">${footerText || (isProUser ? '⚡️ Cardify Pro' : '⚡️ Made with Cardify.ai')}</span>
               <span class="text-[10px] opacity-60">${idx + 1} / ${slides.length} Slide</span>
             </div>
           </div>
@@ -1151,27 +1159,44 @@
       trackAnalyticsEvent('copy_post_text');
     }
 
-    // Commercial High-DPI 3x Retina PNG Export
+    // Commercial High-DPI 3x Retina PNG Export (With Loading State)
     async function exportCurrentCard() {
       const activeIndex = swiperInstance.activeIndex || 0;
       const targetCard = document.getElementById(`card-${activeIndex + 1}`) || document.getElementById('card-1');
+      const btn = document.getElementById('btnExportCurrent');
+      const txt = document.getElementById('txtExportCurrentBtn');
       
+      btn.disabled = true;
+      txt.innerText = '⏳ Rendering...';
       showToast('Rendering Retina 3x Ultra-HD Image...');
-      const canvas = await html2canvas(targetCard, { scale: 3, useCORS: true, backgroundColor: null });
-      const link = document.createElement('a');
-      link.download = `cardify-retina-slide-${activeIndex + 1}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-      showToast('Retina 3x HD Slide Exported!');
-      trackAnalyticsEvent('export_card_png', { slide: activeIndex + 1 });
+
+      try {
+        const canvas = await html2canvas(targetCard, { scale: 3, useCORS: true, backgroundColor: null });
+        const link = document.createElement('a');
+        link.download = `cardify-retina-slide-${activeIndex + 1}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        showToast('Retina 3x HD Slide Exported!');
+        trackAnalyticsEvent('export_card_png', { slide: activeIndex + 1 });
+      } catch (e) {
+        showToast('Export failed: ' + e.message, true);
+      } finally {
+        btn.disabled = false;
+        txt.innerText = I18N_DICT[selectedLang]?.exportCurrentBtn || '📷 3x HD';
+      }
     }
 
-    // Commercial Direct Copy Image to Clipboard
+    // Commercial Direct Copy Image to Clipboard (With Loading State)
     async function copyCardImageToClipboard() {
       const activeIndex = swiperInstance.activeIndex || 0;
       const targetCard = document.getElementById(`card-${activeIndex + 1}`) || document.getElementById('card-1');
+      const btn = document.getElementById('btnCopyImg');
+      const txt = document.getElementById('txtCopyImgBtn');
       
+      btn.disabled = true;
+      txt.innerText = '⏳ Copying...';
       showToast('Rendering HD Image to Clipboard...');
+
       try {
         const canvas = await html2canvas(targetCard, { scale: 3, useCORS: true, backgroundColor: null });
         canvas.toBlob(async (blob) => {
@@ -1189,19 +1214,28 @@
         console.error(e);
         showToast('Clipboard copy not supported by browser. Downloading PNG instead.');
         exportCurrentCard();
+      } finally {
+        setTimeout(() => {
+          btn.disabled = false;
+          txt.innerText = '📋 Copy Image';
+        }, 1500);
       }
     }
 
-    // Commercial Multi-Page PDF Export (LinkedIn Carousel)
+    // Commercial Multi-Page PDF Export (LinkedIn Carousel) (With Loading State)
     async function exportLinkedInPdf() {
       const slidesCount = (currentResponseData?.slides?.length) || (I18N_DICT[selectedLang] || I18N_DICT.en).defaultCarouselSlides.length;
+      const btn = document.getElementById('btnExportPdf');
+      const txt = document.getElementById('txtExportPdfBtn');
+
+      btn.disabled = true;
+      txt.innerText = '⏳ Building PDF...';
       showToast(`Building LinkedIn Carousel PDF (${slidesCount} pages)...`);
 
       try {
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
 
         for (let i = 1; i <= slidesCount; i++) {
           const card = document.getElementById(`card-${i}`);
@@ -1221,12 +1255,21 @@
         console.error(e);
         showToast('PDF Export failed. Batch PNG downloading instead.', true);
         exportAllCards();
+      } finally {
+        btn.disabled = false;
+        txt.innerText = '📄 PDF Slide';
       }
     }
 
     async function exportAllCards() {
       const slidesCount = (currentResponseData?.slides?.length) || (I18N_DICT[selectedLang] || I18N_DICT.en).defaultCarouselSlides.length;
+      const btn = document.getElementById('btnExportAll');
+      const txt = document.getElementById('exportAllBtnText');
+
+      btn.disabled = true;
+      txt.innerText = '⏳ Packaging...';
       showToast(`Exporting ${slidesCount} card slides...`);
+
       for (let i = 1; i <= slidesCount; i++) {
         const card = document.getElementById(`card-${i}`);
         if (card) {
@@ -1239,9 +1282,10 @@
       }
       showToast(`All ${slidesCount} Card Slides exported!`);
       trackAnalyticsEvent('export_all_cards', { count: slidesCount });
+      btn.disabled = false;
+      applyTranslations();
     }
 
-    // Modal Control & License Verification
     function openUpgradeModal() {
       document.getElementById('upgradeModal').classList.remove('hidden');
       trackAnalyticsEvent('upgrade_modal_opened');
@@ -1251,7 +1295,7 @@
       document.getElementById('upgradeModal').classList.add('hidden');
     }
 
-    async function verifyLicenseKey(key) {
+    async function verifyLicenseKey(key, isFromUrl = false) {
       try {
         const res = await fetch('/api/verify-license', {
           method: 'POST',
@@ -1262,8 +1306,11 @@
         if (data.valid) {
           isProUser = true;
           localStorage.setItem('cardify_license_key', key);
-          showToast('Pro License Activated! Unlimited VIP Access Unlocked.');
+          showToast(isFromUrl ? '🎉 Payment Successful! Pro License automatically activated!' : 'Pro License Activated! Unlimited VIP Access Unlocked.');
           applyTranslations();
+          trackAnalyticsEvent('license_verified_success', { isFromUrl });
+        } else if (isFromUrl) {
+          showToast('Invalid License Key from URL.', true);
         }
       } catch (e) {
         console.warn('License verification failed:', e);
@@ -1274,14 +1321,13 @@
       const val = document.getElementById('licenseKeyInput').value.trim();
       if (val.length >= 5) {
         licenseKey = val;
-        await verifyLicenseKey(val);
+        await verifyLicenseKey(val, false);
         closeUpgradeModal();
       } else {
         showToast('Invalid License Key format.', true);
       }
     }
 
-    // Mandatory Legal Policies Modal
     function openLegalModal(type) {
       const modal = document.getElementById('legalModal');
       const title = document.getElementById('legalModalTitle');
