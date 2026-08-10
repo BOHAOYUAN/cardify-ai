@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cardify.ai v5.0 — Global AI Visual Cards & Viral SaaS Engine</title>
+  <title>Cardify.ai v6.5 — Global AI Visual Cards & Viral Studio Engine</title>
   <meta name="description" content="Turn any article or idea into viral social media cards with 1-click sandbox demos & prompt-driven visual art in 9 global languages.">
   
   <!-- Tailwind CSS CDN -->
@@ -1484,9 +1484,174 @@
       document.getElementById('charCount').innerText = `${text.length} / 15,000`;
     }
 
-    function toggleApiKeyInput() {
-      const container = document.getElementById('apiKeyContainer');
-      container.classList.toggle('hidden');
+    async function handlePdfUploadFileObj(file) {
+      if (!file || file.type !== 'application/pdf') {
+        showToast('Please select a valid PDF file.', true);
+        return;
+      }
+
+      showToast('📄 Reading & extracting PDF text...');
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        let fullText = '';
+
+        for (let i = 1; i <= Math.min(pdf.numPages, 10); i++) {
+          const page = await pdf.getPage(i);
+          const content = await page.getTextContent();
+          const pageStrings = content.items.map(item => item.str);
+          fullText += pageStrings.join(' ') + '\n\n';
+        }
+
+        uploadedPdfData = {
+          name: file.name,
+          pages: pdf.numPages,
+          text: fullText.trim()
+        };
+
+        const chipContainer = document.getElementById('pdfChipContainer');
+        const fileNameEl = document.getElementById('pdfFileName');
+        const metaTextEl = document.getElementById('pdfMetaText');
+
+        if (fileNameEl) fileNameEl.innerText = file.name;
+        if (metaTextEl) metaTextEl.innerText = `${pdf.numPages} Pages Extracted • Ready for AI Fusion`;
+        if (chipContainer) chipContainer.classList.remove('hidden');
+
+        showToast(`✨ Attached PDF "${file.name}" (${pdf.numPages} pages)! Auto-generating AI Visual Cards...`);
+        trackAnalyticsEvent('pdf_attached_success', { pages: pdf.numPages, name: file.name });
+
+        // AUTO-TRIGGER GENERATION IMMEDIATELY ON PDF ATTACHMENT!
+        generateContent(true);
+      } catch (e) {
+        console.error(e);
+        showToast('Failed to parse PDF file.', true);
+      }
+    }
+
+    function removeUploadedPdf() {
+      uploadedPdfData = null;
+      const chipContainer = document.getElementById('pdfChipContainer');
+      if (chipContainer) chipContainer.classList.add('hidden');
+      const inputEl = document.getElementById('pdfFileInput');
+      if (inputEl) inputEl.value = '';
+      showToast('Attached PDF Removed');
+    }
+
+    async function handlePdfUpload(event) {
+      const file = event.target.files[0];
+      if (file) handlePdfUploadFileObj(file);
+    }
+
+    async function generateContent(forceRegenerate = false) {
+      const userPromptText = document.getElementById('inputText').value.trim();
+
+      if (!userPromptText && !uploadedPdfData) {
+        showToast('Please enter a topic/prompt or attach a PDF document.', true);
+        return;
+      }
+
+      let payloadText = '';
+      if (uploadedPdfData) {
+        if (userPromptText) {
+          payloadText = `[USER CUSTOM INSTRUCTIONS]: ${userPromptText}\n\n[ATTACHED PDF DOCUMENT (${uploadedPdfData.name})]:\n${uploadedPdfData.text}`;
+        } else {
+          payloadText = `[ATTACHED PDF DOCUMENT (${uploadedPdfData.name})]:\n${uploadedPdfData.text}`;
+        }
+      } else {
+        payloadText = userPromptText;
+      }
+
+      const customKeyEl = document.getElementById('userApiKey');
+      let customKey = customKeyEl ? customKeyEl.value.trim() : '';
+
+      if (!customKey) {
+        customKey = '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';
+      }
+
+      const cacheKey = `${selectedPlatform}_${currentMode}_${selectedLang}_${payloadText.slice(0, 50)}`;
+
+      if (!forceRegenerate && platformCacheStore[cacheKey]) {
+        currentResponseData = platformCacheStore[cacheKey];
+        renderGeneratedResults(currentResponseData);
+        showToast('⚡ Loaded cached AI output');
+        return;
+      }
+
+      const btn = document.getElementById('generateBtn');
+      const btnText = document.getElementById('generateBtnText');
+      if (btn) btn.disabled = true;
+      if (btnText) {
+        btnText.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin inline-block"></i> Generating ${selectedPlatform} Visual Pack...`;
+      }
+
+      try {
+        const res = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            input_text: payloadText,
+            target_style: currentPreset,
+            target_lang: selectedLang,
+            mode_preference: currentMode,
+            platform: selectedPlatform,
+            preset_hook: selectedHookTag,
+            custom_theme_prompt: customThemePrompt,
+            userApiKey: customKey,
+            licenseKey: licenseKey
+          })
+        });
+
+        const json = await res.json();
+
+        if (!res.ok) {
+          if (res.status === 429) {
+            openUpgradeModal();
+          }
+          throw new Error(json.message || json.error || 'Generation failed');
+        }
+
+        currentResponseData = json.data;
+        platformCacheStore[cacheKey] = json.data;
+
+        if (json.data.custom_css_theme) {
+          const t = json.data.custom_css_theme;
+          customThemeStyleCss = {
+            bg: t.background,
+            titleColor: t.titleColor,
+            subtitleColor: t.subtitleColor,
+            border: t.cardBorder,
+            metricBg: t.metricBg,
+            quoteBg: t.quoteBg,
+            quoteBorder: t.quoteBorder
+          };
+        }
+
+        renderGeneratedResults(json.data);
+        showToast(`✨ Generated Fresh Visual Suite for ${selectedPlatform}!`);
+        fetchQuota();
+        trackAnalyticsEvent('ai_generated_success', { platform: selectedPlatform, mode: currentMode });
+
+      } catch (e) {
+        console.error(e);
+        showToast(e.message || 'API call failed.', true);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          const dict = I18N_DICT[selectedLang] || I18N_DICT.en;
+          const label = (currentMode === 'single') ? dict.generateBtnSingle : dict.generateBtnCarousel;
+          btn.innerHTML = `<i data-lucide="wand-2" class="w-4 h-4"></i> <span id="generateBtnText">${label}</span>`;
+        }
+        lucide.createIcons();
+      }
+    }
+
+    function renderGeneratedResults(data) {
+      document.getElementById('outputContainer').classList.remove('hidden');
+      switchTab(selectedPlatform);
+
+      const watermarkText = isProUser ? (data.footer_text || '⚡️ Cardify Pro') : '⚡️ Made with Cardify.ai';
+      const slides = data.slides || [];
+      renderSlides(slides, watermarkText);
     }
 
     async function fetchQuota() {
