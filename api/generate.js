@@ -62,10 +62,16 @@ const PLATFORM_INJECTORS = {
   bilibili: `### PLATFORM-SPECIFIC STYLE INJECTOR (Bilibili/Video Script)
 - Style: Hook -> Problem -> Solution -> Call to Action storyboard format.`,
 
-  linkedin: `### PLATFORM-SPECIFIC STYLE INJECTOR (LinkedIn)
-- Style: Professional, concise, data-driven, thought leadership.
-- Tone: Authoritative, polished, action-oriented.
-- Headline Rules: Focus on ROI, career growth, or industry paradigm shift.`,
+  linkedin: `### PLATFORM-SPECIFIC STYLE INJECTOR (LinkedIn Carousel & Lead Gen Engine)
+- Style: B2B Thought Leadership & Executive Visual Carousel.
+- Structure Rules: 
+  * Page 1 (Hook): Scroll-stopping bold claim, high-ROI metric or curiosity gap.
+  * Body Pages: 5 core actionable insights, step-by-step SOP, or versus comparisons (old way vs new way).
+  * FINAL PAGE (Lead Magnet CTA): MUST contain a high-converting B2B lead generation call to action!
+    - Subtitle: "🎁 EXCLUSIVE BONUS SOP"
+    - Title: "Want the Complete Step-by-Step Guide PDF?"
+    - Takeaway Quote: "Comment 'GROWTH' below and I'll DM you the full unredacted PDF guide!"
+- Tone: Authoritative, executive, highly valuable, ROI-driven.`,
 
   twitter: `### PLATFORM-SPECIFIC STYLE INJECTOR (Twitter/X)
 - Style: Punchy, contrarian claims, high-retweet potential.
@@ -88,7 +94,8 @@ Your task is to take raw user text and output ONLY valid JSON according to the s
 - VIRAL HOOK REWRITING: Do NOT output plain summary headlines. Rewrite raw titles into scroll-stopping social hooks with curiosity gaps and bold ROI claims (e.g. "Why 99% of Indie Hackers Quit at Day 10 (And the 3 Rules to Reach $10k ARR)").
 - DIAGRAM LAYOUT SELECTION: Assign 'diagram_type' to 'versus' for mistake vs solution comparisons, 'flow' for step-by-step execution, or 'matrix' for data highlights.
 - Generate a dynamic CSS Theme based on the user's requested style/prompt.
-- CREATIVE EXPANSION: If the input text is a short topic or single sentence (e.g. "DeepSeek AI", "SaaS Growth"), automatically expand it into a rich, professional 3-slide viral carousel deck with realistic metrics and actionable insights.
+- CREATIVE EXPANSION & URL REPURPOSING: If the input text is a URL, blog article or video transcript, extract the 5 most valuable insights and construct a structured viral deck.
+- FINAL SLIDE LEAD MAGNET RULE: The final slide of every carousel deck MUST be a Lead Magnet CTA encouraging the reader to comment a keyword (e.g. "GROWTH" or "TEMPLATE") to get the full PDF in their DMs.
 
 ### STRICT OUTPUT RULES
 1. Output MUST be ONLY valid JSON.
