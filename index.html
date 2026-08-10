@@ -3135,11 +3135,8 @@
 
               <div class="card-subtitle text-[10px] font-bold uppercase tracking-widest opacity-75 mb-2">${slide.subtitle || '🔥 HIGHLIGHTS'}</div>
               <h3 class="card-title text-lg font-extrabold font-outfit leading-snug mb-3">${highlightedTitle}</h3>
-              ${versusHtml}
-              ${flowHtml}
-              ${metricHtml}
-              ${!flowHtml ? bulletsHtml : ''}
-              ${quoteHtml}
+              <!-- Smart layout hierarchy: render signature elements per slide to prevent text overlapping -->
+              ${versusHtml ? (versusHtml + (quoteHtml || bulletsHtml)) : (flowHtml || (metricHtml ? (metricHtml + bulletsHtml) : (quoteHtml ? (quoteHtml + bulletsHtml) : bulletsHtml)))}
             </div>
 
             <div class="pt-3 border-t border-gray-800/60 flex items-center justify-between">
