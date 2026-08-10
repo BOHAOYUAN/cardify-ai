@@ -391,7 +391,7 @@ export default async function handler(req, res) {
   let userPrompt = `[Target Language Mode]: ${targetLangCode}\n[Mode Preference]: ${modeVal}\n[Platform]: ${platformKey}\n[Style Profile]: ${target_style || 'cyber'}`;
   if (custom_theme_prompt) userPrompt += `\n[Custom Prompt Visual Theme]: ${custom_theme_prompt}`;
   if (preset_hook) userPrompt += `\n[Viral Hook Focus]: ${preset_hook}`;
-  userPrompt += `\n[Raw Content]:\n${input_text.trim()}`;
+  userPrompt += `\n[Raw Content]:\n${resolvedInputText.trim()}`;
 
   try {
     const { rawText, usedProvider } = await robustLLMFailover(userApiKey, finalSystemPrompt, userPrompt);
