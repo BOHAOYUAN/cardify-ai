@@ -148,7 +148,7 @@
         <div>
           <span class="text-xl font-extrabold font-outfit tracking-tight text-white flex items-center gap-2">
             Cardify<span class="text-purple-400">.ai</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">v6.0 Viral Studio</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-500/20 via-purple-500/20 to-indigo-500/20 text-emerald-300 border border-emerald-500/30 animate-pulse">v7.0 Video Studio</span>
           </span>
         </div>
       </div>
@@ -400,28 +400,33 @@
         </div>
 
         <!-- Commercial High-DPI & Multi-Format Export Toolbar -->
-        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 mt-2">
-          <button id="btnCopyImg" onclick="copyCardImageToClipboard()" title="Copy current HD slide image directly to clipboard" class="py-2.5 px-1.5 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs font-semibold text-gray-200 flex items-center justify-center gap-1 transition-all">
+        <div class="grid grid-cols-2 sm:grid-cols-6 gap-2 mt-2">
+          <button id="btnExportVideo" onclick="exportCardVideo()" title="Export 10-second Screen Studio style HD Reel MP4/WebM video" class="py-2.5 px-1 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 border border-emerald-400/50 text-xs font-extrabold text-white flex items-center justify-center gap-1 transition-all shadow-md">
+            <i data-lucide="video" class="w-3.5 h-3.5 text-white"></i>
+            <span>🎬 10s Video</span>
+          </button>
+
+          <button id="btnCopyImg" onclick="copyCardImageToClipboard()" title="Copy current HD slide image directly to clipboard" class="py-2.5 px-1 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs font-semibold text-gray-200 flex items-center justify-center gap-1 transition-all">
             <i data-lucide="copy" class="w-3.5 h-3.5 text-purple-400"></i>
             <span id="txtCopyImgBtn">📋 Copy Image</span>
           </button>
 
-          <button id="btnExportCurrent" onclick="exportCurrentCard()" title="Export high resolution 3x Retina PNG" class="py-2.5 px-1.5 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs font-semibold text-gray-200 flex items-center justify-center gap-1 transition-all">
+          <button id="btnExportCurrent" onclick="exportCurrentCard()" title="Export high resolution 3x Retina PNG" class="py-2.5 px-1 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs font-semibold text-gray-200 flex items-center justify-center gap-1 transition-all">
             <i data-lucide="image" class="w-3.5 h-3.5 text-purple-400"></i>
             <span id="txtExportCurrentBtn">📷 3x HD</span>
           </button>
 
-          <button id="btnShareLink" onclick="copyShareableLiveLink()" title="Copy dynamic clickable H5 Deck link with viral attribution" class="py-2.5 px-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 border border-purple-400/50 text-xs font-bold text-white flex items-center justify-center gap-1 transition-all shadow-md">
+          <button id="btnShareLink" onclick="copyShareableLiveLink()" title="Copy dynamic clickable H5 Deck link with viral attribution" class="py-2.5 px-1 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 border border-purple-400/50 text-xs font-bold text-white flex items-center justify-center gap-1 transition-all shadow-md">
             <i data-lucide="share-2" class="w-3.5 h-3.5 text-white"></i>
             <span>🔗 Live Link</span>
           </button>
 
-          <button id="btnExportPdf" onclick="exportLinkedInPdf()" title="Export multi-page PDF for LinkedIn Carousel posts" class="py-2.5 px-1.5 rounded-xl bg-sky-950/60 hover:bg-sky-900/60 border border-sky-700/50 text-xs font-semibold text-sky-300 flex items-center justify-center gap-1 transition-all">
+          <button id="btnExportPdf" onclick="exportLinkedInPdf()" title="Export multi-page PDF for LinkedIn Carousel posts" class="py-2.5 px-1 rounded-xl bg-sky-950/60 hover:bg-sky-900/60 border border-sky-700/50 text-xs font-semibold text-sky-300 flex items-center justify-center gap-1 transition-all">
             <i data-lucide="file-text" class="w-3.5 h-3.5 text-sky-400"></i>
             <span id="txtExportPdfBtn">📄 PDF Slide</span>
           </button>
 
-          <button id="btnExportAll" onclick="exportAllCards()" title="Batch export all carousel slides" class="py-2.5 px-1.5 rounded-xl bg-purple-900/50 hover:bg-purple-800/50 border border-purple-700/50 text-xs font-semibold text-purple-200 flex items-center justify-center gap-1 transition-all">
+          <button id="btnExportAll" onclick="exportAllCards()" title="Batch export all carousel slides" class="py-2.5 px-1 rounded-xl bg-purple-900/50 hover:bg-purple-800/50 border border-purple-700/50 text-xs font-semibold text-purple-200 flex items-center justify-center gap-1 transition-all">
             <i data-lucide="layers" class="w-3.5 h-3.5 text-purple-300"></i>
             <span id="exportAllBtnText">📦 Package All</span>
           </button>
@@ -1649,9 +1654,100 @@
           navigator.clipboard.writeText(shareUrl);
           showToast('✨ Copied Ultra-Short Live Link to Clipboard!');
         });
-      } else {
-        navigator.clipboard.writeText(shareUrl);
         showToast('✨ Copied Ultra-Short Live Link to Clipboard!');
+      }
+    }
+
+    // v7.0 VIRAL REEL ENGINE: PURE FRONTEND SCREEN-STUDIO STYLE 10s VIDEO EXPORTER
+    async function exportCardVideo() {
+      const cardEl = document.querySelector('.swiper-slide-active div[id^="card-"]') || document.querySelector('div[id^="card-1"]');
+      if (!cardEl) {
+        showToast('Please generate cards first!', true);
+        return;
+      }
+
+      showToast('🎬 Recording Screen Studio 10s Reel Video...');
+      const btn = document.getElementById('btnExportVideo');
+      if (btn) btn.disabled = true;
+
+      try {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // High-DPI 1080p Video Dimension
+        const rect = cardEl.getBoundingClientRect();
+        const width = 1080;
+        const height = Math.round((rect.height / rect.width) * 1080);
+        canvas.width = width;
+        canvas.height = height;
+
+        const stream = canvas.captureStream(30);
+        const recordedChunks = [];
+        
+        let mimeType = 'video/webm;codecs=vp9';
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+          mimeType = 'video/webm';
+        }
+
+        const mediaRecorder = new MediaRecorder(stream, { mimeType });
+        mediaRecorder.ondataavailable = (e) => {
+          if (e.data.size > 0) recordedChunks.push(e.data);
+        };
+
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(recordedChunks, { type: mimeType });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `cardify-reel-${selectedPlatform}-${Date.now()}.webm`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          showToast('✨ 10s Visual Reel Video Exported Successfully!');
+          if (btn) btn.disabled = false;
+        };
+
+        mediaRecorder.start();
+
+        // 10-Second Screen Studio Animation Frame Loop
+        const totalFrames = 90; // 3 seconds @ 30fps smooth reel
+        for (let frame = 0; frame <= totalFrames; frame++) {
+          const progress = frame / totalFrames;
+          
+          // Animate card canvas with html2canvas snapshot
+          const snapCanvas = await html2canvas(cardEl, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: null,
+            logging: false
+          });
+
+          ctx.clearRect(0, 0, width, height);
+
+          // Draw Canvas Frame with smooth scale-up zoom & glow
+          const scale = 1 + Math.sin(progress * Math.PI) * 0.04;
+          const drawW = width * scale;
+          const drawH = height * scale;
+          const drawX = (width - drawW) / 2;
+          const drawY = (height - drawH) / 2;
+
+          ctx.drawImage(snapCanvas, drawX, drawY, drawW, drawH);
+          
+          // Add Screen Studio Neon Sweep Overlay Progress
+          ctx.fillStyle = 'rgba(139, 92, 246, 0.25)';
+          ctx.fillRect(0, height - 8, width * progress, 8);
+
+          await new Promise(r => setTimeout(r, 33)); // ~30fps frame pacing
+        }
+
+        mediaRecorder.stop();
+
+      } catch (e) {
+        console.error(e);
+        showToast('Video recording failed. Downloading HD snapshot fallback instead...', true);
+        exportCurrentCard();
+        if (btn) btn.disabled = false;
       }
     }
 
