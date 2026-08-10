@@ -1,5 +1,4 @@
-// /api/parse-url.js — Cardify AI URL & YouTube Content Extractor Engine
-// Parses Web Articles & YouTube Videos into clean structured Markdown for 1-click Carousel Repurposing
+// /api/parse-url.js — Cardify AI Bulletproof URL & YouTube oEmbed Content Extractor Engine
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -14,16 +13,22 @@ export default async function handler(req, res) {
 
   const { url } = req.body || {};
 
-  if (!url || typeof url !== 'string' || !url.trim().startsWith('http')) {
-    return res.status(400).json({ error: 'INVALID_URL', message: 'Please provide a valid HTTP/HTTPS URL.' });
+  if (!url || typeof url !== 'string') {
+    return res.status(400).json({ error: 'INVALID_URL', message: 'Please provide a valid URL.' });
   }
 
-  const cleanUrl = url.trim();
+  // Extract first URL using Regex matching
+  const urlMatch = url.match(/(https?:\/\/[^\s]+)/);
+  if (!urlMatch) {
+    return res.status(400).json({ error: 'NO_URL_FOUND', message: 'No valid HTTP/HTTPS URL found in input.' });
+  }
+
+  const cleanUrl = urlMatch[1].trim();
 
   try {
-    // 1. YouTube Video URL Extractor
+    // 1. YouTube Video URL Extractor via Official oEmbed API
     if (cleanUrl.includes('youtube.com/') || cleanUrl.includes('youtu.be/')) {
-      const parsedData = await extractYouTubeContent(cleanUrl);
+      const parsedData = await extractYouTubeContentViaOEmbed(cleanUrl);
       return res.status(200).json({ success: true, type: 'youtube', ...parsedData });
     }
 
@@ -42,8 +47,21 @@ export default async function handler(req, res) {
   }
 }
 
-// Helper: Extract YouTube Video Title & Subtitle Track
-async function extractYouTubeContent(targetUrl) {
+// Helper: Extract YouTube Video metadata via 100% Reliable Official oEmbed API
+async function extractYouTubeContentViaOEmbed(targetUrl) {
+  const oembedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(targetUrl)}&format=json`;
+  
+  const oembedRes = await fetch(oembedUrl);
+  if (!oembedRes.ok) {
+    throw new Error('Unable to fetch YouTube video metadata');
+  }
+
+  const oembedData = await oembedRes.json();
+  const title = oembedData.title || 'YouTube Video';
+  const author = oembedData.author_name || 'YouTube Channel';
+
+  // Try extracting transcript XML as supplementary content
+  let transcriptText = '';
   let videoId = '';
   if (targetUrl.includes('youtu.be/')) {
     videoId = targetUrl.split('youtu.be/')[1]?.split('?')[0]?.split('#')[0];
@@ -52,77 +70,35 @@ async function extractYouTubeContent(targetUrl) {
     if (match) videoId = match[1];
   }
 
-  if (!videoId) throw new Error('Invalid YouTube URL');
-
-  const pageRes = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-      'Accept-Language': 'en-US,en;q=0.9'
-    }
-  });
-
-  if (!pageRes.ok) throw new Error('YouTube video page unreachable');
-
-  const html = await pageRes.text();
-  const titleMatch = html.match(/<title>(.*?)<\/title>/);
-  let title = titleMatch ? titleMatch[1].replace('- YouTube', '').trim() : 'YouTube Video Summary';
-
-  // Extract meta description & og:description
-  const descMatch = html.match(/meta name="description" content="(.*?)"/) || html.match(/meta property="og:description" content="(.*?)"/);
-  let description = descMatch ? descMatch[1] : '';
-
-  // Deep extract keywords & shortDescription from YouTube JSON data if available
-  let keywordsStr = '';
-  const keywordsMatch = html.match(/"keywords":s*([.*?])/);
-  if (keywordsMatch) {
+  if (videoId) {
     try {
-      const kwArr = JSON.parse(keywordsMatch[1]);
-      if (Array.isArray(kwArr)) keywordsStr = kwArr.slice(0, 15).join(', ');
-    } catch (_) {}
-  }
-
-  const shortDescMatch = html.match(/"shortDescription":s*"(.*?)"/);
-  if (shortDescMatch && !description) {
-    description = shortDescMatch[1].replace(/\\n/g, '\n').replace(/\\"/g, '"');
-  }
-
-  // Extract captions JSON track if available
-  let transcriptText = '';
-  const captionMatch = html.match(/"captionTracks":\s*(\[.*?\])/);
-  if (captionMatch) {
-    try {
-      const tracks = JSON.parse(captionMatch[1]);
-      if (tracks && tracks.length > 0) {
-        const trackUrl = tracks[0].baseUrl;
-        const xmlRes = await fetch(trackUrl);
-        if (xmlRes.ok) {
-          const xml = await xmlRes.text();
-          transcriptText = xml
-            .replace(/<text[^>]*>/g, ' ')
-            .replace(/<\/text>/g, '\n')
-            .replace(/<[^>]+>/g, '')
-            .replace(/&amp;/g, '&')
-            .replace(/&lt;/g, '<')
-            .replace(/&gt;/g, '>')
-            .replace(/&#39;/g, "'")
-            .replace(/&quot;/g, '"')
-            .replace(/\s+/g, ' ')
-            .trim();
+      const pageRes = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
+        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
+      });
+      if (pageRes.ok) {
+        const html = await pageRes.text();
+        const captionMatch = html.match(/"captionTracks":\s*(\[.*?\])/);
+        if (captionMatch) {
+          const tracks = JSON.parse(captionMatch[1]);
+          if (tracks && tracks[0] && tracks[0].baseUrl) {
+            const xmlRes = await fetch(tracks[0].baseUrl);
+            if (xmlRes.ok) {
+              const xml = await xmlRes.text();
+              transcriptText = xml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 8000);
+            }
+          }
         }
       }
     } catch (_) {}
   }
 
-  const contextBody = transcriptText 
-    ? `[FULL VIDEO TRANSCRIPT]:\n${transcriptText}`
-    : `[VIDEO DESCRIPTION & CHAPTERS]:\n${description || title}\n\n[KEY TOPICS & TAGS]:\n${keywordsStr || title}`;
-
-  const fullContent = `[SPECIFIC VIDEO TOPIC & TITLE]: ${title}\n\n${contextBody}\n\nCRITICAL INSTRUCTION FOR AI: You MUST strictly generate slides focused 100% on the exact subject matter of this video title ("${title}"). Do NOT hallucinate generic business buzzwords like "Growth Hacking" unless the video is specifically about growth hacking.`;
+  const fullPayload = `[EXACT YOUTUBE VIDEO TITLE]: ${title}\n[CHANNEL AUTHOR]: ${author}\n\n${transcriptText ? '[VIDEO TRANSCRIPT]:\n' + transcriptText : '[PRIMARY VIDEO SUBJECT]:\n' + title}\n\nCRITICAL INSTRUCTION FOR AI: You MUST strictly generate slides specifically analyzing and explaining the exact video title subject ("${title}"). For example, if the video is about "公众表达与背稿优缺点", all slides MUST specifically discuss public speaking and script vs no-script techniques. Do NOT generate generic efficiency or growth hacking slides.`;
 
   return {
     title,
-    text: fullContent.slice(0, 15000),
-    word_count: fullContent.split(/\s+/).length
+    author,
+    text: fullPayload,
+    word_count: fullPayload.split(/\s+/).length
   };
 }
 
@@ -147,11 +123,9 @@ async function extractWebArticleContent(targetUrl) {
 
   const html = await response.text();
 
-  // Extract Page Title
   const titleMatch = html.match(/<title[^>]*>(.*?)<\/title>/i);
   const title = titleMatch ? titleMatch[1].replace(/<[^>]+>/g, '').trim() : 'Web Article';
 
-  // Strip script, style, nav, footer, header tags
   let cleanedHtml = html
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
     .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
@@ -159,9 +133,8 @@ async function extractWebArticleContent(targetUrl) {
     .replace(/<footer\b[^<]*(?:(?!<\/footer>)<[^<]*)*<\/footer>/gi, '')
     .replace(/<header\b[^<]*(?:(?!<\/header>)<[^<]*)*<\/header>/gi, '');
 
-  // Extract headings and paragraphs
   const textBlocks = [];
-  const regex = /<(h1|h2|h3|p)[^>]*>(.*?)<\/\1>/gi;
+  const regex = /<(h1|h2|h3|p)[^>]*>(.*?)<\/h1|h2|h3|p>/gi;
   let match;
   while ((match = regex.exec(cleanedHtml)) !== null) {
     const txt = match[2].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
@@ -171,24 +144,19 @@ async function extractWebArticleContent(targetUrl) {
   }
 
   let extractedText = textBlocks.join('\n\n');
-
   if (!extractedText || extractedText.length < 100) {
-    // Fallback body text extraction
-    extractedText = cleanedHtml
-      .replace(/<[^>]+>/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
+    extractedText = cleanedHtml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
   }
 
   if (extractedText.length < 100) {
     throw new Error('Could not extract readable article text');
   }
 
-  const fullPayload = `[ARTICLE TITLE]: ${title}\n\n[ARTICLE SOURCE URL]: ${targetUrl}\n\n[ARTICLE CONTENT]:\n${extractedText}`;
+  const fullPayload = `[ARTICLE TITLE]: ${title}\n\n[ARTICLE SOURCE URL]: ${targetUrl}\n\n[ARTICLE CONTENT]:\n${extractedText.slice(0, 12000)}\n\nCRITICAL INSTRUCTION FOR AI: You MUST strictly generate slides specifically analyzing and explaining the exact article title subject ("${title}").`;
 
   return {
     title,
-    text: fullPayload.slice(0, 15000),
+    text: fullPayload,
     word_count: fullPayload.split(/\s+/).length
   };
 }
