@@ -1506,175 +1506,9 @@
       }
     }
 
-    async function handlePdfUploadFileObj(file) {
-      if (!file || file.type !== 'application/pdf') {
-        showToast('Please select a valid PDF file.', true);
-        return;
-      }
-
-      showToast('📄 Reading & extracting PDF text...');
-      try {
-        const arrayBuffer = await file.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-        let fullText = '';
-
-        for (let i = 1; i <= Math.min(pdf.numPages, 10); i++) {
-          const page = await pdf.getPage(i);
-          const content = await page.getTextContent();
-          const pageStrings = content.items.map(item => item.str);
-          fullText += pageStrings.join(' ') + '\n\n';
-        }
-
-        uploadedPdfData = {
-          name: file.name,
-          pages: pdf.numPages,
-          text: fullText.trim()
-        };
-
-        const chipContainer = document.getElementById('pdfChipContainer');
-        const fileNameEl = document.getElementById('pdfFileName');
-        const metaTextEl = document.getElementById('pdfMetaText');
-
-        if (fileNameEl) fileNameEl.innerText = file.name;
-        if (metaTextEl) metaTextEl.innerText = `${pdf.numPages} Pages Extracted • Ready for AI Fusion`;
-        if (chipContainer) chipContainer.classList.remove('hidden');
-
-        showToast(`✨ Attached PDF "${file.name}" (${pdf.numPages} pages)! Auto-generating AI Visual Cards...`);
-        trackAnalyticsEvent('pdf_attached_success', { pages: pdf.numPages, name: file.name });
-
-        // AUTO-TRIGGER GENERATION IMMEDIATELY ON PDF ATTACHMENT!
-        generateContent(true);
-      } catch (e) {
-        console.error(e);
-        showToast('Failed to parse PDF file.', true);
-      }
-    }
-
-    function removeUploadedPdf() {
-      uploadedPdfData = null;
-      const chipContainer = document.getElementById('pdfChipContainer');
-      if (chipContainer) chipContainer.classList.add('hidden');
-      const inputEl = document.getElementById('pdfFileInput');
-      if (inputEl) inputEl.value = '';
-      showToast('Attached PDF Removed');
-    }
-
-    async function handlePdfUpload(event) {
-      const file = event.target.files[0];
-      if (file) handlePdfUploadFileObj(file);
-    }
-
-    async function generateContent(forceRegenerate = false) {
-      const userPromptText = document.getElementById('inputText').value.trim();
-
-      if (!userPromptText && !uploadedPdfData) {
-        showToast('Please enter a topic/prompt or attach a PDF document.', true);
-        return;
-      }
-
-      let payloadText = '';
-      if (uploadedPdfData) {
-        if (userPromptText) {
-          payloadText = `[USER CUSTOM INSTRUCTIONS]: ${userPromptText}\n\n[ATTACHED PDF DOCUMENT (${uploadedPdfData.name})]:\n${uploadedPdfData.text}`;
-        } else {
-          payloadText = `[ATTACHED PDF DOCUMENT (${uploadedPdfData.name})]:\n${uploadedPdfData.text}`;
-        }
-      } else {
-        payloadText = userPromptText;
-      }
-
-      const customKeyEl = document.getElementById('userApiKey');
-      let customKey = customKeyEl ? customKeyEl.value.trim() : '';
-
-      // Auto-fallback key if user hasn't provided a custom key
-      if (!customKey) {
-        customKey = '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';
-      }
-
-      const cacheKey = `${selectedPlatform}_${currentMode}_${selectedLang}_${payloadText.slice(0, 50)}`;
-
-      if (!forceRegenerate && platformCacheStore[cacheKey]) {
-        currentResponseData = platformCacheStore[cacheKey];
-        renderGeneratedResults(currentResponseData);
-        showToast('⚡ Loaded cached AI output');
-        return;
-      }
-
-      const btn = document.getElementById('generateBtn');
-      const btnText = document.getElementById('generateBtnText');
-      if (btn) btn.disabled = true;
-      if (btnText) {
-        btnText.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin inline-block"></i> Generating ${selectedPlatform} Visual Pack...`;
-      }
-
-      try {
-        const res = await fetch('/api/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            input_text: payloadText,
-            target_style: currentPreset,
-            target_lang: selectedLang,
-            mode_preference: currentMode,
-            platform: selectedPlatform,
-            preset_hook: selectedHookTag,
-            custom_theme_prompt: customThemePrompt,
-            userApiKey: customKey,
-            licenseKey: licenseKey
-          })
-        });
-
-        const json = await res.json();
-
-        if (!res.ok) {
-          if (res.status === 429) {
-            openUpgradeModal();
-          }
-          throw new Error(json.message || json.error || 'Generation failed');
-        }
-
-        currentResponseData = json.data;
-        platformCacheStore[cacheKey] = json.data;
-
-        if (json.data.custom_css_theme) {
-          const t = json.data.custom_css_theme;
-          customThemeStyleCss = {
-            bg: t.background,
-            titleColor: t.titleColor,
-            subtitleColor: t.subtitleColor,
-            border: t.cardBorder,
-            metricBg: t.metricBg,
-            quoteBg: t.quoteBg,
-            quoteBorder: t.quoteBorder
-          };
-        }
-
-        renderGeneratedResults(json.data);
-        showToast(`✨ Generated Fresh Visual Suite for ${selectedPlatform}!`);
-        fetchQuota();
-        trackAnalyticsEvent('ai_generated_success', { platform: selectedPlatform, mode: currentMode });
-
-      } catch (e) {
-        console.error(e);
-        showToast(e.message || 'API call failed.', true);
-      } finally {
-        if (btn) {
-          btn.disabled = false;
-          const dict = I18N_DICT[selectedLang] || I18N_DICT.en;
-          const label = (currentMode === 'single') ? dict.generateBtnSingle : dict.generateBtnCarousel;
-          btn.innerHTML = `<i data-lucide="wand-2" class="w-4 h-4"></i> <span id="generateBtnText">${label}</span>`;
-        }
-        lucide.createIcons();
-      }
-    }
-
-    function renderGeneratedResults(data) {
-      document.getElementById('outputContainer').classList.remove('hidden');
-      switchTab(selectedPlatform);
-
-      const watermarkText = isProUser ? (data.footer_text || '⚡️ Cardify Pro') : '⚡️ Made with Cardify.ai';
-      const slides = data.slides || [];
-      renderSlides(slides, watermarkText);
+    function highlightKeywords(str) {
+      if (!str) return '';
+      return str.replace(/(\$\d+[\mathbf{kKmM}]*|\d+x|\d+%\b|\d+个|\d+法则)/gi, '<span class="px-1.5 py-0.5 rounded bg-emerald-400/20 text-emerald-300 border border-emerald-400/40 font-bold inline-block mx-0.5">$1</span>');
     }
 
     function renderSlides(slides, footerText = '⚡️ Made with Cardify.ai') {
@@ -1689,11 +1523,11 @@
 
         const versusHtml = (slide.diagram_type === 'versus' || slide.versus_comparison) ? `
           <div class="my-3 grid grid-cols-2 gap-2 text-[11px]">
-            <div class="p-2.5 rounded-xl bg-red-950/40 border border-red-500/30 text-red-200">
+            <div class="p-2.5 rounded-xl bg-red-950/50 border border-red-500/40 text-red-200 backdrop-blur-md shadow-md">
               <div class="font-bold text-[10px] uppercase text-red-400 mb-1 flex items-center gap-1">❌ Old Mistake Trap</div>
               <div>${slide.versus_comparison?.old_way || 'Generic text block with zero hook'}</div>
             </div>
-            <div class="p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-200">
+            <div class="p-2.5 rounded-xl bg-emerald-950/50 border border-emerald-500/40 text-emerald-200 backdrop-blur-md shadow-md">
               <div class="font-bold text-[10px] uppercase text-emerald-400 mb-1 flex items-center gap-1">⚡️ Viral Breakthrough</div>
               <div>${slide.versus_comparison?.new_way || 'Visual Infographic Diagram + Data ROI'}</div>
             </div>
@@ -1701,17 +1535,17 @@
         ` : '';
 
         const metricHtml = (slide.key_metric && slide.key_metric.value) ? `
-          <div class="card-metric-box bg-gray-900/80 border border-gray-800 rounded-xl p-3 text-center mb-3">
-            <div class="card-metric-value text-xl font-extrabold font-outfit">${slide.key_metric.value}</div>
-            <div class="card-metric-label text-[10px] opacity-75 mt-0.5">${slide.key_metric.label || ''}</div>
+          <div class="card-metric-box backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-3.5 text-center mb-3 shadow-lg">
+            <div class="card-metric-value text-3xl font-black font-outfit text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 tracking-tight">${slide.key_metric.value}</div>
+            <div class="card-metric-label text-[10px] uppercase font-bold tracking-wider opacity-90 mt-1">${slide.key_metric.label || ''}</div>
           </div>
         ` : '';
 
         const bulletsHtml = (Array.isArray(slide.bullet_points) && slide.bullet_points.length > 0) ? `
           <div class="flex flex-col gap-2 mb-3">
             ${slide.bullet_points.map((b, i) => `
-              <div class="flex items-start gap-2 text-xs opacity-90">
-                <span class="card-bullet-num w-4 h-4 rounded-full text-[10px] flex items-center justify-center font-bold flex-shrink-0 mt-0.5">${i+1}</span>
+              <div class="flex items-start gap-2 text-xs opacity-95">
+                <span class="card-bullet-num w-4.5 h-4.5 rounded-full text-[10px] flex items-center justify-center font-bold flex-shrink-0 mt-0.5 bg-purple-500/20 text-purple-300 border border-purple-500/40">${i+1}</span>
                 <div>
                   <strong class="card-bullet-title">${b.point_title || ''}:</strong> <span class="card-bullet-desc">${b.point_desc || ''}</span>
                 </div>
@@ -1721,25 +1555,27 @@
         ` : '';
 
         const quoteHtml = slide.takeaway_quote ? `
-          <div class="card-quote-box rounded-xl p-3 mb-3">
-            <p class="card-quote-text text-xs italic leading-relaxed">"${slide.takeaway_quote}"</p>
+          <div class="card-quote-box rounded-xl p-3.5 mb-3 bg-purple-950/40 border border-purple-500/30 backdrop-blur-sm shadow-sm">
+            <p class="card-quote-text text-xs italic leading-relaxed font-medium"><span class="text-purple-400 font-bold text-sm">“</span>${slide.takeaway_quote}<span class="text-purple-400 font-bold text-sm">”</span></p>
           </div>
         ` : '';
 
         const flowHtml = (slide.diagram_type === 'flow' && Array.isArray(slide.bullet_points)) ? `
           <div class="my-3 flex flex-col gap-2">
             ${slide.bullet_points.map((b, i) => `
-              <div class="flex items-center gap-2 text-xs p-2.5 rounded-xl bg-purple-950/30 border border-purple-500/20">
-                <span class="w-5 h-5 rounded-full bg-purple-600 text-white text-[10px] font-extrabold flex items-center justify-center flex-shrink-0">Step ${i+1}</span>
+              <div class="flex items-center gap-2 text-xs p-2.5 rounded-xl bg-purple-950/40 border border-purple-500/30 backdrop-blur-md">
+                <span class="w-5 h-5 rounded-full bg-purple-600 text-white text-[10px] font-extrabold flex items-center justify-center flex-shrink-0 shadow-sm">Step ${i+1}</span>
                 <div class="flex-1 font-semibold">${b.point_title || ''}</div>
-                ${i < slide.bullet_points.length - 1 ? '<i data-lucide="chevron-right" class="w-4 h-4 text-purple-400 opacity-60"></i>' : ''}
+                ${i < slide.bullet_points.length - 1 ? '<i data-lucide="chevron-right" class="w-4 h-4 text-purple-400 opacity-75"></i>' : ''}
               </div>
             `).join('')}
           </div>
         ` : '';
 
+        const highlightedTitle = highlightKeywords(slide.title || '');
+
         slideDiv.innerHTML = `
-          <div id="card-${idx + 1}" class="theme-${currentPreset} rounded-2xl p-6 min-h-[440px] flex flex-col justify-between relative overflow-hidden transition-all duration-300 shadow-2xl border border-white/10">
+          <div id="card-${idx + 1}" class="theme-${currentPreset} rounded-2xl p-6 min-h-[460px] flex flex-col justify-between relative overflow-hidden transition-all duration-300 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.85)] border border-white/15 ring-1 ring-white/10">
             <div>
               <!-- macOS Window Control Header Bar -->
               <div class="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
@@ -1748,11 +1584,11 @@
                   <span class="w-3 h-3 rounded-full bg-[#ffbd2e] inline-block shadow-sm"></span>
                   <span class="w-3 h-3 rounded-full bg-[#27c93f] inline-block shadow-sm"></span>
                 </div>
-                <span class="text-[10px] font-mono opacity-50 tracking-wider font-bold uppercase">Cardify Studio</span>
+                <span class="text-[10px] font-mono opacity-60 tracking-wider font-extrabold uppercase text-purple-300">Cardify Studio</span>
               </div>
 
               <div class="card-subtitle text-[10px] font-bold uppercase tracking-widest opacity-75 mb-2">${slide.subtitle || '🔥 HIGHLIGHTS'}</div>
-              <h3 class="card-title text-lg font-extrabold font-outfit leading-snug mb-3">${slide.title || ''}</h3>
+              <h3 class="card-title text-lg font-extrabold font-outfit leading-snug mb-3">${highlightedTitle}</h3>
               ${versusHtml}
               ${flowHtml}
               ${metricHtml}
