@@ -3387,6 +3387,19 @@
       }
     }
 
+    function copyFirstCommentContent() {
+      const shareUrl = window.location.origin + '/#d=demo';
+      let commentText = '';
+      if (currentResponseData && currentResponseData.linkedin_comment) {
+        commentText = currentResponseData.linkedin_comment.replace('[LIVE_LINK]', shareUrl);
+      } else {
+        commentText = `👉 Here is the interactive 60FPS H5 deck & 1-Click SOP: ${shareUrl}\n\n💬 Comment 'GROWTH' below and I'll DM you the unredacted PDF!`;
+      }
+      navigator.clipboard.writeText(commentText).then(() => {
+        showToast('💬 LinkedIn 1st Comment Lead Magnet copied to clipboard!');
+      });
+    }
+
     function copyCurrentTabContent() {
       const area = document.getElementById('tabContentArea');
       if (!area.innerText) return;

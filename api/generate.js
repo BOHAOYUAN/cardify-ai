@@ -148,7 +148,8 @@ Your task is to take raw user text and output ONLY valid JSON according to the s
   "tags": ["string"],
   "footer_text": "string",
   "twitter_thread": ["Tweet 1", "Tweet 2", "Tweet 3"],
-  "linkedin_post": "Professional LinkedIn post...",
+  "linkedin_post": "Professional LinkedIn post ending with: \n\n📌 Want the interactive checklist & PDF template? Check the 1st comment below! 👇",
+  "linkedin_comment": "👉 Here is the interactive H5 deck & 1-Click SOP: [LIVE_LINK]\n\n💬 Comment 'GROWTH' below and I'll DM you the unredacted PDF!",
   "xiaohongshu_post": { "title": "爆款标题", "content": "爆款内容" },
   "instagram_caption": "Instagram caption..."
 }`;
