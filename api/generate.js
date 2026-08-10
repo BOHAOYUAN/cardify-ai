@@ -1,7 +1,8 @@
 
-async function resolveUrlContentIfPresent(inputText) {
-  if (!inputText || typeof inputText !== 'string') return inputText;
-  const urlMatch = inputText.match(/(https?:\/\/[^\s]+)/);
+async function resolveUrlContentIfPresent(inputText, ctaValue) {
+  const textToScan = ((inputText || '') + ' ' + (ctaValue || '')).trim();
+  if (!textToScan) return inputText || '';
+  const urlMatch = textToScan.match(/(https?:\/\/[^\s]+)/);
   if (!urlMatch) return inputText;
 
   const targetUrl = urlMatch[1].trim();
@@ -15,28 +16,37 @@ async function resolveUrlContentIfPresent(inputText) {
         const data = await res.json();
         const title  = data.title || 'YouTube Video';
         const author = data.author_name || 'YouTube Channel';
-        return `[EXACT YOUTUBE VIDEO TITLE]: ${title}\n[CHANNEL AUTHOR]: ${author}\n\n[USER INPUT]: ${inputText}\n\nCRITICAL INSTRUCTION FOR AI: The user provided a YouTube video titled "${title}". You MUST strictly generate slides specifically analyzing and explaining the exact video title subject ("${title}"). For example, if the video is about "公众表达与背稿优缺点", all slides MUST specifically discuss public speaking and script vs no-script techniques. Do NOT generate generic efficiency or growth hacking slides.`;
+        return `[EXACT YOUTUBE VIDEO TITLE]: ${title}\n[CHANNEL AUTHOR]: ${author}\n\n[USER INPUT]: ${inputText}\n\nCRITICAL INSTRUCTION FOR AI: The user provided a YouTube video titled "${title}". You MUST strictly generate slides specifically analyzing and explaining the exact video title subject ("${title}"). Do NOT generate generic efficiency or growth hacking slides.`;
       }
     } catch (_) {}
   }
 
-  // 2. Web Article / Blog URL
+  // 2. Web Article / Blog URL via Jina Reader Engine (High-Precision Web Scraper)
+  try {
+    const jinaUrl = 'https://r.jina.ai/' + targetUrl;
+    const res = await fetch(jinaUrl, { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' } });
+    if (res.ok) {
+      const markdown = await res.text();
+      if (markdown && markdown.length > 200 && !markdown.includes('Target URL returned error')) {
+        const titleMatch = markdown.match(/Title:\s*(.+)/i);
+        const title = titleMatch ? titleMatch[1].trim() : 'Web Article';
+        const slicedContent = markdown.slice(0, 12000);
+        return `[ARTICLE TITLE]: ${title}\n[SOURCE URL]: ${targetUrl}\n\n[EXTRACTED ARTICLE CONTENT]:\n${slicedContent}\n\nCRITICAL INSTRUCTION FOR AI: You MUST strictly generate slides specifically analyzing and summarizing the article topic "${title}". All key points, cards, quotes, and takeaways MUST be directly derived from this extracted content. Do NOT generate generic templates.`;
+      }
+    }
+  } catch (_) {}
+
+  // 3. Fallback Raw HTML Parser
   try {
     const res = await fetch(targetUrl, { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' } });
     if (res.ok) {
       const html = await res.text();
       const titleMatch = html.match(/<title[^>]*>(.*?)<\/title>/i);
       const title = titleMatch ? titleMatch[1].replace(/<[^>]+>/g, '').trim() : 'Web Article';
-      const textBlocks = [];
-      const regex = /<(p|h1|h2|h3)[^>]*>(.*?)<\/\1>/gi;
-      let m;
-      while ((m = regex.exec(html)) !== null) {
-        const txt = m[2].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
-        if (txt.length > 25) textBlocks.push(txt);
-      }
-      const articleText = textBlocks.join('\n\n').slice(0, 10000);
-      if (articleText.length > 80) {
-        return `[ARTICLE TITLE]: ${title}\n[SOURCE URL]: ${targetUrl}\n\n[ARTICLE CONTENT]:\n${articleText}\n\nCRITICAL INSTRUCTION FOR AI: You MUST strictly generate slides specifically analyzing and summarizing the article topic "${title}". Do NOT generate generic buzzwords.`;
+      const cleanHtml = html.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '').replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
+      const plainText = cleanHtml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 10000);
+      if (plainText.length > 80) {
+        return `[ARTICLE TITLE]: ${title}\n[SOURCE URL]: ${targetUrl}\n\n[ARTICLE CONTENT]:\n${plainText}\n\nCRITICAL INSTRUCTION FOR AI: You MUST strictly generate slides specifically analyzing and summarizing the article topic "${title}".`;
       }
     }
   } catch (_) {}
@@ -344,8 +354,8 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'METHOD_NOT_ALLOWED' });
   }
 
-  const { input_text, target_style, target_lang, mode_preference, platform, preset_hook, custom_theme_prompt, userApiKey, licenseKey } = req.body || {};
-  const resolvedInputText = await resolveUrlContentIfPresent(input_text);
+  const { input_text, cta_value, target_style, target_lang, mode_preference, platform, preset_hook, custom_theme_prompt, userApiKey, licenseKey } = req.body || {};
+  const resolvedInputText = await resolveUrlContentIfPresent(input_text, cta_value);
 
   if (!input_text || typeof input_text !== 'string' || resolvedInputText.trim().length < 2) {
     return res.status(400).json({ error: 'INPUT_TOO_SHORT', message: 'Input text must be at least 2 characters long.' });
