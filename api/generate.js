@@ -152,6 +152,7 @@ Your task is to take raw user text and output ONLY valid JSON according to the s
 - Generate a dynamic CSS Theme based on the user's requested style/prompt.
 - STRICT TOPIC ANCHORING & ACCURACY: The generated carousel deck MUST strictly be anchored to the actual subject matter of the input content (e.g., if the input is about "Public Speaking / Speech without Script vs Scripted Speech", the generated slides MUST specifically discuss public speaking and script vs no script techniques). NEVER fallback to generic business/marketing buzzwords like "Growth Hacking" or "Traditional Marketing" unless the input text is explicitly about growth hacking.
 - CREATIVE EXPANSION & URL REPURPOSING: If the input text is a URL, blog article or video transcript, extract the 5 most valuable insights and construct a structured viral deck.
+- RICH CONTENT DENSITY: Every slide MUST have rich, deep, insightful content. Always include 2-3 detailed bullet points with concrete explanations ('point_desc'), specific examples, data points, or step-by-step guidance rather than sparse 1-line cards.
 - FINAL SLIDE LEAD MAGNET RULE: The final slide of every carousel deck MUST be a Lead Magnet CTA encouraging the reader to comment a keyword (e.g. "GROWTH" or "TEMPLATE") to get the full PDF in their DMs.
 
 ### STRICT OUTPUT RULES
