@@ -47,12 +47,22 @@
     .font-outfit { font-family: 'Outfit', sans-serif; }
     .font-mono-code { font-family: 'Fira Code', monospace; }
     
-    /* Glassmorphism utility */
-    .glass-panel {
-      background: rgba(17, 24, 39, 0.75);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+    /* v7.5 Reel Motion Timeline Keyframes */
+    @keyframes reelTitleReveal {
+      0% { opacity: 0; transform: translateY(14px) scale(0.96); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes reelMetricPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.08); filter: drop-shadow(0 0 16px rgba(16, 185, 129, 0.7)); }
+      100% { transform: scale(1); }
+    }
+
+    .is-recording-reel .card-title {
+      animation: reelTitleReveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    }
+    .is-recording-reel .card-metric-value {
+      animation: reelMetricPulse 1.8s ease-in-out infinite !important;
     }
 
     /* Dynamic Themes */
@@ -148,7 +158,7 @@
         <div>
           <span class="text-xl font-extrabold font-outfit tracking-tight text-white flex items-center gap-2">
             Cardify<span class="text-purple-400">.ai</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-500/20 via-purple-500/20 to-indigo-500/20 text-emerald-300 border border-emerald-500/30 animate-pulse">v7.0 Video Studio</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-500/20 via-purple-500/20 to-indigo-500/20 text-emerald-300 border border-emerald-500/30 animate-pulse">v7.5 Cinema Studio</span>
           </span>
         </div>
       </div>
@@ -1658,7 +1668,39 @@
       }
     }
 
-    // v7.0 VIRAL REEL ENGINE: PURE FRONTEND SCREEN-STUDIO STYLE 10s VIDEO EXPORTER
+    // v7.5 AMBIENT LOFI SYNTH AUDIO TRACK GENERATOR (PURE FRONTEND WEB AUDIO API)
+    function createAmbientAudioTrack(durationSec = 4) {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const dest = audioCtx.createMediaStreamDestination();
+
+        // Synthesize an ultra-chill Cmaj7 Lofi Pad Ambient Chord: C4 (261.63Hz), E4 (329.63Hz), G4 (392.00Hz), B4 (493.88Hz)
+        const frequencies = [261.63, 329.63, 392.00, 493.88];
+        frequencies.forEach(freq => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+          // Soft ambient swell envelope
+          gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.07, audioCtx.currentTime + 0.8);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + durationSec);
+
+          osc.connect(gain);
+          gain.connect(dest);
+          osc.start();
+          osc.stop(audioCtx.currentTime + durationSec);
+        });
+
+        return dest.stream.getAudioTracks()[0];
+      } catch (e) {
+        console.warn('Web Audio API synthesis unsupported:', e);
+        return null;
+      }
+    }
+
+    // v7.5 VIRAL REEL ENGINE: PURE FRONTEND SCREEN-STUDIO STYLE 10s VIDEO & AUDIO EXPORTER
     async function exportCardVideo() {
       const cardEl = document.querySelector('.swiper-slide-active div[id^="card-"]') || document.querySelector('div[id^="card-1"]');
       if (!cardEl) {
@@ -1666,9 +1708,12 @@
         return;
       }
 
-      showToast('🎬 Recording Screen Studio 10s Reel Video...');
+      showToast('🎬 Recording Screen Studio Reel Video with Ambient BGM...');
       const btn = document.getElementById('btnExportVideo');
       if (btn) btn.disabled = true;
+
+      // Trigger 10s Motion Timeline CSS Class
+      cardEl.classList.add('is-recording-reel');
 
       try {
         const canvas = document.createElement('canvas');
@@ -1681,7 +1726,16 @@
         canvas.width = width;
         canvas.height = height;
 
-        const stream = canvas.captureStream(30);
+        // Capture Video Stream at 30fps
+        const videoTrack = canvas.captureStream(30).getVideoTracks()[0];
+        
+        // Synthesize Web Audio Ambient Chill BGM Track
+        const audioTrack = createAmbientAudioTrack(4);
+
+        const tracks = [videoTrack];
+        if (audioTrack) tracks.push(audioTrack);
+
+        const combinedStream = new MediaStream(tracks);
         const recordedChunks = [];
         
         let mimeType = 'video/webm;codecs=vp9';
@@ -1689,12 +1743,13 @@
           mimeType = 'video/webm';
         }
 
-        const mediaRecorder = new MediaRecorder(stream, { mimeType });
+        const mediaRecorder = new MediaRecorder(combinedStream, { mimeType });
         mediaRecorder.ondataavailable = (e) => {
           if (e.data.size > 0) recordedChunks.push(e.data);
         };
 
         mediaRecorder.onstop = () => {
+          cardEl.classList.remove('is-recording-reel');
           const blob = new Blob(recordedChunks, { type: mimeType });
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
@@ -1704,18 +1759,18 @@
           a.click();
           document.body.removeChild(a);
           URL.revokeObjectURL(url);
-          showToast('✨ 10s Visual Reel Video Exported Successfully!');
+          showToast('✨ Screen Studio Reel Video (with Audio) Exported Successfully!');
           if (btn) btn.disabled = false;
         };
 
         mediaRecorder.start();
 
-        // 10-Second Screen Studio Animation Frame Loop
-        const totalFrames = 90; // 3 seconds @ 30fps smooth reel
+        // Screen Studio Camera Pan & Motion Animation Frame Loop
+        const totalFrames = 110; // ~3.6s @ 30fps smooth reel
         for (let frame = 0; frame <= totalFrames; frame++) {
           const progress = frame / totalFrames;
           
-          // Animate card canvas with html2canvas snapshot
+          // Capture current animated frame from DOM
           const snapCanvas = await html2canvas(cardEl, {
             scale: 2,
             useCORS: true,
@@ -1725,8 +1780,8 @@
 
           ctx.clearRect(0, 0, width, height);
 
-          // Draw Canvas Frame with smooth scale-up zoom & glow
-          const scale = 1 + Math.sin(progress * Math.PI) * 0.04;
+          // Screen Studio 3D Camera Push & Breathing Zoom
+          const scale = 1 + Math.sin(progress * Math.PI) * 0.05;
           const drawW = width * scale;
           const drawH = height * scale;
           const drawX = (width - drawW) / 2;
@@ -1734,8 +1789,8 @@
 
           ctx.drawImage(snapCanvas, drawX, drawY, drawW, drawH);
           
-          // Add Screen Studio Neon Sweep Overlay Progress
-          ctx.fillStyle = 'rgba(139, 92, 246, 0.25)';
+          // Screen Studio Neon Sweep Overlay Progress Bar
+          ctx.fillStyle = 'rgba(139, 92, 246, 0.35)';
           ctx.fillRect(0, height - 8, width * progress, 8);
 
           await new Promise(r => setTimeout(r, 33)); // ~30fps frame pacing
@@ -1745,6 +1800,7 @@
 
       } catch (e) {
         console.error(e);
+        cardEl.classList.remove('is-recording-reel');
         showToast('Video recording failed. Downloading HD snapshot fallback instead...', true);
         exportCurrentCard();
         if (btn) btn.disabled = false;
