@@ -326,6 +326,23 @@
           </div>
         </div>
 
+        
+        <!-- Lead Gen / CTA Setup -->
+        <div class="p-3.5 rounded-xl bg-gray-950 border border-amber-900/40 flex flex-col gap-2.5">
+          <label class="text-xs font-bold text-amber-300 flex items-center justify-between">
+            <span class="flex items-center gap-1.5"><i data-lucide="magnet" class="w-4 h-4"></i> Live Link Lead Gen CTA</span>
+            <span class="text-[10px] text-amber-300 bg-amber-900/40 px-2 py-0.5 rounded-full font-mono border border-amber-700/40">PLG Feature</span>
+          </label>
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
+            <select id="ctaType" onchange="window.handleCtaChange && window.handleCtaChange()" class="sm:col-span-4 w-full bg-gray-900 border border-gray-800 rounded-md px-3 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-amber-500 transition-all">
+              <option value="none">Disabled</option>
+              <option value="email">Email Micro-Form</option>
+              <option value="calendly">Calendly Modal</option>
+            </select>
+            <input type="text" id="ctaValue" placeholder="Webhook URL or Calendly Link..." class="sm:col-span-8 w-full bg-gray-900 border border-gray-800 rounded-md px-3 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-amber-500 transition-all hidden">
+          </div>
+        </div>
+
         <!-- Custom Key Accordion -->
         <div class="pt-1">
           <button onclick="toggleApiKeyInput()" class="w-full flex items-center justify-between bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-xs text-gray-400 hover:text-gray-200 transition-all">
@@ -1766,7 +1783,60 @@
       if (container && cards[currentPresenterIndex]) {
         const targetCard = cards[currentPresenterIndex].querySelector('div[id^="card-"]');
         if (targetCard) {
-          container.innerHTML = targetCard.outerHTML;
+          
+      // Inject Lead Gen CTA if on last slide
+      let ctaHtml = '';
+      let scriptToRun = null;
+      if (currentPresenterIndex === cards.length - 1 && currentResponseData.ctaType && currentResponseData.ctaType !== 'none') {
+        if (currentResponseData.ctaType === 'email') {
+          ctaHtml = `
+            <div class="absolute -bottom-16 left-0 right-0 w-full animate-slide-up-fade">
+              <div class="p-4 bg-gray-900/95 border border-amber-500/50 rounded-2xl flex flex-col gap-3 shadow-[0_0_30px_rgba(245,158,11,0.15)] backdrop-blur-xl">
+                <div class="text-xs font-bold text-amber-400 flex items-center justify-center gap-1.5">
+                  <i data-lucide="gift" class="w-4 h-4"></i> Get the Full SOP / Cheat Sheet
+                </div>
+                <div class="flex items-center gap-2" id="leadForm">
+                  <input type="email" id="leadEmailInput" placeholder="Enter your best email..." class="flex-1 bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
+                  <button id="leadSubmitBtn" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-gray-950 font-bold text-xs transition-all glow-amber shadow-lg shadow-amber-500/20 whitespace-nowrap">
+                    Send Me Access
+                  </button>
+                </div>
+                <div id="leadSuccess" class="hidden text-xs text-emerald-400 font-bold text-center py-2 animate-fade-in">
+                  ✅ Sent! Check your inbox shortly.
+                </div>
+              </div>
+            </div>
+          `;
+          scriptToRun = () => {
+            const btn = document.getElementById('leadSubmitBtn');
+            if(btn) btn.onclick = async () => {
+              const email = document.getElementById('leadEmailInput').value;
+              const wh = currentResponseData.ctaValue;
+              btn.innerText = 'Sending...';
+              btn.disabled = true;
+              await submitLeadEmail(wh, email);
+              document.getElementById('leadForm').classList.add('hidden');
+              document.getElementById('leadSuccess').classList.remove('hidden');
+              showToast('✨ Success!');
+            };
+          };
+        } else if (currentResponseData.ctaType === 'calendly') {
+          const calUrl = currentResponseData.ctaValue || 'https://calendly.com/';
+          ctaHtml = `
+            <div class="absolute -bottom-16 left-0 right-0 w-full animate-slide-up-fade flex justify-center">
+              <button onclick="openCalendlyModal('${calUrl}')" class="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm transition-all shadow-[0_0_30px_rgba(79,70,229,0.3)] hover:scale-105 flex items-center gap-2 border border-blue-400/30">
+                <i data-lucide="calendar" class="w-5 h-5 text-blue-200"></i> Book a Demo Call ⚡️
+              </button>
+            </div>
+          `;
+        }
+      }
+
+      container.innerHTML = `<div class="relative">${targetCard.outerHTML}${ctaHtml}</div>`;
+      
+      // Execute any attached script (for email bind)
+      if (scriptToRun) setTimeout(scriptToRun, 50);
+
         }
       }
       if (progress) {
@@ -1806,6 +1876,59 @@
       window.removeEventListener('keydown', handlePresenterKeydown);
     }
 
+    
+    function handleCtaChange() {
+      const type = document.getElementById('ctaType').value;
+      const input = document.getElementById('ctaValue');
+      if (type === 'none') {
+        input.classList.add('hidden');
+        input.value = '';
+      } else {
+        input.classList.remove('hidden');
+        if (type === 'email') input.placeholder = 'Webhook URL (e.g. Make.com, Feishu)';
+        if (type === 'calendly') input.placeholder = 'Calendly URL (e.g. https://calendly.com/...)';
+      }
+    }
+    
+    async function submitLeadEmail(webhookUrl, email) {
+      if (!email || !email.includes('@')) return false;
+      if (!webhookUrl) {
+        // Fallback to mailto
+        window.location.href = `mailto:?subject=New Lead from Live Link&body=Email: ${email}`;
+        return true;
+      }
+      try {
+        await fetch(webhookUrl, { 
+          method: 'POST', 
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, timestamp: new Date().toISOString() })
+        });
+        return true;
+      } catch (e) {
+        console.error('Webhook failed', e);
+        // Fallback
+        window.location.href = `mailto:?subject=New Lead from Live Link&body=Email: ${email}`;
+        return true;
+      }
+    }
+
+    function openCalendlyModal(url) {
+      const existing = document.getElementById('calendlyModal');
+      if (existing) existing.remove();
+      const m = document.createElement('div');
+      m.id = 'calendlyModal';
+      m.className = 'fixed inset-0 z-[60] bg-black/90 flex flex-col items-center justify-center p-4 backdrop-blur-sm animate-fade-in';
+      m.innerHTML = `
+        <div class="w-full max-w-4xl h-[85vh] bg-white rounded-2xl overflow-hidden relative shadow-2xl">
+          <button onclick="document.getElementById('calendlyModal').remove()" class="absolute top-4 right-4 z-10 w-8 h-8 bg-gray-900 rounded-full flex items-center justify-center text-white hover:bg-gray-800 transition-all">
+            ✕
+          </button>
+          <iframe src="${url}" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+      `;
+      document.body.appendChild(m);
+    }
+
     // v6.9 DYNAMIC CLICKABLE ULTRA-SHORT LIVE LINK ENGINE
     async function copyShareableLiveLink() {
       if (!currentResponseData || !currentResponseData.slides) {
@@ -1818,7 +1941,9 @@
       let shareUrl = '';
       const slimPayload = {
         slides: currentResponseData.slides,
-        preset: currentPreset
+        preset: currentPreset,
+        ctaType: document.getElementById('ctaType')?.value || 'none',
+        ctaValue: document.getElementById('ctaValue')?.value || ''
       };
 
       try {
