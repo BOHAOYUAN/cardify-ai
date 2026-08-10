@@ -400,23 +400,28 @@
         </div>
 
         <!-- Commercial High-DPI & Multi-Format Export Toolbar -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">
-          <button id="btnCopyImg" onclick="copyCardImageToClipboard()" title="Copy current HD slide image directly to clipboard" class="py-2.5 px-2 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs font-semibold text-gray-200 flex items-center justify-center gap-1 transition-all">
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 mt-2">
+          <button id="btnCopyImg" onclick="copyCardImageToClipboard()" title="Copy current HD slide image directly to clipboard" class="py-2.5 px-1.5 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs font-semibold text-gray-200 flex items-center justify-center gap-1 transition-all">
             <i data-lucide="copy" class="w-3.5 h-3.5 text-purple-400"></i>
             <span id="txtCopyImgBtn">📋 Copy Image</span>
           </button>
 
-          <button id="btnExportCurrent" onclick="exportCurrentCard()" title="Export high resolution 3x Retina PNG" class="py-2.5 px-2 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs font-semibold text-gray-200 flex items-center justify-center gap-1 transition-all">
+          <button id="btnExportCurrent" onclick="exportCurrentCard()" title="Export high resolution 3x Retina PNG" class="py-2.5 px-1.5 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs font-semibold text-gray-200 flex items-center justify-center gap-1 transition-all">
             <i data-lucide="image" class="w-3.5 h-3.5 text-purple-400"></i>
             <span id="txtExportCurrentBtn">📷 3x HD</span>
           </button>
 
-          <button id="btnExportPdf" onclick="exportLinkedInPdf()" title="Export multi-page PDF for LinkedIn Carousel posts" class="py-2.5 px-2 rounded-xl bg-sky-950/60 hover:bg-sky-900/60 border border-sky-700/50 text-xs font-semibold text-sky-300 flex items-center justify-center gap-1 transition-all">
+          <button id="btnShareLink" onclick="copyShareableLiveLink()" title="Copy dynamic clickable H5 Deck link with viral attribution" class="py-2.5 px-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 border border-purple-400/50 text-xs font-bold text-white flex items-center justify-center gap-1 transition-all shadow-md">
+            <i data-lucide="share-2" class="w-3.5 h-3.5 text-white"></i>
+            <span>🔗 Live Link</span>
+          </button>
+
+          <button id="btnExportPdf" onclick="exportLinkedInPdf()" title="Export multi-page PDF for LinkedIn Carousel posts" class="py-2.5 px-1.5 rounded-xl bg-sky-950/60 hover:bg-sky-900/60 border border-sky-700/50 text-xs font-semibold text-sky-300 flex items-center justify-center gap-1 transition-all">
             <i data-lucide="file-text" class="w-3.5 h-3.5 text-sky-400"></i>
             <span id="txtExportPdfBtn">📄 PDF Slide</span>
           </button>
 
-          <button id="btnExportAll" onclick="exportAllCards()" title="Batch export all carousel slides" class="py-2.5 px-2 rounded-xl bg-purple-900/50 hover:bg-purple-800/50 border border-purple-700/50 text-xs font-semibold text-purple-200 flex items-center justify-center gap-1 transition-all">
+          <button id="btnExportAll" onclick="exportAllCards()" title="Batch export all carousel slides" class="py-2.5 px-1.5 rounded-xl bg-purple-900/50 hover:bg-purple-800/50 border border-purple-700/50 text-xs font-semibold text-purple-200 flex items-center justify-center gap-1 transition-all">
             <i data-lucide="layers" class="w-3.5 h-3.5 text-purple-300"></i>
             <span id="exportAllBtnText">📦 Package All</span>
           </button>
@@ -1586,6 +1591,58 @@
       if (modal) modal.classList.add('hidden');
       window.removeEventListener('keydown', handlePresenterKeydown);
     }
+
+    // v6.9 DYNAMIC CLICKABLE LIVE WEB DECK ENGINE (PURE FRONTEND HASH 0-COST LINK)
+    function copyShareableLiveLink() {
+      if (!currentResponseData || !currentResponseData.slides) {
+        showToast('Please generate cards first before sharing!', true);
+        return;
+      }
+
+      try {
+        const jsonStr = JSON.stringify(currentResponseData);
+        const encodedHash = btoa(unescape(encodeURIComponent(jsonStr)));
+        const shareUrl = `${window.location.origin}${window.location.pathname}#deck=${encodedHash}`;
+
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          showToast('✨ Dynamic Clickable H5 Live Deck Link Copied! (Ready for Twitter/LinkedIn Share)');
+          trackAnalyticsEvent('share_live_link_copied', { platform: selectedPlatform });
+        }).catch(err => {
+          console.error(err);
+          showToast('Failed to copy link to clipboard', true);
+        });
+      } catch (e) {
+        console.error(e);
+        showToast('Failed to encode share link', true);
+      }
+    }
+
+    function checkUrlHashForLiveDeck() {
+      if (!window.location.hash || !window.location.hash.startsWith('#deck=')) return;
+
+      try {
+        const rawHash = window.location.hash.slice(6);
+        const jsonStr = decodeURIComponent(escape(atob(rawHash)));
+        const data = JSON.parse(jsonStr);
+
+        if (data && data.slides && data.slides.length > 0) {
+          currentResponseData = data;
+          renderGeneratedResults(data);
+
+          // Auto-trigger Presenter Mode for incoming viral visitors!
+          setTimeout(() => {
+            openPresenterMode();
+            showToast('🌐 Viewing Shared Live Visual Deck! Click ESC or Exit to edit.');
+          }, 800);
+        }
+      } catch (e) {
+        console.warn('Failed to parse share deck URL hash:', e);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      checkUrlHashForLiveDeck();
+    });
 
     async function handlePdfUploadFileObj(file) {
       if (!file || file.type !== 'application/pdf') {
