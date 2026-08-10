@@ -1723,8 +1723,10 @@
       document.getElementById('charCount').innerText = `${text.length} / 15,000`;
     }
 
-    // v6.8 LIGHTWEIGHT PRESENTER DECK MODE (PURE FRONTEND 0-COST FULLSCREEN)
+    
+    // v8.5 STANDALONE LUXURY H5 DECK ENGINE (PHASE 1)
     let currentPresenterIndex = 0;
+
     function openPresenterMode() {
       const wrapper = document.getElementById('swiperWrapper');
       const cards = wrapper ? wrapper.querySelectorAll('.swiper-slide') : [];
@@ -1739,37 +1741,61 @@
       if (!modal) {
         modal = document.createElement('div');
         modal.id = 'presenterModal';
-        modal.className = 'fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-between p-8 backdrop-blur-2xl transition-all duration-300';
+        modal.className = 'fixed inset-0 z-50 bg-slate-950 flex flex-col items-center justify-center p-0 md:p-6 overflow-hidden select-none animate-fade-in';
         document.body.appendChild(modal);
       }
 
       modal.innerHTML = `
-        <div class="w-full flex items-center justify-between max-w-4xl">
-          <div class="flex items-center gap-2">
-            <span class="text-xs font-mono text-purple-400 font-bold uppercase tracking-wider">🖥️ CARDIFY PRESENTER DECK</span>
-            <span class="text-[10px] bg-purple-950 text-purple-300 px-2 py-0.5 rounded border border-purple-800 font-mono">Use ← → Arrows or Space to navigate</span>
-          </div>
-          <button onclick="closePresenterMode()" class="px-3 py-1 rounded-lg bg-gray-900 hover:bg-gray-800 text-gray-300 text-xs font-bold border border-gray-800 flex items-center gap-1">
-            <i data-lucide="x" class="w-4 h-4"></i> ESC Exit
-          </button>
+        <!-- Glassmorphism Ambient Glow -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+          <div id="presenterAmbientGlow" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] rounded-full blur-[110px] opacity-40 transition-all duration-700 bg-gradient-to-tr from-purple-600 via-indigo-600 to-amber-500"></div>
         </div>
 
-        <div id="presenterCardContainer" class="w-full max-w-xl my-auto flex items-center justify-center transition-all duration-300 transform scale-105">
+        <!-- Standalone H5 Active Card Container -->
+        <div id="presenterCardContainer" class="w-full max-w-lg md:max-w-xl my-auto z-10 flex flex-col items-center justify-center px-4 transition-all duration-300 transform scale-100 sm:scale-105">
           <!-- Active Card Cloned Here -->
         </div>
 
-        <div class="w-full max-w-4xl flex items-center justify-between text-xs text-gray-400">
-          <button onclick="prevPresenterSlide()" class="px-4 py-2 rounded-xl bg-purple-950/60 border border-purple-500/40 text-purple-200 font-bold hover:bg-purple-900/80 transition-all">← Previous</button>
-          <span id="presenterProgress" class="font-mono text-purple-300 font-bold">1 / ${cards.length}</span>
-          <button onclick="nextPresenterSlide()" class="px-4 py-2 rounded-xl bg-purple-950/60 border border-purple-500/40 text-purple-200 font-bold hover:bg-purple-900/80 transition-all">Next →</button>
-        </div>
+        <!-- Micro-Motion Pagination Dots -->
+        <div id="presenterDotsContainer" class="z-10 mb-6 md:mb-4 flex items-center gap-2"></div>
+
+        <!-- Floating PLG Co-Branding Badge -->
+        <a href="/" target="_blank" title="Create your own B2B Carousel with Cardify.ai" class="z-20 fixed bottom-4 right-4 px-3.5 py-1.5 rounded-full bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-slate-700/80 text-[11px] font-mono shadow-2xl transition-all hover:scale-105 flex items-center gap-1.5 backdrop-blur-md">
+          <span class="text-amber-400">⚡</span> Interactive Carousel <span class="text-purple-400 font-bold">powered by Cardify.ai</span>
+        </a>
       `;
 
       modal.classList.remove('hidden');
+
+      // Bind Touch Swipe Gestures for Mobile
+      let touchStartX = 0;
+      let touchStartY = 0;
+      modal.ontouchstart = (e) => {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      };
+      modal.ontouchend = (e) => {
+        const diffX = e.changedTouches[0].clientX - touchStartX;
+        const diffY = e.changedTouches[0].clientY - touchStartY;
+        if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+          if (diffX < 0) nextPresenterSlide();
+          else prevPresenterSlide();
+        }
+      };
+
       updatePresenterCard();
 
       window.addEventListener('keydown', handlePresenterKeydown);
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function goToPresenterSlide(index) {
+      const wrapper = document.getElementById('swiperWrapper');
+      const cards = wrapper ? wrapper.querySelectorAll('.swiper-slide') : [];
+      if (index >= 0 && index < cards.length) {
+        currentPresenterIndex = index;
+        updatePresenterCard();
+      }
     }
 
     function updatePresenterCard() {
@@ -1778,69 +1804,73 @@
       if (!cards || cards.length === 0) return;
 
       const container = document.getElementById('presenterCardContainer');
-      const progress = document.getElementById('presenterProgress');
 
       if (container && cards[currentPresenterIndex]) {
         const targetCard = cards[currentPresenterIndex].querySelector('div[id^="card-"]');
         if (targetCard) {
-          
-      // Inject Lead Gen CTA if on last slide
-      let ctaHtml = '';
-      let scriptToRun = null;
-      if (currentPresenterIndex === cards.length - 1 && currentResponseData.ctaType && currentResponseData.ctaType !== 'none') {
-        if (currentResponseData.ctaType === 'email') {
-          ctaHtml = `
-            <div class="absolute -bottom-16 left-0 right-0 w-full animate-slide-up-fade">
-              <div class="p-4 bg-gray-900/95 border border-amber-500/50 rounded-2xl flex flex-col gap-3 shadow-[0_0_30px_rgba(245,158,11,0.15)] backdrop-blur-xl">
-                <div class="text-xs font-bold text-amber-400 flex items-center justify-center gap-1.5">
-                  <i data-lucide="gift" class="w-4 h-4"></i> Get the Full SOP / Cheat Sheet
+          // Inject Lead Gen CTA if on last slide
+          let ctaHtml = '';
+          let scriptToRun = null;
+          if (currentPresenterIndex === cards.length - 1 && currentResponseData.ctaType && currentResponseData.ctaType !== 'none') {
+            if (currentResponseData.ctaType === 'email') {
+              ctaHtml = `
+                <div class="absolute -bottom-16 left-0 right-0 w-full animate-slide-up-fade">
+                  <div class="p-4 bg-gray-900/95 border border-amber-500/50 rounded-2xl flex flex-col gap-3 shadow-[0_0_30px_rgba(245,158,11,0.15)] backdrop-blur-xl">
+                    <div class="text-xs font-bold text-amber-400 flex items-center justify-center gap-1.5">
+                      <i data-lucide="gift" class="w-4 h-4"></i> Get the Full SOP / Cheat Sheet
+                    </div>
+                    <div class="flex items-center gap-2" id="leadForm">
+                      <input type="email" id="leadEmailInput" placeholder="Enter your best email..." class="flex-1 bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
+                      <button id="leadSubmitBtn" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-gray-950 font-bold text-xs transition-all glow-amber shadow-lg shadow-amber-500/20 whitespace-nowrap">
+                        Send Me Access
+                      </button>
+                    </div>
+                    <div id="leadSuccess" class="hidden text-xs text-emerald-400 font-bold text-center py-2 animate-fade-in">
+                      ✅ Sent! Check your inbox shortly.
+                    </div>
+                  </div>
                 </div>
-                <div class="flex items-center gap-2" id="leadForm">
-                  <input type="email" id="leadEmailInput" placeholder="Enter your best email..." class="flex-1 bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
-                  <button id="leadSubmitBtn" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-gray-950 font-bold text-xs transition-all glow-amber shadow-lg shadow-amber-500/20 whitespace-nowrap">
-                    Send Me Access
+              `;
+              scriptToRun = () => {
+                const btn = document.getElementById('leadSubmitBtn');
+                if(btn) btn.onclick = async () => {
+                  const email = document.getElementById('leadEmailInput').value;
+                  const wh = currentResponseData.ctaValue;
+                  btn.innerText = 'Sending...';
+                  btn.disabled = true;
+                  await submitLeadEmail(wh, email);
+                  document.getElementById('leadForm').classList.add('hidden');
+                  document.getElementById('leadSuccess').classList.remove('hidden');
+                  showToast('✨ Success!');
+                };
+              };
+            } else if (currentResponseData.ctaType === 'calendly') {
+              const calUrl = currentResponseData.ctaValue || 'https://calendly.com/';
+              ctaHtml = `
+                <div class="absolute -bottom-16 left-0 right-0 w-full animate-slide-up-fade flex justify-center">
+                  <button onclick="openCalendlyModal('${calUrl}')" class="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm transition-all shadow-[0_0_30px_rgba(79,70,229,0.3)] hover:scale-105 flex items-center gap-2 border border-blue-400/30">
+                    <i data-lucide="calendar" class="w-5 h-5 text-blue-200"></i> Book a Demo Call ⚡️
                   </button>
                 </div>
-                <div id="leadSuccess" class="hidden text-xs text-emerald-400 font-bold text-center py-2 animate-fade-in">
-                  ✅ Sent! Check your inbox shortly.
-                </div>
-              </div>
-            </div>
-          `;
-          scriptToRun = () => {
-            const btn = document.getElementById('leadSubmitBtn');
-            if(btn) btn.onclick = async () => {
-              const email = document.getElementById('leadEmailInput').value;
-              const wh = currentResponseData.ctaValue;
-              btn.innerText = 'Sending...';
-              btn.disabled = true;
-              await submitLeadEmail(wh, email);
-              document.getElementById('leadForm').classList.add('hidden');
-              document.getElementById('leadSuccess').classList.remove('hidden');
-              showToast('✨ Success!');
-            };
-          };
-        } else if (currentResponseData.ctaType === 'calendly') {
-          const calUrl = currentResponseData.ctaValue || 'https://calendly.com/';
-          ctaHtml = `
-            <div class="absolute -bottom-16 left-0 right-0 w-full animate-slide-up-fade flex justify-center">
-              <button onclick="openCalendlyModal('${calUrl}')" class="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm transition-all shadow-[0_0_30px_rgba(79,70,229,0.3)] hover:scale-105 flex items-center gap-2 border border-blue-400/30">
-                <i data-lucide="calendar" class="w-5 h-5 text-blue-200"></i> Book a Demo Call ⚡️
-              </button>
-            </div>
-          `;
+              `;
+            }
+          }
+
+          container.innerHTML = `<div class="relative w-full flex items-center justify-center">${targetCard.outerHTML}${ctaHtml}</div>`;
+          
+          if (scriptToRun) setTimeout(scriptToRun, 50);
         }
       }
 
-      container.innerHTML = `<div class="relative">${targetCard.outerHTML}${ctaHtml}</div>`;
-      
-      // Execute any attached script (for email bind)
-      if (scriptToRun) setTimeout(scriptToRun, 50);
-
+      // Update Pagination Dots
+      const dotsContainer = document.getElementById('presenterDotsContainer');
+      if (dotsContainer && cards.length > 0) {
+        let dotsHtml = '';
+        for (let i = 0; i < cards.length; i++) {
+          const isActive = i === currentPresenterIndex;
+          dotsHtml += `<div class="h-2 rounded-full transition-all duration-300 ${isActive ? 'w-6 bg-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.8)] scale-110' : 'w-2 bg-slate-700/80 hover:bg-slate-600'} cursor-pointer" onclick="goToPresenterSlide(${i})"></div>`;
         }
-      }
-      if (progress) {
-        progress.innerText = `${currentPresenterIndex + 1} / ${cards.length}`;
+        dotsContainer.innerHTML = dotsHtml;
       }
     }
 
