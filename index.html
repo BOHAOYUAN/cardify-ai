@@ -528,47 +528,93 @@
 
   <!-- ================= DODO PAYMENTS / PRO MODAL ================= -->
   <div id="upgradeModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-purple-500/30 flex flex-col gap-5 relative">
+    <div class="glass-panel w-full max-w-xl rounded-2xl p-6 border border-purple-500/40 flex flex-col gap-5 relative max-h-[92vh] overflow-y-auto">
       <button onclick="closeUpgradeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
         <i data-lucide="x" class="w-5 h-5"></i>
       </button>
 
       <div class="text-center flex flex-col items-center gap-2">
-        <div class="w-12 h-12 rounded-2xl bg-purple-600/30 border border-purple-500/50 flex items-center justify-center">
-          <i data-lucide="crown" class="w-6 h-6 text-amber-300"></i>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-900/40 border border-purple-500/40 text-purple-300 text-xs font-bold font-mono">
+          <i data-lucide="crown" class="w-3.5 h-3.5 text-amber-300"></i> B2B Thought Leadership & Agency Suite
         </div>
-        <h3 class="text-xl font-bold text-white font-outfit" id="txtModalTitle">Unlock Pro Carousel Package</h3>
-        
-        <!-- Asset Paywall Highlight Banner -->
-        <div class="bg-gradient-to-r from-purple-950/80 to-indigo-950/80 border border-purple-500/30 rounded-xl px-4 py-2.5 text-center my-1 w-full">
-          <div class="text-xs text-gray-400 line-through">Regular Price $19.9 / month</div>
-          <div class="text-lg font-extrabold text-amber-300 font-outfit">Limited Time 50% OFF: $9.9 / month</div>
-          <div class="text-[10px] text-purple-200 mt-0.5">✦ Download full unwatermarked carousel pack + add your custom IP branding!</div>
-        </div>
+        <h3 class="text-2xl font-black text-white font-outfit">Upgrade to Cardify Pro Studio</h3>
+        <p class="text-xs text-gray-300 max-w-md">Turn your posts, articles & PDFs into high-converting 60FPS visual reels & LinkedIn PDF carousels.</p>
 
-        <p class="text-xs text-gray-400" id="txtModalDesc">Unlock unlimited AI generations, custom watermarks, and high-converting viral templates.</p>
+        <!-- Monthly vs Annual Billing Switch -->
+        <div class="flex items-center gap-2 bg-gray-950 p-1 rounded-xl border border-gray-800 mt-2">
+          <button onclick="setBillingCycle('monthly')" id="btnBillingMonthly" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-400 hover:text-white">
+            Monthly
+          </button>
+          <button onclick="setBillingCycle('annual')" id="btnBillingAnnual" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-amber-300 bg-amber-500/20 border border-amber-500/40 shadow-sm flex items-center gap-1">
+            <span>Annual (Save 35% ⚡️)</span>
+          </button>
+        </div>
       </div>
 
-      <div class="bg-gray-950 p-4 rounded-xl border border-gray-800 flex flex-col gap-2.5 text-xs text-gray-300">
-        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span id="txtModalFeat1">Unlimited Single & Carousel Cards</span></div>
-        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span>Download Unwatermarked High-Res Carousel ZIP & PDF</span></div>
-        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span>Custom Personal Branding Watermark / Avatar ID</span></div>
-        <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span id="txtModalFeat3">Priority Groq Llama-3 70B & Gemini Flash</span></div>
+      <!-- Pricing Tier Cards Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <!-- Tier 1: Pro Founder -->
+        <div class="p-4 rounded-xl bg-gray-950 border border-purple-800/60 flex flex-col justify-between gap-4 relative">
+          <div class="flex flex-col gap-2">
+            <div class="text-xs font-bold text-purple-300 uppercase tracking-wider">🚀 Pro Founder</div>
+            <div class="flex items-baseline gap-1">
+              <span class="text-2xl font-black text-white font-outfit" id="priceFounder">$19</span>
+              <span class="text-xs text-gray-400" id="periodFounder">/ mo</span>
+            </div>
+            <p class="text-[11px] text-gray-400 leading-snug">Perfect for founders, consultants & creators looking to dominate LinkedIn & X.</p>
+            
+            <div class="flex flex-col gap-2 text-xs text-gray-300 mt-2 border-t border-gray-900 pt-3">
+              <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> <span>Unlimited 1080p Video Reels</span></div>
+              <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> <span class="font-bold text-sky-300">3-5x Reach LinkedIn PDF Export</span></div>
+              <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> <span>Personal Brand Watermark</span></div>
+              <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> <span>Priority AI Response Speed</span></div>
+            </div>
+          </div>
+
+          <a href="https://dodopayments.com" target="_blank" onclick="trackAnalyticsEvent('checkout_click_founder')" id="linkCheckoutFounder" class="w-full py-2.5 text-center rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition-all shadow-md">
+            Get Pro Founder ($19/mo)
+          </a>
+        </div>
+
+        <!-- Tier 2: Agency & Team (HIGH CONVERTING B2B WHITE-LABEL TIER) -->
+        <div class="p-4 rounded-xl bg-gradient-to-b from-purple-950/70 to-indigo-950/70 border-2 border-amber-500/60 flex flex-col justify-between gap-4 relative shadow-xl shadow-purple-950/50">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-black text-[9px] font-black uppercase tracking-wider shadow-sm">
+            🔥 MOST POPULAR FOR AGENCIES
+          </div>
+
+          <div class="flex flex-col gap-2 pt-1">
+            <div class="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center justify-between">
+              <span>🏢 Agency & Team</span>
+              <span class="text-[10px] text-amber-200 bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-500/40">White-Label Included</span>
+            </div>
+            <div class="flex items-baseline gap-1">
+              <span class="text-2xl font-black text-white font-outfit" id="priceAgency">$49</span>
+              <span class="text-xs text-gray-400" id="periodAgency">/ mo</span>
+            </div>
+            <p class="text-[11px] text-purple-200/80 leading-snug">For agencies & growth teams managing multi-client visual campaigns.</p>
+
+            <div class="flex flex-col gap-2 text-xs text-gray-200 mt-2 border-t border-purple-900/60 pt-3">
+              <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> <span class="font-bold text-amber-300">100% White-Label (No Watermark)</span></div>
+              <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> <span>Custom Client Logo & CI Brand Kit</span></div>
+              <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> <span>Multi-User Team Collaboration</span></div>
+              <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> <span>Priority 60FPS Video Pipeline</span></div>
+            </div>
+          </div>
+
+          <a href="https://dodopayments.com" target="_blank" onclick="trackAnalyticsEvent('checkout_click_agency')" id="linkCheckoutAgency" class="w-full py-2.5 text-center rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-extrabold text-xs transition-all shadow-lg shadow-amber-500/30">
+            Get Agency Plan ($49/mo)
+          </a>
+        </div>
       </div>
 
       <!-- License Key Activation -->
-      <div class="flex flex-col gap-2">
-        <label class="text-xs font-medium text-gray-400" id="txtModalLicLabel">Have a Pro License Key?</label>
+      <div class="flex flex-col gap-2 border-t border-gray-800 pt-3">
+        <label class="text-xs font-medium text-gray-400">Have a License Key?</label>
         <div class="flex gap-2">
           <input type="text" id="licenseKeyInput" placeholder="CARDIFY-PRO-XXXX-XXXX" class="flex-1 bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-xs text-white uppercase font-mono">
-          <button onclick="activateLicense()" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded-lg text-xs font-bold text-white" id="txtModalActivate">Activate</button>
+          <button onclick="activateLicense()" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded-lg text-xs font-bold text-white">Activate</button>
         </div>
       </div>
-
-      <!-- Dodo Payments Buy Link -->
-      <a href="https://dodopayments.com" target="_blank" onclick="trackAnalyticsEvent('dodo_checkout_click')" class="w-full py-3 text-center rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-bold text-sm transition-all shadow-lg shadow-amber-500/20" id="txtModalBuy">
-        Buy Pro License ($9.9/mo)
-      </a>
     </div>
   </div>
 
@@ -606,6 +652,45 @@
   <script>
     let currentMode = 'carousel';
     let selectedSlideCount = 5;
+
+    let currentBillingCycle = 'annual';
+
+    function setBillingCycle(cycle) {
+      currentBillingCycle = cycle;
+      const btnMonthly = document.getElementById('btnBillingMonthly');
+      const btnAnnual  = document.getElementById('btnBillingAnnual');
+      const pFounder   = document.getElementById('priceFounder');
+      const perFounder = document.getElementById('periodFounder');
+      const pAgency    = document.getElementById('priceAgency');
+      const perAgency  = document.getElementById('periodAgency');
+      const lFounder   = document.getElementById('linkCheckoutFounder');
+      const lAgency    = document.getElementById('linkCheckoutAgency');
+
+      if (cycle === 'annual') {
+        if (btnAnnual) btnAnnual.className = 'px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-amber-300 bg-amber-500/20 border border-amber-500/40 shadow-sm';
+        if (btnMonthly) btnMonthly.className = 'px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-400 hover:text-white';
+        
+        if (pFounder) pFounder.innerText = '$149';
+        if (perFounder) perFounder.innerText = '/ year ($12.4/mo)';
+        if (pAgency) pAgency.innerText = '$399';
+        if (perAgency) perAgency.innerText = '/ year ($33.2/mo)';
+
+        if (lFounder) lFounder.innerText = 'Get Pro Founder ($149/yr)';
+        if (lAgency) lAgency.innerText = 'Get Agency Plan ($399/yr)';
+      } else {
+        if (btnMonthly) btnMonthly.className = 'px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-purple-300 bg-purple-600/30 border border-purple-500/40 shadow-sm';
+        if (btnAnnual) btnAnnual.className = 'px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-400 hover:text-white';
+
+        if (pFounder) pFounder.innerText = '$19';
+        if (perFounder) perFounder.innerText = '/ mo';
+        if (pAgency) pAgency.innerText = '$49';
+        if (perAgency) perAgency.innerText = '/ mo';
+
+        if (lFounder) lFounder.innerText = 'Get Pro Founder ($19/mo)';
+        if (lAgency) lAgency.innerText = 'Get Agency Plan ($49/mo)';
+      }
+    }
+
 
     function setTargetSlideCount(count) {
       selectedSlideCount = count;
@@ -1122,6 +1207,45 @@
     // PROMPT THEME PRESETS (was missing - caused all theme buttons to fail)
     // ============================================================
     const PROMPT_THEME_PRESETS = {
+      'LinkedIn Blue & Slate': {
+        bg: 'linear-gradient(135deg, #0b1329 0%, #0f172a 50%, #1e293b 100%)',
+        border: '1px solid rgba(14, 116, 144, 0.6)',
+        titleColor: '#ffffff',
+        subtitleColor: '#38bdf8',
+        metricBg: 'rgba(15, 23, 42, 0.95)',
+        metricValueColor: '#0a66c2',
+        quoteBg: 'rgba(14, 165, 233, 0.12)',
+        quoteBorder: '1px solid rgba(56, 189, 248, 0.5)',
+        quoteTextColor: '#e0f2fe',
+        textColor: '#f8fafc',
+        fontFamily: "'Outfit', sans-serif"
+      },
+      'Dark SaaS Neon': {
+        bg: 'linear-gradient(135deg, #090d16 0%, #0f172a 50%, #1a103c 100%)',
+        border: '1px solid rgba(168, 85, 247, 0.6)',
+        titleColor: '#ffffff',
+        subtitleColor: '#06b6d4',
+        metricBg: 'rgba(15, 23, 42, 0.95)',
+        metricValueColor: '#a855f7',
+        quoteBg: 'rgba(168, 85, 247, 0.12)',
+        quoteBorder: '1px solid rgba(168, 85, 247, 0.5)',
+        quoteTextColor: '#f3e8ff',
+        textColor: '#f1f5f9',
+        fontFamily: "'Outfit', sans-serif"
+      },
+      'Morandi Executive': {
+        bg: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+        border: '1px solid rgba(245, 158, 11, 0.5)',
+        titleColor: '#f8fafc',
+        subtitleColor: '#f59e0b',
+        metricBg: 'rgba(30, 41, 59, 0.95)',
+        metricValueColor: '#fbbf24',
+        quoteBg: 'rgba(245, 158, 11, 0.1)',
+        quoteBorder: '1px solid rgba(245, 158, 11, 0.4)',
+        quoteTextColor: '#fef3c7',
+        textColor: '#cbd5e1',
+        fontFamily: "'Outfit', sans-serif"
+      },
       'Cyberpunk 2077': {
         bg: 'linear-gradient(135deg, #0f0c29 0%, #1a0533 50%, #0d1b2a 100%)',
         border: '1px solid rgba(168, 85, 247, 0.5)',
