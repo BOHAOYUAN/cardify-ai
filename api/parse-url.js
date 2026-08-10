@@ -102,57 +102,51 @@ async function extractYouTubeContentViaOEmbed(targetUrl) {
   };
 }
 
-// Helper: Extract Web Article Content
+// Helper: Extract Web Article Content via Jina Reader Engine
 async function extractWebArticleContent(targetUrl) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 8000);
+  try {
+    const jinaUrl = 'https://r.jina.ai/' + targetUrl;
+    const res = await fetch(jinaUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+    if (res.ok) {
+      const markdown = await res.text();
+      if (markdown && markdown.length > 200 && !markdown.includes('Target URL returned error')) {
+        const titleMatch = markdown.match(/Title:\s*(.+)/i);
+        const title = titleMatch ? titleMatch[1].trim() : 'Web Article';
+        const fullPayload = `[ARTICLE TITLE]: ${title}\n\n[ARTICLE SOURCE URL]: ${targetUrl}\n\n[ARTICLE CONTENT]:\n${markdown.slice(0, 12000)}\n\nCRITICAL INSTRUCTION FOR AI: You MUST strictly generate slides specifically analyzing and explaining the exact article title subject ("${title}").`;
+        return {
+          title,
+          text: fullPayload,
+          word_count: fullPayload.split(/\s+/).length
+        };
+      }
+    }
+  } catch (_) {}
 
+  // Fallback: Direct HTML fetch
   const response = await fetch(targetUrl, {
-    signal: controller.signal,
     headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     }
   });
-
-  clearTimeout(timeoutId);
 
   if (!response.ok) {
     throw new Error(`HTTP Error ${response.status}: Unable to fetch webpage`);
   }
 
   const html = await response.text();
-
   const titleMatch = html.match(/<title[^>]*>(.*?)<\/title>/i);
   const title = titleMatch ? titleMatch[1].replace(/<[^>]+>/g, '').trim() : 'Web Article';
 
-  let cleanedHtml = html
+  const cleanHtml = html
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
-    .replace(/<nav\b[^<]*(?:(?!<\/nav>)<[^<]*)*<\/nav>/gi, '')
-    .replace(/<footer\b[^<]*(?:(?!<\/footer>)<[^<]*)*<\/footer>/gi, '')
-    .replace(/<header\b[^<]*(?:(?!<\/header>)<[^<]*)*<\/header>/gi, '');
+    .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '');
 
-  const textBlocks = [];
-  const regex = /<(h1|h2|h3|p)[^>]*>(.*?)<\/h1|h2|h3|p>/gi;
-  let match;
-  while ((match = regex.exec(cleanedHtml)) !== null) {
-    const txt = match[2].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
-    if (txt.length > 20) {
-      textBlocks.push(txt);
-    }
-  }
-
-  let extractedText = textBlocks.join('\n\n');
-  if (!extractedText || extractedText.length < 100) {
-    extractedText = cleanedHtml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-  }
-
-  if (extractedText.length < 100) {
+  const extractedText = cleanHtml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 10000);
+  if (extractedText.length < 50) {
     throw new Error('Could not extract readable article text');
   }
 
-  const fullPayload = `[ARTICLE TITLE]: ${title}\n\n[ARTICLE SOURCE URL]: ${targetUrl}\n\n[ARTICLE CONTENT]:\n${extractedText.slice(0, 12000)}\n\nCRITICAL INSTRUCTION FOR AI: You MUST strictly generate slides specifically analyzing and explaining the exact article title subject ("${title}").`;
+  const fullPayload = `[ARTICLE TITLE]: ${title}\n\n[ARTICLE SOURCE URL]: ${targetUrl}\n\n[ARTICLE CONTENT]:\n${extractedText}\n\nCRITICAL INSTRUCTION FOR AI: You MUST strictly generate slides specifically analyzing and explaining the exact article title subject ("${title}").`;
 
   return {
     title,
