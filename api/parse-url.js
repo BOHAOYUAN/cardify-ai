@@ -67,9 +67,24 @@ async function extractYouTubeContent(targetUrl) {
   const titleMatch = html.match(/<title>(.*?)<\/title>/);
   let title = titleMatch ? titleMatch[1].replace('- YouTube', '').trim() : 'YouTube Video Summary';
 
-  // Extract meta description
-  const descMatch = html.match(/meta name="description" content="(.*?)"/);
-  const description = descMatch ? descMatch[1] : '';
+  // Extract meta description & og:description
+  const descMatch = html.match(/meta name="description" content="(.*?)"/) || html.match(/meta property="og:description" content="(.*?)"/);
+  let description = descMatch ? descMatch[1] : '';
+
+  // Deep extract keywords & shortDescription from YouTube JSON data if available
+  let keywordsStr = '';
+  const keywordsMatch = html.match(/"keywords":s*([.*?])/);
+  if (keywordsMatch) {
+    try {
+      const kwArr = JSON.parse(keywordsMatch[1]);
+      if (Array.isArray(kwArr)) keywordsStr = kwArr.slice(0, 15).join(', ');
+    } catch (_) {}
+  }
+
+  const shortDescMatch = html.match(/"shortDescription":s*"(.*?)"/);
+  if (shortDescMatch && !description) {
+    description = shortDescMatch[1].replace(/\\n/g, '\n').replace(/\\"/g, '"');
+  }
 
   // Extract captions JSON track if available
   let transcriptText = '';
@@ -98,7 +113,11 @@ async function extractYouTubeContent(targetUrl) {
     } catch (_) {}
   }
 
-  const fullContent = `[YOUTUBE VIDEO TITLE]: ${title}\n\n[DESCRIPTION]: ${description}\n\n[TRANSCRIPT SUMMARY]:\n${transcriptText || description || title}`;
+  const contextBody = transcriptText 
+    ? `[FULL VIDEO TRANSCRIPT]:\n${transcriptText}`
+    : `[VIDEO DESCRIPTION & CHAPTERS]:\n${description || title}\n\n[KEY TOPICS & TAGS]:\n${keywordsStr || title}`;
+
+  const fullContent = `[SPECIFIC VIDEO TOPIC & TITLE]: ${title}\n\n${contextBody}\n\nCRITICAL INSTRUCTION FOR AI: You MUST strictly generate slides focused 100% on the exact subject matter of this video title ("${title}"). Do NOT hallucinate generic business buzzwords like "Growth Hacking" unless the video is specifically about growth hacking.`;
 
   return {
     title,

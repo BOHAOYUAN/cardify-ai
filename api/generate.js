@@ -94,6 +94,7 @@ Your task is to take raw user text and output ONLY valid JSON according to the s
 - VIRAL HOOK REWRITING: Do NOT output plain summary headlines. Rewrite raw titles into scroll-stopping social hooks with curiosity gaps and bold ROI claims (e.g. "Why 99% of Indie Hackers Quit at Day 10 (And the 3 Rules to Reach $10k ARR)").
 - DIAGRAM LAYOUT SELECTION: Assign 'diagram_type' to 'versus' for mistake vs solution comparisons, 'flow' for step-by-step execution, or 'matrix' for data highlights.
 - Generate a dynamic CSS Theme based on the user's requested style/prompt.
+- STRICT TOPIC ANCHORING & ACCURACY: The generated carousel deck MUST strictly be anchored to the actual subject matter of the input content (e.g., if the input is about "Public Speaking / Speech without Script vs Scripted Speech", the generated slides MUST specifically discuss public speaking and script vs no script techniques). NEVER fallback to generic business/marketing buzzwords like "Growth Hacking" or "Traditional Marketing" unless the input text is explicitly about growth hacking.
 - CREATIVE EXPANSION & URL REPURPOSING: If the input text is a URL, blog article or video transcript, extract the 5 most valuable insights and construct a structured viral deck.
 - FINAL SLIDE LEAD MAGNET RULE: The final slide of every carousel deck MUST be a Lead Magnet CTA encouraging the reader to comment a keyword (e.g. "GROWTH" or "TEMPLATE") to get the full PDF in their DMs.
 
