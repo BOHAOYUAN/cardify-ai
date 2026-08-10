@@ -1592,7 +1592,7 @@
       window.removeEventListener('keydown', handlePresenterKeydown);
     }
 
-    // v6.9 DYNAMIC CLICKABLE LIVE WEB DECK ENGINE (PURE FRONTEND HASH 0-COST LINK)
+    // v6.9 DYNAMIC CLICKABLE LIVE WEB DECK ENGINE (LIGHTWEIGHT COMPACT HASH LINK)
     function copyShareableLiveLink() {
       if (!currentResponseData || !currentResponseData.slides) {
         showToast('Please generate cards first before sharing!', true);
@@ -1600,12 +1600,17 @@
       }
 
       try {
-        const jsonStr = JSON.stringify(currentResponseData);
+        // Slim payload to slides only for ultra-compact clean share URLs
+        const slimPayload = {
+          slides: currentResponseData.slides,
+          preset: currentPreset
+        };
+        const jsonStr = JSON.stringify(slimPayload);
         const encodedHash = btoa(unescape(encodeURIComponent(jsonStr)));
         const shareUrl = `${window.location.origin}${window.location.pathname}#deck=${encodedHash}`;
 
         navigator.clipboard.writeText(shareUrl).then(() => {
-          showToast('✨ Dynamic Clickable H5 Live Deck Link Copied! (Ready for Twitter/LinkedIn Share)');
+          showToast('✨ Compact Live Deck Link Copied! Perfect for Twitter & LinkedIn.');
           trackAnalyticsEvent('share_live_link_copied', { platform: selectedPlatform });
         }).catch(err => {
           console.error(err);
