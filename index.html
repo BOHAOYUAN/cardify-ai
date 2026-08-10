@@ -1538,7 +1538,7 @@
       if (matrixContainer) {
         matrixContainer.innerHTML = matrix.map(p => `
           <button onclick="selectPlatform('${p.id}', '${p.preset}', '${p.ratio}')" id="platform-btn-${p.id}"
-            class="platform-btn p-2.5 rounded-xl border ${selectedPlatform === p.id ? 'border-purple-500 bg-purple-950/40 text-purple-300 ring-2 ring-purple-500/30 font-bold' : 'border-gray-800 bg-gray-900/60 text-gray-400 hover:text-gray-200'} text-xs text-left transition-all flex flex-col justify-between min-h-[58px]">
+            class="platform-btn p-3 rounded-xl border-2 ${selectedPlatform === p.id ? 'border-purple-400 bg-purple-950/90 text-purple-200 ring-2 ring-purple-400/50 shadow-lg shadow-purple-950 font-black scale-[1.02]' : 'border-gray-800 bg-gray-900/60 text-gray-400 hover:text-gray-200 hover:border-gray-700'} text-xs text-left transition-all flex flex-col justify-between min-h-[62px]">
             <span>${p.name}</span>
             <span class="text-[9px] opacity-60 font-mono">📐 Ratio ${p.ratio}</span>
           </button>
