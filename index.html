@@ -414,9 +414,10 @@
 
         <!-- Commercial High-DPI & Multi-Format Export Toolbar -->
         <div class="grid grid-cols-2 sm:grid-cols-6 gap-2 mt-2">
-          <button id="btnExportVideo" onclick="exportCardVideo()" title="Export 10-second Screen Studio style HD Reel MP4/WebM video" class="py-2.5 px-1 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 border border-emerald-400/50 text-xs font-extrabold text-white flex items-center justify-center gap-1 transition-all shadow-md">
-            <i data-lucide="video" class="w-3.5 h-3.5 text-white"></i>
-            <span>🎬 10s Video</span>
+          <!-- ★ HERO: Preview Motion Reel -->
+          <button id="btnPreviewReel" onclick="openReelPreview()" title="Preview animated multi-slide motion reel before export" class="col-span-2 sm:col-span-2 py-3 px-2 rounded-xl bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 border border-purple-400/60 text-sm font-extrabold text-white flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-purple-500/40 hover:scale-[1.02] active:scale-95">
+            <i data-lucide="play-circle" class="w-4 h-4 text-white"></i>
+            <span>▶ Preview Motion Reel</span>
           </button>
 
           <button id="btnCopyImg" onclick="copyCardImageToClipboard()" title="Copy current HD slide image directly to clipboard" class="py-2.5 px-1 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs font-semibold text-gray-200 flex items-center justify-center gap-1 transition-all">
