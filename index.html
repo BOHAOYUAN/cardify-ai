@@ -1904,7 +1904,9 @@
       for (const cardEl of cardEls.slice(0, 4)) {
         try {
           const snapCanvas = await html2canvas(cardEl, {
-            scale: 2,
+            scale: 3,
+            allowTaint: true,
+            letterRendering: true,
             useCORS: true,
             backgroundColor: null,
             logging: false
