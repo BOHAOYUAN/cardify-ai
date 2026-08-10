@@ -1393,34 +1393,112 @@
     }
 
     // Localized Sandbox Demo Loader for All 3 Demos
-    const SANDBOX_DEMO_DATA = {
-      hacker: {
-        text: "How 1 Indie Hacker Reached $10k ARR in 30 Days (Step-by-Step). 1. Front-load hard truths in <10 words to stop the scroll. 2. Repurpose articles into viral visual card decks. 3. Cross-post to Twitter, LinkedIn, and Xiaohongshu. Content that makes people look smart gets retweeted endlessly.",
-        theme: 'Cyberpunk 2077',
-        platform: 'twitter'
-      },
-      deepseek: {
-        text: "DeepSeek R1 Disrupted the Global AI Industry in 48 Hours. Old Trap: Spending $100M on massive compute clusters. New Breakthrough: Open-source reasoning models with 10x cost efficiency and maximum ROI. The future belongs to lean, fast-executing indie hacker teams.",
-        theme: 'Matrix Green',
-        platform: 'linkedin'
-      },
-      xhs: {
-        text: "小红书与自媒体爆款图文 3 大法则：1. 高对比视觉卡片在前 0.5 秒强抓眼球。2. 枯燥文本升维成 VS 对比图表与高光 ROI 数据。3. 末页金句引导点赞收藏。视觉逼格越高，粉丝转化率越强！",
-        theme: 'Morandi Soft',
-        platform: 'xiaohongshu'
-      }
+    
+    // v9.0 SILICON VALLEY LEVEL I18N SANDBOX DEMO ENGINE
+    const SANDBOX_CONFIG = {
+      en: [
+        {
+          id: 'demo1',
+          badge: '🚀 Try: Zero to $10k/mo MRR',
+          sub: 'Cyberpunk 2077 • Twitter/X',
+          btnClass: 'bg-purple-950/60 hover:bg-purple-900/80',
+          titleClass: 'text-purple-200',
+          subClass: 'text-purple-300/70',
+          theme: 'Cyberpunk 2077',
+          platform: 'twitter',
+          text: 'Zero to $10k/mo MRR Solo Business Playbook.\n\n1. Front-load hard truths in <10 words to stop the scroll.\n2. Repurpose articles into viral visual card decks.\n3. Cross-post to Twitter/X and LinkedIn for maximum reach.\n\nContent that makes readers look smart gets shared endlessly.'
+        },
+        {
+          id: 'demo2',
+          badge: '🧠 Try: DeepSeek 90% Cost Cut',
+          sub: 'Matrix Hacker • LinkedIn',
+          btnClass: 'bg-slate-900/80 hover:bg-slate-800',
+          titleClass: 'text-emerald-300',
+          subClass: 'text-emerald-400/70',
+          theme: 'Matrix Green',
+          platform: 'linkedin',
+          text: 'How DeepSeek Saved 90% AI Compute Costs & Disrupted Big Tech.\n\nOld Trap: Spending $100M+ on massive compute clusters.\nNew Breakthrough: Open-source reasoning models with 10x cost efficiency & maximum ROI.\n\nThe future belongs to lean, fast-executing indie hacker teams.'
+        },
+        {
+          id: 'demo3',
+          badge: '💼 Try: Cold Outreach SOP',
+          sub: 'Morandi Soft • Carousel',
+          btnClass: 'bg-rose-950/60 hover:bg-rose-900/80',
+          titleClass: 'text-rose-200',
+          subClass: 'text-rose-300/70',
+          theme: 'Morandi Soft',
+          platform: 'linkedin',
+          text: '4-Step Cold Outreach System with 45% Reply Rate.\n\nStep 1: Ultra-personalized hook referencing their recent post.\nStep 2: Value-first visual PDF cheat sheet attached.\nStep 3: Low-friction CTA: "Reply YES for the free template".\nStep 4: Automated follow-up within 48 hours.'
+        }
+      ],
+      zh: [
+        {
+          id: 'demo1',
+          badge: '🚀 试用: 1万刀/月 MRR 独立开发法则',
+          sub: 'Cyberpunk 2077 • Twitter/X',
+          btnClass: 'bg-purple-950/60 hover:bg-purple-900/80',
+          titleClass: 'text-purple-200',
+          subClass: 'text-purple-300/70',
+          theme: 'Cyberpunk 2077',
+          platform: 'twitter',
+          text: '1万刀/月 MRR 独立开发爆款法则：\n1. 前 10 个字直接抛出高 ROI 痛点，停住滚动滑动。\n2. 将长文/博客一键切片为社交高颜值卡片。\n3. 多平台一键全网分发，让提供高认知价值的内容自发裂变。'
+        },
+        {
+          id: 'demo2',
+          badge: '🧠 试用: DeepSeek 节省 90% 算力内幕',
+          sub: 'Matrix Hacker • LinkedIn',
+          btnClass: 'bg-slate-900/80 hover:bg-slate-800',
+          titleClass: 'text-emerald-300',
+          subClass: 'text-emerald-400/70',
+          theme: 'Matrix Green',
+          platform: 'linkedin',
+          text: 'DeepSeek 节省 90% 算力颠覆全球 AI 行业：\n传统旧路：烧钱数亿美金堆砌巨型算力集群。\n颠覆突破：开源推理模型，以 10 倍 ROI 效率实现极致性能。\n未来属于执行力极强、极简高效的独立开发团队。'
+        },
+        {
+          id: 'demo3',
+          badge: '💼 试用: 4步冷邮件获客 (45% 回复率)',
+          sub: 'Morandi Soft • 连载切片',
+          btnClass: 'bg-rose-950/60 hover:bg-rose-900/80',
+          titleClass: 'text-rose-200',
+          subClass: 'text-rose-300/70',
+          theme: 'Morandi Soft',
+          platform: 'xiaohongshu',
+          text: '4步冷邮件 B2B 高效获客 SOP (45% 回复率)：\n第一步：个性化 Hook 引用对方最新公开发表观点。\n第二步：附赠高价值 SOP / Visual PDF 拆解干货。\n第三步：零摩擦 CTA——“回复‘1’免费领完整 SOP”。\n第四步：48小时内自动化静默二次 Follow-up。'
+        }
+      ]
     };
 
+    function renderSandboxDemos(lang) {
+      const container = document.getElementById('sandboxDemosGrid');
+      if (!container) return;
+      const isZh = (lang === 'zh');
+      const list = isZh ? SANDBOX_CONFIG.zh : SANDBOX_CONFIG.en;
+
+      let html = '';
+      list.forEach((item) => {
+        html += `
+          <button onclick="loadSandboxDemo('${item.id}')" class="sandbox-demo-btn p-2.5 rounded-xl ${item.btnClass} border border-gray-800/80 text-left transition-all flex flex-col justify-between min-h-[58px] hover:scale-[1.02] shadow-sm">
+            <span class="text-xs font-bold ${item.titleClass}">${item.badge}</span>
+            <span class="text-[10px] ${item.subClass} font-mono">${item.sub}</span>
+          </button>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
     function loadSandboxDemo(demoId) {
-      const demoObj = SANDBOX_DEMO_DATA[demoId] || SANDBOX_DEMO_DATA.hacker;
+      const isZh = (selectedLang === 'zh');
+      const list = isZh ? SANDBOX_CONFIG.zh : SANDBOX_CONFIG.en;
+      const demoObj = list.find(d => d.id === demoId) || list[0];
 
       document.getElementById('inputText').value = demoObj.text;
       updateCharCount();
+      renderSandboxDemos(selectedLang || 'en');
 
       applyThemePrompt(demoObj.theme);
       selectPlatform(demoObj.platform, 'cyber', '16:9');
       
-      showToast(`⚡ Demo Loaded: "${demoObj.theme}" ready!`);
+      showToast(`⚡ Demo Loaded: "${demoObj.badge}" ready!`);
       trackAnalyticsEvent('sandbox_demo_clicked', { demo: demoId, lang: selectedLang });
     }
 
@@ -3215,6 +3293,7 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+      renderSandboxDemos(selectedLang || 'en');
       checkUrlHashForLiveDeck();
     });
 
