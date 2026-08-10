@@ -485,7 +485,7 @@
         </div>
 
         <!-- Duration badge -->
-        <div id="reelTimeBadge" class="absolute top-3 right-3 px-2 py-1 rounded-lg bg-black/60 backdrop-blur-sm text-white text-xs font-mono">0.0s / 14s</div>
+        <div id="reelTimeBadge" class="absolute top-3 right-3 px-2 py-1 rounded-lg bg-black/60 backdrop-blur-sm text-white text-xs font-mono">0.0s / Reel</div>
       </div>
 
       <!-- CTA Buttons -->
@@ -605,6 +605,19 @@
   <!-- ================= CORE APPLICATION LOGIC & FULL 9-LANG NATIVE SYSTEM ================= -->
   <script>
     let currentMode = 'carousel';
+    let selectedSlideCount = 5;
+
+    function setTargetSlideCount(count) {
+      selectedSlideCount = count;
+      document.querySelectorAll('.count-btn').forEach(btn => {
+        btn.className = 'count-btn px-2 py-1 rounded-md text-[11px] font-extrabold transition-all text-gray-400 hover:text-white';
+      });
+      const activeBtn = document.getElementById(`count-btn-${count}`);
+      if (activeBtn) {
+        activeBtn.className = 'count-btn px-2 py-1 rounded-md text-[11px] font-extrabold transition-all text-purple-300 bg-purple-600/40 border border-purple-500/50';
+      }
+      showToast(`🎯 Target Deck Size Set to ${count} Cards`);
+    }
     let currentPreset = 'cyber';
     let selectedLang = 'auto';
     let selectedPlatform = 'twitter';
@@ -1921,7 +1934,7 @@
 
     // ---- Apple Keynote / Screen Studio GSAP Physics Compositor ----
     function drawHybridReelFrame(ctx, W, H, t, slideSnapshots, isPro) {
-      const TOTAL_SEC = 14;
+      const TOTAL_SEC = (Math.max(1, _cachedSnapshots.length) * 2.8) + 2.5;
       const SEC_PER_SLIDE = 3.5;
       const OUTRO_START = 10.5;
 
@@ -2116,7 +2129,7 @@
       canvas.width = W; canvas.height = H;
       const ctx = canvas.getContext('2d');
 
-      const TOTAL_SEC = 14;
+      const TOTAL_SEC = (Math.max(1, _cachedSnapshots.length) * 2.8) + 2.5;
       const startMs = performance.now();
 
       function tick() {
@@ -2169,7 +2182,7 @@
       }
 
       const W = 1080, H = 1350;
-      const TOTAL_SEC = 14;
+      const TOTAL_SEC = (Math.max(1, _cachedSnapshots.length) * 2.8) + 2.5;
       const FPS = 60;
       const TOTAL_FRAMES = TOTAL_SEC * FPS;
 
@@ -2388,7 +2401,7 @@
 
     // ---- Core 60FPS Frame Compositor (Renders captured DOM slides with Screen Studio motion) ----
     function drawHybridReelFrame(ctx, W, H, t, slideSnapshots, isPro) {
-      const TOTAL_SEC = 14;
+      const TOTAL_SEC = (Math.max(1, _cachedSnapshots.length) * 2.8) + 2.5;
       const SEC_PER_SLIDE = 3.5;
       const OUTRO_START = 10.5;
 
@@ -2976,6 +2989,7 @@
             target_style: currentPreset,
             target_lang: selectedLang,
             mode_preference: currentMode,
+            target_slide_count: selectedSlideCount,
             platform: selectedPlatform,
             preset_hook: selectedHookTag,
             custom_theme_prompt: customThemePrompt,
