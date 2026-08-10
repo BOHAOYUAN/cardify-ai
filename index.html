@@ -1592,7 +1592,7 @@
       window.removeEventListener('keydown', handlePresenterKeydown);
     }
 
-    // v6.9 DYNAMIC CLICKABLE LIVE WEB DECK ENGINE (LIGHTWEIGHT COMPACT HASH LINK)
+    // v6.9 DYNAMIC CLICKABLE LIVE WEB DECK ENGINE (RICH HYPERLINK + MARKDOWN)
     function copyShareableLiveLink() {
       if (!currentResponseData || !currentResponseData.slides) {
         showToast('Please generate cards first before sharing!', true);
@@ -1600,7 +1600,6 @@
       }
 
       try {
-        // Slim payload to slides only for ultra-compact clean share URLs
         const slimPayload = {
           slides: currentResponseData.slides,
           preset: currentPreset
@@ -1609,13 +1608,29 @@
         const encodedHash = btoa(unescape(encodeURIComponent(jsonStr)));
         const shareUrl = `${window.location.origin}${window.location.pathname}#deck=${encodedHash}`;
 
-        navigator.clipboard.writeText(shareUrl).then(() => {
-          showToast('✨ Compact Live Deck Link Copied! Perfect for Twitter & LinkedIn.');
-          trackAnalyticsEvent('share_live_link_copied', { platform: selectedPlatform });
-        }).catch(err => {
-          console.error(err);
-          showToast('Failed to copy link to clipboard', true);
-        });
+        const titleText = currentResponseData.slides[0]?.title || 'Cardify Visual Deck';
+        const plainMarkdown = `[⚡️ Interactive Cardify Deck: ${titleText}](${shareUrl})`;
+        const htmlHyperlink = `<a href="${shareUrl}" target="_blank" style="color:#8b5cf6;font-weight:bold;text-decoration:underline;">⚡️ Interactive Cardify Deck: ${titleText}</a>`;
+
+        if (navigator.clipboard && window.ClipboardItem) {
+          const textBlob = new Blob([plainMarkdown], { type: 'text/plain' });
+          const htmlBlob = new Blob([htmlHyperlink], { type: 'text/html' });
+          const item = new ClipboardItem({
+            'text/plain': textBlob,
+            'text/html': htmlBlob
+          });
+
+          navigator.clipboard.write([item]).then(() => {
+            showToast('✨ Copied Rich Blue Hyperlink & Markdown Link to Clipboard!');
+            trackAnalyticsEvent('share_live_link_copied', { platform: selectedPlatform });
+          }).catch(() => {
+            navigator.clipboard.writeText(shareUrl);
+            showToast('✨ Copied Live Deck URL to Clipboard!');
+          });
+        } else {
+          navigator.clipboard.writeText(shareUrl);
+          showToast('✨ Copied Live Deck URL to Clipboard!');
+        }
       } catch (e) {
         console.error(e);
         showToast('Failed to encode share link', true);
