@@ -1592,71 +1592,111 @@
       window.removeEventListener('keydown', handlePresenterKeydown);
     }
 
-    // v6.9 DYNAMIC CLICKABLE LIVE WEB DECK ENGINE (RICH HYPERLINK + MARKDOWN)
-    function copyShareableLiveLink() {
+    // v6.9 DYNAMIC CLICKABLE ULTRA-SHORT LIVE LINK ENGINE
+    async function copyShareableLiveLink() {
       if (!currentResponseData || !currentResponseData.slides) {
         showToast('Please generate cards first before sharing!', true);
         return;
       }
 
+      showToast('🔗 Generating Ultra-Short Live Deck Link...');
+
+      let shareUrl = '';
+      const slimPayload = {
+        slides: currentResponseData.slides,
+        preset: currentPreset
+      };
+
       try {
-        const slimPayload = {
-          slides: currentResponseData.slides,
-          preset: currentPreset
-        };
-        const jsonStr = JSON.stringify(slimPayload);
-        const encodedHash = btoa(unescape(encodeURIComponent(jsonStr)));
-        const shareUrl = `${window.location.origin}${window.location.pathname}#deck=${encodedHash}`;
+        const res = await fetch('/api/share', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(slimPayload)
+        });
 
-        const titleText = currentResponseData.slides[0]?.title || 'Cardify Visual Deck';
-        const plainMarkdown = `[⚡️ Interactive Cardify Deck: ${titleText}](${shareUrl})`;
-        const htmlHyperlink = `<a href="${shareUrl}" target="_blank" style="color:#8b5cf6;font-weight:bold;text-decoration:underline;">⚡️ Interactive Cardify Deck: ${titleText}</a>`;
-
-        if (navigator.clipboard && window.ClipboardItem) {
-          const textBlob = new Blob([plainMarkdown], { type: 'text/plain' });
-          const htmlBlob = new Blob([htmlHyperlink], { type: 'text/html' });
-          const item = new ClipboardItem({
-            'text/plain': textBlob,
-            'text/html': htmlBlob
-          });
-
-          navigator.clipboard.write([item]).then(() => {
-            showToast('✨ Copied Rich Blue Hyperlink & Markdown Link to Clipboard!');
-            trackAnalyticsEvent('share_live_link_copied', { platform: selectedPlatform });
-          }).catch(() => {
-            navigator.clipboard.writeText(shareUrl);
-            showToast('✨ Copied Live Deck URL to Clipboard!');
-          });
-        } else {
-          navigator.clipboard.writeText(shareUrl);
-          showToast('✨ Copied Live Deck URL to Clipboard!');
+        if (res.ok) {
+          const json = await res.json();
+          if (json.shortUrl) {
+            shareUrl = json.shortUrl;
+          }
         }
       } catch (e) {
-        console.error(e);
-        showToast('Failed to encode share link', true);
+        console.warn('Shortlink API fallback to hash:', e);
+      }
+
+      if (!shareUrl) {
+        const jsonStr = JSON.stringify(slimPayload);
+        const encodedHash = btoa(unescape(encodeURIComponent(jsonStr)));
+        shareUrl = `${window.location.origin}${window.location.pathname}#deck=${encodedHash}`;
+      }
+
+      const titleText = currentResponseData.slides[0]?.title || 'Cardify Visual Deck';
+      const plainMarkdown = `[⚡️ Interactive Cardify Deck: ${titleText}](${shareUrl})`;
+      const htmlHyperlink = `<a href="${shareUrl}" target="_blank" style="color:#8b5cf6;font-weight:bold;text-decoration:underline;">⚡️ Interactive Cardify Deck: ${titleText}</a>`;
+
+      if (navigator.clipboard && window.ClipboardItem) {
+        const textBlob = new Blob([plainMarkdown], { type: 'text/plain' });
+        const htmlBlob = new Blob([htmlHyperlink], { type: 'text/html' });
+        const item = new ClipboardItem({
+          'text/plain': textBlob,
+          'text/html': htmlBlob
+        });
+
+        navigator.clipboard.write([item]).then(() => {
+          showToast('✨ Copied Ultra-Short Blue Hyperlink & Link to Clipboard!');
+          trackAnalyticsEvent('share_live_link_copied', { platform: selectedPlatform });
+        }).catch(() => {
+          navigator.clipboard.writeText(shareUrl);
+          showToast('✨ Copied Ultra-Short Live Link to Clipboard!');
+        });
+      } else {
+        navigator.clipboard.writeText(shareUrl);
+        showToast('✨ Copied Ultra-Short Live Link to Clipboard!');
       }
     }
 
-    function checkUrlHashForLiveDeck() {
-      if (!window.location.hash || !window.location.hash.startsWith('#deck=')) return;
+    async function checkUrlHashForLiveDeck() {
+      const hash = window.location.hash;
+      if (!hash) return;
 
-      try {
-        const rawHash = window.location.hash.slice(6);
-        const jsonStr = decodeURIComponent(escape(atob(rawHash)));
-        const data = JSON.parse(jsonStr);
-
-        if (data && data.slides && data.slides.length > 0) {
-          currentResponseData = data;
-          renderGeneratedResults(data);
-
-          // Auto-trigger Presenter Mode for incoming viral visitors!
-          setTimeout(() => {
-            openPresenterMode();
-            showToast('🌐 Viewing Shared Live Visual Deck! Click ESC or Exit to edit.');
-          }, 800);
+      if (hash.startsWith('#d=')) {
+        const shortId = hash.slice(3);
+        try {
+          const res = await fetch(`/api/share?id=${shortId}`);
+          if (res.ok) {
+            const json = await res.json();
+            if (json.data && json.data.slides) {
+              currentResponseData = json.data;
+              renderGeneratedResults(json.data);
+              setTimeout(() => {
+                openPresenterMode();
+                showToast('🌐 Viewing Shared Ultra-Short Live Visual Deck!');
+              }, 800);
+              return;
+            }
+          }
+        } catch (e) {
+          console.warn('Failed to load shortlink API:', e);
         }
-      } catch (e) {
-        console.warn('Failed to parse share deck URL hash:', e);
+      }
+
+      if (hash.startsWith('#deck=')) {
+        try {
+          const rawHash = hash.slice(6);
+          const jsonStr = decodeURIComponent(escape(atob(rawHash)));
+          const data = JSON.parse(jsonStr);
+
+          if (data && data.slides && data.slides.length > 0) {
+            currentResponseData = data;
+            renderGeneratedResults(data);
+            setTimeout(() => {
+              openPresenterMode();
+              showToast('🌐 Viewing Shared Live Visual Deck!');
+            }, 800);
+          }
+        } catch (e) {
+          console.warn('Failed to parse share deck URL hash:', e);
+        }
       }
     }
 
