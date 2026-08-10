@@ -158,7 +158,7 @@
         <div>
           <span class="text-xl font-extrabold font-outfit tracking-tight text-white flex items-center gap-2">
             Cardify<span class="text-purple-400">.ai</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-500/20 via-purple-500/20 to-indigo-500/20 text-emerald-300 border border-emerald-500/30 animate-pulse">v7.5 Cinema Studio</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-500/20 via-purple-500/20 to-indigo-500/20 text-emerald-300 border border-emerald-500/30 animate-pulse">v8.0 Canvas Studio</span>
           </span>
         </div>
       </div>
@@ -447,6 +447,64 @@
     </section>
 
   </main>
+
+  <!-- =====================================================================
+       LIVE MOTION REEL PREVIEW MODAL  (v8.0 Canvas Studio)
+  ====================================================================== -->
+  <div id="reelPreviewModal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4" style="background:rgba(2,1,12,0.88);backdrop-filter:blur(16px);">
+    <div class="relative w-full max-w-md mx-auto flex flex-col gap-4" style="max-height:96vh;">
+
+      <!-- Header -->
+      <div class="flex items-center justify-between px-1">
+        <div>
+          <h2 class="text-white font-extrabold text-lg tracking-tight">Motion Reel Preview</h2>
+          <p class="text-purple-300 text-xs mt-0.5">Multi-slide • 60 FPS Screen Studio • Cmaj7 BGM</p>
+        </div>
+        <button onclick="closeReelPreview()" class="w-9 h-9 rounded-full bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 flex items-center justify-center transition-all text-lg font-bold">&times;</button>
+      </div>
+
+      <!-- Canvas Preview Frame (4:5 portrait) -->
+      <div class="relative rounded-2xl overflow-hidden border border-purple-500/40 shadow-2xl shadow-purple-900/60" style="aspect-ratio:4/5;background:#08050f;">
+        <canvas id="reelPreviewCanvas" class="w-full h-full" style="display:block;"></canvas>
+
+        <!-- Playback overlay controls -->
+        <div id="reelOverlay" class="absolute inset-0 flex flex-col items-center justify-center gap-3 transition-opacity duration-300" style="background:rgba(4,2,18,0.55);">
+          <button onclick="startReelPlayback()" class="w-16 h-16 rounded-full bg-white/10 hover:bg-white/20 border-2 border-white/40 backdrop-blur-sm flex items-center justify-center text-white text-3xl transition-all hover:scale-110">
+            ▶
+          </button>
+          <p class="text-white/70 text-xs font-medium">Click to play preview</p>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="absolute bottom-0 left-0 right-0 h-1 bg-white/10">
+          <div id="reelProgressBar" class="h-full bg-gradient-to-r from-violet-500 to-emerald-400 transition-none" style="width:0%;"></div>
+        </div>
+
+        <!-- Duration badge -->
+        <div id="reelTimeBadge" class="absolute top-3 right-3 px-2 py-1 rounded-lg bg-black/60 backdrop-blur-sm text-white text-xs font-mono">0.0s / 14s</div>
+      </div>
+
+      <!-- CTA Buttons -->
+      <div class="grid grid-cols-2 gap-3">
+        <!-- Free export with watermark -->
+        <button id="btnExportFree" onclick="exportCardVideo(false)" class="py-3 px-4 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-sm font-bold text-gray-200 flex flex-col items-center gap-0.5 transition-all hover:border-gray-500">
+          <span class="text-base">📥</span>
+          <span>Export 1080p</span>
+          <span class="text-[10px] text-gray-400 font-normal">Free · with watermark</span>
+        </button>
+
+        <!-- Pro: unlock 4K no watermark -->
+        <button id="btnExportPro" onclick="exportCardVideo(true)" class="py-3 px-4 rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 border border-violet-400/50 text-sm font-extrabold text-white flex flex-col items-center gap-0.5 transition-all shadow-lg shadow-purple-900/50 hover:shadow-purple-500/40 hover:scale-[1.02]">
+          <span class="text-base">⚡️</span>
+          <span>Unlock 4K Pro</span>
+          <span class="text-[10px] text-purple-200 font-normal">No watermark · $19/mo</span>
+        </button>
+      </div>
+
+      <!-- Fine-print -->
+      <p class="text-center text-[10px] text-gray-600">Pro export: 4K 60fps · custom logo · multi-soundtrack · batch deck export</p>
+    </div>
+  </div>
 
   <!-- ================= FOOTER WITH MANDATORY LEGAL COMPLIANCE LINKS ================= -->
   <footer class="w-full border-t border-gray-800/80 py-6 px-4 text-center text-xs text-gray-500 glass-panel mt-8">
@@ -1669,6 +1727,450 @@
         showToast('✨ Copied Ultra-Short Live Link to Clipboard!');
       }
     }
+
+    async function checkUrlHashForLiveDeck() {
+      const hash = window.location.hash;
+      if (!hash) return;
+
+      if (hash.startsWith('#d=')) {
+        const shortId = hash.slice(3);
+        try {
+          const res = await fetch(`/api/share?id=${shortId}`);
+          if (res.ok) {
+            const json = await res.json();
+            if (json.data && json.data.slides) {
+              currentResponseData = json.data;
+              renderGeneratedResults(json.data);
+              setTimeout(() => {
+                openPresenterMode();
+                showToast('🌐 Viewing Shared Ultra-Short Live Visual Deck!');
+              }, 800);
+              return;
+            }
+          }
+        } catch (e) {
+          console.warn('Failed to load shortlink API:', e);
+        }
+      }
+
+      if (hash.startsWith('#deck=')) {
+        try {
+          const rawHash = hash.slice(6);
+          const jsonStr = decodeURIComponent(escape(atob(rawHash)));
+          const data = JSON.parse(jsonStr);
+
+          if (data && data.slides && data.slides.length > 0) {
+            currentResponseData = data;
+            renderGeneratedResults(data);
+            setTimeout(() => {
+              openPresenterMode();
+              showToast('🌐 Viewing Shared Live Visual Deck!');
+            }, 800);
+          }
+        } catch (e) {
+          console.warn('Failed to parse share deck URL hash:', e);
+        }
+      }
+    }
+
+    // v7.5 AMBIENT LOFI SYNTH AUDIO TRACK GENERATOR (PURE FRONTEND WEB AUDIO API)
+    function createAmbientAudioTrack(durationSec = 4) {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const dest = audioCtx.createMediaStreamDestination();
+
+        // Synthesize an ultra-chill Cmaj7 Lofi Pad Ambient Chord: C4 (261.63Hz), E4 (329.63Hz), G4 (392.00Hz), B4 (493.88Hz)
+        const frequencies = [261.63, 329.63, 392.00, 493.88];
+        frequencies.forEach(freq => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+          // Soft ambient swell envelope
+          gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.07, audioCtx.currentTime + 0.8);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + durationSec);
+
+          osc.connect(gain);
+          gain.connect(dest);
+          osc.start();
+          osc.stop(audioCtx.currentTime + durationSec);
+        });
+
+        return dest.stream.getAudioTracks()[0];
+      } catch (e) {
+        console.warn('Web Audio API synthesis unsupported:', e);
+        return null;
+      }
+    }
+
+    
+    // ================================================================
+    // v8.0 MULTI-SLIDE SCREEN STUDIO HYBRID REEL ENGINE
+    // Combines 100% pixel-perfect v7.5 DOM Visuals with 60FPS Multi-Slide Reel Compositor
+    // ================================================================
+
+    // ---- Easing Functions ----
+    function easeOutCubic(t)   { return 1 - Math.pow(1 - t, 3); }
+    function easeInOutSine(t)  { return -(Math.cos(Math.PI * t) - 1) / 2; }
+    function clamp01(t)        { return Math.max(0, Math.min(1, t)); }
+    function mapRange(t, a, b) { return clamp01((t - a) / (b - a)); }
+
+    // ---- Web Audio API: Cmaj7 ambient pad + sub-bass + typewriter & whoosh SFX ----
+    function buildReelAudio(totalSec) {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const dest   = audioCtx.createMediaStreamDestination();
+        const master = audioCtx.createGain();
+        master.gain.setValueAtTime(0.001, audioCtx.currentTime);
+        master.gain.linearRampToValueAtTime(0.30, audioCtx.currentTime + 1.5);
+        master.gain.setValueAtTime(0.30, audioCtx.currentTime + totalSec - 2.0);
+        master.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + totalSec);
+        master.connect(dest);
+
+        // Cmaj7 Lofi Pad (C4 E4 G4 B4)
+        [261.63, 329.63, 392.00, 493.88].forEach(freq => {
+          const osc = audioCtx.createOscillator();
+          const lp  = audioCtx.createBiquadFilter();
+          const g   = audioCtx.createGain();
+          osc.type = 'sine'; osc.frequency.value = freq;
+          lp.type = 'lowpass'; lp.frequency.value = 1100;
+          g.gain.value = 0.07;
+          osc.connect(lp); lp.connect(g); g.connect(master);
+          osc.start(); osc.stop(audioCtx.currentTime + totalSec + 0.2);
+        });
+
+        // 55Hz Sub-bass
+        const sub = audioCtx.createOscillator();
+        const subG = audioCtx.createGain();
+        sub.type = 'sine'; sub.frequency.value = 55; subG.gain.value = 0.05;
+        sub.connect(subG); subG.connect(master);
+        sub.start(); sub.stop(audioCtx.currentTime + totalSec + 0.2);
+
+        // Typewriter clicks for Slide 1
+        for (let i = 0; i < 20; i++) {
+          const ct = audioCtx.currentTime + i * 0.075;
+          const ck = audioCtx.createOscillator();
+          const cg = audioCtx.createGain();
+          ck.type = 'square'; ck.frequency.value = 1100 + Math.random() * 500;
+          cg.gain.setValueAtTime(0.07, ct);
+          cg.gain.exponentialRampToValueAtTime(0.001, ct + 0.04);
+          ck.connect(cg); cg.connect(dest);
+          ck.start(ct); ck.stop(ct + 0.05);
+        }
+
+        // Slide transition Whooshes at t=3.5s and t=7.0s
+        [3.5, 7.0].forEach(ts => {
+          const wt = audioCtx.currentTime + ts;
+          const wo = audioCtx.createOscillator();
+          const wg = audioCtx.createGain();
+          wo.type = 'sine'; wo.frequency.setValueAtTime(280, wt);
+          wo.frequency.linearRampToValueAtTime(80, wt + 0.25);
+          wg.gain.setValueAtTime(0.18, wt);
+          wg.gain.exponentialRampToValueAtTime(0.001, wt + 0.3);
+          wo.connect(wg); wg.connect(dest);
+          wo.start(wt); wo.stop(wt + 0.35);
+        });
+
+        return { stream: dest.stream.getAudioTracks()[0], ctx: audioCtx };
+      } catch(e) {
+        console.warn('Web Audio API unavailable:', e);
+        return { stream: null, ctx: null };
+      }
+    }
+
+    // ---- Helper: Snapshot all generated DOM slides upfront into Canvas objects ----
+    async function captureAllDOMSlides() {
+      const cardEls = Array.from(document.querySelectorAll('div[id^="card-"]'));
+      if (cardEls.length === 0) return [];
+
+      const snapshots = [];
+      for (const cardEl of cardEls.slice(0, 4)) {
+        try {
+          const snapCanvas = await html2canvas(cardEl, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: null,
+            logging: false
+          });
+          snapshots.push(snapCanvas);
+        } catch(e) {
+          console.warn('DOM Slide snapshot error:', e);
+        }
+      }
+      return snapshots;
+    }
+
+    // ---- Core 60FPS Frame Compositor (Renders captured DOM slides with Screen Studio motion) ----
+    function drawHybridReelFrame(ctx, W, H, t, slideSnapshots, isPro) {
+      const TOTAL_SEC = 14;
+      const SEC_PER_SLIDE = 3.5;
+      const OUTRO_START = 10.5;
+
+      // Dark Mesh Background
+      const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+      const shift = Math.sin(t * 0.35) * 0.05;
+      bgGrad.addColorStop(0,           `hsl(${255+shift*50},45%,7%)`);
+      bgGrad.addColorStop(0.5 + shift, `hsl(${240+shift*30},38%,4%)`);
+      bgGrad.addColorStop(1,           `hsl(${268+shift*25},52%,9%)`);
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      // Ambient Orbs
+      for (let d = 0; d < 5; d++) {
+        const ox = W * ((d * 0.19 + t * 0.006 + d * 0.13) % 1);
+        const oy = H * ((d * 0.27 + t * 0.004 + d * 0.08) % 1);
+        const oA = 0.035 + 0.025 * Math.sin(t * 0.8 + d);
+        ctx.beginPath();
+        ctx.arc(ox, oy, 90 + d * 22, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(139,92,246,${oA})`;
+        ctx.fill();
+      }
+
+      if (slideSnapshots.length === 0) return;
+
+      const slideIdx = t < OUTRO_START ? Math.min(slideSnapshots.length - 1, Math.floor(t / SEC_PER_SLIDE)) : Math.min(2, slideSnapshots.length - 1);
+      const slideLocalT = t < OUTRO_START ? (t % SEC_PER_SLIDE) / SEC_PER_SLIDE : 1;
+      const snap = slideSnapshots[slideIdx];
+
+      // Draw active slide with Screen Studio 3D Camera Breathing & Rise
+      if (snap) {
+        ctx.save();
+
+        // Cross-fade opacity between slides
+        const XFADE = 0.15;
+        const withinSlide = t % SEC_PER_SLIDE;
+        let alpha = 1;
+        if (withinSlide < XFADE * SEC_PER_SLIDE && t > 0.1) {
+          alpha = easeOutCubic(withinSlide / (XFADE * SEC_PER_SLIDE));
+        } else if (withinSlide > SEC_PER_SLIDE * (1 - XFADE) && t < OUTRO_START) {
+          alpha = easeOutCubic(1 - (withinSlide - SEC_PER_SLIDE * (1 - XFADE)) / (XFADE * SEC_PER_SLIDE));
+        }
+        ctx.globalAlpha = alpha;
+
+        // Screen Studio 3D Push & Breathing scale
+        const scale = 0.94 + Math.sin(slideLocalT * Math.PI) * 0.04;
+        const drawW = W * 0.88 * scale;
+        const drawH = (snap.height / snap.width) * drawW;
+        const drawX = (W - drawW) / 2;
+        const drawY = (H - drawH) / 2 - 15;
+
+        // Drop shadow
+        ctx.shadowBlur = 60; ctx.shadowColor = 'rgba(0,0,0,0.85)'; ctx.shadowOffsetY = 24;
+        ctx.drawImage(snap, drawX, drawY, drawW, drawH);
+        ctx.shadowBlur = 0;
+
+        // Neon sweep accent progress bar on active card
+        const sweepW = drawW * easeInOutSine(slideLocalT);
+        ctx.fillStyle = 'rgba(16, 185, 129, 0.45)';
+        ctx.fillRect(drawX, drawY + drawH - 6, sweepW, 6);
+
+        ctx.restore();
+      }
+
+      // Outro overlay: Brand outro bar + fade out
+      if (t >= OUTRO_START) {
+        const pO = mapRange(t, OUTRO_START, TOTAL_SEC);
+        const appear = easeOutCubic(clamp01(pO * 2.5));
+        const fadeOut = pO > 0.8 ? easeInOutSine(mapRange(pO, 0.8, 1.0)) : 0;
+
+        ctx.save();
+        ctx.globalAlpha = appear * (1 - fadeOut);
+        const barW = W * 0.84, barH = 64;
+        const barX = (W - barW) / 2, barY = H - barH - 36;
+
+        ctx.fillStyle = 'rgba(20,12,48,0.94)';
+        ctx.strokeStyle = 'rgba(168,85,247,0.50)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.roundRect(barX, barY, barW, barH, 16); ctx.fill(); ctx.stroke();
+
+        ctx.font = "800 24px 'Outfit', sans-serif";
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.shadowBlur = 14; ctx.shadowColor = 'rgba(168,85,247,0.9)';
+        ctx.fillStyle = '#f0e6ff';
+        ctx.fillText('⚡️  cardify.ai  — Make Content That Pops', W / 2, barY + barH / 2);
+        ctx.shadowBlur = 0;
+
+        if (!isPro) {
+          ctx.font = "600 14px monospace";
+          ctx.textAlign = 'right'; ctx.textBaseline = 'bottom';
+          ctx.fillStyle = 'rgba(192,132,252,0.45)';
+          ctx.fillText('Powered by Cardify.ai', W - 20, H - 12);
+        }
+        ctx.restore();
+
+        if (fadeOut > 0) {
+          ctx.save();
+          ctx.globalAlpha = fadeOut;
+          ctx.fillStyle = '#000';
+          ctx.fillRect(0, 0, W, H);
+          ctx.restore();
+        }
+      }
+    }
+
+    // ---- Live Preview Controls ----
+    let _reelRAF = null;
+    let _reelPlaying = false;
+    let _cachedSnapshots = [];
+
+    async function openReelPreview() {
+      if (!currentResponseData || !currentResponseData.slides) {
+        showToast('Please generate cards first!', true);
+        return;
+      }
+
+      showToast('📸 Capturing slide visuals for Screen Studio preview...');
+      _cachedSnapshots = await captureAllDOMSlides();
+      if (_cachedSnapshots.length === 0) {
+        showToast('Failed to snapshot slides', true);
+        return;
+      }
+
+      const modal = document.getElementById('reelPreviewModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+
+      const canvas = document.getElementById('reelPreviewCanvas');
+      const W = 1080, H = 1350;
+      canvas.width = W; canvas.height = H;
+      const ctx = canvas.getContext('2d');
+
+      // Draw initial frame
+      drawHybridReelFrame(ctx, W, H, 0.05, _cachedSnapshots, false);
+    }
+
+    function closeReelPreview() {
+      _reelPlaying = false;
+      if (_reelRAF) { cancelAnimationFrame(_reelRAF); _reelRAF = null; }
+      const modal = document.getElementById('reelPreviewModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      const overlay = document.getElementById('reelOverlay');
+      if (overlay) {
+        overlay.style.opacity = '1';
+        overlay.style.pointerEvents = '';
+      }
+      const prog = document.getElementById('reelProgressBar');
+      if (prog) prog.style.width = '0%';
+      const badge = document.getElementById('reelTimeBadge');
+      if (badge) badge.textContent = '0.0s / 14s';
+    }
+
+    function startReelPlayback() {
+      if (_reelPlaying) return;
+      _reelPlaying = true;
+
+      const overlay   = document.getElementById('reelOverlay');
+      const progBar   = document.getElementById('reelProgressBar');
+      const timeBadge = document.getElementById('reelTimeBadge');
+      if (overlay) {
+        overlay.style.opacity = '0';
+        overlay.style.pointerEvents = 'none';
+      }
+
+      const canvas = document.getElementById('reelPreviewCanvas');
+      const W = 1080, H = 1350;
+      canvas.width = W; canvas.height = H;
+      const ctx = canvas.getContext('2d');
+
+      const TOTAL_SEC = 14;
+      const startMs = performance.now();
+
+      function tick() {
+        if (!_reelPlaying) return;
+        const t = Math.min((performance.now() - startMs) / 1000, TOTAL_SEC);
+        drawHybridReelFrame(ctx, W, H, t, _cachedSnapshots, false);
+
+        if (progBar) progBar.style.width = `${(t / TOTAL_SEC) * 100}%`;
+        if (timeBadge) timeBadge.textContent = `${t.toFixed(1)}s / ${TOTAL_SEC}s`;
+
+        if (t < TOTAL_SEC) {
+          _reelRAF = requestAnimationFrame(tick);
+        } else {
+          _reelPlaying = false;
+          if (overlay) {
+            overlay.style.opacity = '1';
+            overlay.style.pointerEvents = '';
+            overlay.innerHTML = `
+              <button onclick="startReelPlayback()" class="w-14 h-14 rounded-full bg-white/10 hover:bg-white/20 border-2 border-white/40 backdrop-blur-sm flex items-center justify-center text-white text-2xl transition-all hover:scale-110">↺</button>
+              <p class="text-white/70 text-xs font-medium">Replay</p>`;
+          }
+        }
+      }
+
+      _reelRAF = requestAnimationFrame(tick);
+    }
+
+    // ---- Export Video Function ----
+    async function exportCardVideo(isPro = false) {
+      if (!currentResponseData || !currentResponseData.slides) {
+        showToast('Please generate cards first!', true);
+        return;
+      }
+
+      if (isPro) {
+        showToast('⚡️ Redirecting to Pro Checkout...');
+        setTimeout(() => {
+          window.open('https://dodopayments.com', '_blank');
+        }, 800);
+        return;
+      }
+
+      closeReelPreview();
+      showToast('🎬 Rendering 14s Screen Studio reel video... (~14s)');
+
+      const snapshots = _cachedSnapshots.length > 0 ? _cachedSnapshots : await captureAllDOMSlides();
+      if (snapshots.length === 0) {
+        showToast('Slide rendering failed', true);
+        return;
+      }
+
+      const W = 1080, H = 1350;
+      const TOTAL_SEC = 14;
+      const FPS = 60;
+      const TOTAL_FRAMES = TOTAL_SEC * FPS;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = W; canvas.height = H;
+      const ctx = canvas.getContext('2d');
+
+      const audio = buildReelAudio(TOTAL_SEC);
+      const tracks = [canvas.captureStream(FPS).getVideoTracks()[0]];
+      if (audio.stream) tracks.push(audio.stream);
+
+      let mimeType = 'video/webm;codecs=vp9';
+      if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm';
+
+      const chunks = [];
+      const recorder = new MediaRecorder(new MediaStream(tracks), { mimeType, videoBitsPerSecond: 12_000_000 });
+      recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: mimeType });
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.href = url; a.download = `cardify-reel-${selectedPlatform}-${Date.now()}.webm`;
+        document.body.appendChild(a); a.click();
+        document.body.removeChild(a); URL.revokeObjectURL(url);
+        showToast('✨ Screen Studio Reel Video Exported!');
+      };
+
+      recorder.start(100);
+      const startMs = performance.now();
+
+      for (let f = 0; f <= TOTAL_FRAMES; f++) {
+        const t = f / FPS;
+        drawHybridReelFrame(ctx, W, H, t, snapshots, isPro);
+        const elapsed = performance.now() - startMs;
+        const targetMs = (f + 1) * (1000 / FPS);
+        await new Promise(r => setTimeout(r, Math.max(0, targetMs - elapsed)));
+      }
+
+      recorder.stop();
+    }
+
 
     async function checkUrlHashForLiveDeck() {
       const hash = window.location.hash;
