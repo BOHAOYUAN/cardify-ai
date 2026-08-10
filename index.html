@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
@@ -1824,27 +1824,19 @@
 
     
     // ================================================================
-    // v8.0 GSAP ELASTIC SPRING & APPLE KEYNOTE MOTION REEL ENGINE
-    // Pure Client-Side $0 API Cost • 60FPS Apple-Level Physics Compositor
+
+    // ================================================================
+    // v8.0 PURE CANVAS DATA-DRIVEN REEL ENGINE
+    // Zero html2canvas - Zero distortion - 60FPS - $0 API cost
     // ================================================================
 
-    // ---- GSAP & Advanced Physics Easing Math ----
-    function springElastic(t) {
-      if (t <= 0) return 0;
-      if (t >= 1) return 1;
-      const p = 0.3;
-      return Math.pow(2, -10 * t) * Math.sin((t - p / 4) * (2 * Math.PI) / p) + 1;
-    }
-    function springBack(t, s = 1.70158) {
-      t = t - 1;
-      return t * t * ((s + 1) * t + s) + 1;
-    }
-    function easeOutCubic(t)   { return 1 - Math.pow(1 - t, 3); }
-    function easeInOutSine(t)  { return -(Math.cos(Math.PI * t) - 1) / 2; }
-    function clamp01(t)        { return Math.max(0, Math.min(1, t)); }
-    function mapRange(t, a, b) { return clamp01((t - a) / (b - a)); }
+    // ---- Easing Math ----
+    function easeOutCubic(t)  { return 1 - Math.pow(1 - t, 3); }
+    function easeInOutSine(t) { return -(Math.cos(Math.PI * t) - 1) / 2; }
+    function clamp01(t)       { return Math.max(0, Math.min(1, t)); }
+    function mapRange(t, a, b){ return clamp01((t - a) / (b - a)); }
 
-    // ---- Web Audio API: Cmaj7 Lofi Pad + Sub-Bass + Typewriter + Whoosh ----
+    // ---- Web Audio: Cmaj7 Lofi Pad + Whoosh transitions ----
     function buildReelAudio(totalSec) {
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1852,247 +1844,340 @@
         const dest   = audioCtx.createMediaStreamDestination();
         const master = audioCtx.createGain();
         master.gain.setValueAtTime(0.001, audioCtx.currentTime);
-        master.gain.linearRampToValueAtTime(0.32, audioCtx.currentTime + 1.2);
-        master.gain.setValueAtTime(0.32, audioCtx.currentTime + totalSec - 1.8);
+        master.gain.linearRampToValueAtTime(0.28, audioCtx.currentTime + 1.2);
+        master.gain.setValueAtTime(0.28, audioCtx.currentTime + totalSec - 1.5);
         master.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + totalSec);
         master.connect(dest);
-
-        // Cmaj7 Lofi Pad (C4, E4, G4, B4)
         [261.63, 329.63, 392.00, 493.88].forEach(freq => {
           const osc = audioCtx.createOscillator();
           const lp  = audioCtx.createBiquadFilter();
           const g   = audioCtx.createGain();
           osc.type = 'sine'; osc.frequency.value = freq;
-          lp.type = 'lowpass'; lp.frequency.value = 1200;
-          g.gain.value = 0.07;
+          lp.type = 'lowpass'; lp.frequency.value = 1100;
+          g.gain.value = 0.06;
           osc.connect(lp); lp.connect(g); g.connect(master);
           osc.start(); osc.stop(audioCtx.currentTime + totalSec + 0.2);
         });
-
-        // 55Hz Sub-Bass
-        const sub = audioCtx.createOscillator();
-        const subG = audioCtx.createGain();
-        sub.type = 'sine'; sub.frequency.value = 55; subG.gain.value = 0.06;
-        sub.connect(subG); subG.connect(master);
-        sub.start(); sub.stop(audioCtx.currentTime + totalSec + 0.2);
-
-        // Typewriter Clicks
-        for (let i = 0; i < 22; i++) {
-          const ct = audioCtx.currentTime + i * 0.070;
-          const ck = audioCtx.createOscillator();
-          const cg = audioCtx.createGain();
-          ck.type = 'square'; ck.frequency.value = 1200 + Math.random() * 400;
-          cg.gain.setValueAtTime(0.08, ct);
-          cg.gain.exponentialRampToValueAtTime(0.001, ct + 0.038);
-          ck.connect(cg); cg.connect(dest);
-          ck.start(ct); ck.stop(ct + 0.045);
-        }
-
-        // Whoosh 过场音效 (At t=3.5s and t=7.0s)
-        [3.5, 7.0].forEach(ts => {
-          const wt = audioCtx.currentTime + ts;
+        for (let s = 1; s < 9; s++) {
+          const wt = audioCtx.currentTime + s * 3.0;
+          if (wt >= audioCtx.currentTime + totalSec) break;
           const wo = audioCtx.createOscillator();
           const wg = audioCtx.createGain();
-          wo.type = 'sine'; wo.frequency.setValueAtTime(320, wt);
-          wo.frequency.exponentialRampToValueAtTime(70, wt + 0.28);
-          wg.gain.setValueAtTime(0.22, wt);
-          wg.gain.exponentialRampToValueAtTime(0.001, wt + 0.32);
+          wo.type = 'sine';
+          wo.frequency.setValueAtTime(300, wt);
+          wo.frequency.exponentialRampToValueAtTime(60, wt + 0.25);
+          wg.gain.setValueAtTime(0.18, wt);
+          wg.gain.exponentialRampToValueAtTime(0.001, wt + 0.3);
           wo.connect(wg); wg.connect(dest);
           wo.start(wt); wo.stop(wt + 0.35);
-        });
-
+        }
         return { stream: dest.stream.getAudioTracks()[0], ctx: audioCtx };
       } catch(e) {
-        console.warn('Web Audio API unavailable:', e);
         return { stream: null, ctx: null };
       }
     }
 
-    // ---- Helper: High-DPI DOM Snapshotter ----
-    async function captureAllDOMSlides() {
-      const cardEls = Array.from(document.querySelectorAll('div[id^="card-"]'));
-      if (cardEls.length === 0) return [];
-
-      const snapshots = [];
-      for (const cardEl of cardEls.slice(0, 4)) {
-        try {
-          const snapCanvas = await html2canvas(cardEl, {
-            scale: 3,
-            allowTaint: true,
-            
-            useCORS: true,
-            backgroundColor: null,
-            logging: false
-          });
-          snapshots.push(snapCanvas);
-        } catch(e) {
-          console.warn('DOM Slide snapshot error:', e);
-        }
+    // ---- Canvas text wrap helper ----
+    function reelWrapText(ctx, text, x, y, maxW, lineH) {
+      if (!text) return y;
+      const words = String(text).split(' ');
+      let line = '';
+      for (const word of words) {
+        const test = line ? line + ' ' + word : word;
+        if (ctx.measureText(test).width > maxW && line) {
+          ctx.fillText(line, x, y);
+          y += lineH; line = word;
+        } else { line = test; }
       }
-      return snapshots;
+      if (line) { ctx.fillText(line, x, y); y += lineH; }
+      return y;
     }
 
-    // ---- Apple Keynote / Screen Studio GSAP Physics Compositor ----
-    function drawHybridReelFrame(ctx, W, H, t, slideSnapshots, isPro) {
-      const TOTAL_SEC = (Math.max(1, _cachedSnapshots.length) * 2.8) + 2.5;
-      const SEC_PER_SLIDE = 3.5;
-      const OUTRO_START = 10.5;
+    // ---- Draw a single slide card onto canvas from raw data ----
+    function drawCanvasCard(ctx, W, H, slideData, slideIdx, totalSlides) {
+      if (!slideData) return;
+      const PAD = Math.round(W * 0.055);
+      const cW  = W - PAD * 2;
+      const hues  = [252, 215, 185, 155, 275, 295, 175, 228, 242];
+      const h1    = hues[slideIdx % hues.length];
+      const h2    = (h1 + 28) % 360;
 
-      // 1. Dynamic Fluid Ambient Background with GSAP-like smooth rotation
-      const bgGrad = ctx.createLinearGradient(0, 0, W, H);
-      const rot = Math.sin(t * 0.4) * 0.08;
-      bgGrad.addColorStop(0,           `hsl(${255 + rot * 60}, 50%, 7%)`);
-      bgGrad.addColorStop(0.5 + rot,  `hsl(${238 + rot * 40}, 42%, 4%)`);
-      bgGrad.addColorStop(1,           `hsl(${272 + rot * 30}, 55%, 9%)`);
-      ctx.fillStyle = bgGrad;
+      // Background
+      const bg = ctx.createLinearGradient(0, 0, W, H);
+      bg.addColorStop(0, 'hsl(' + h1 + ',38%,8%)');
+      bg.addColorStop(1, 'hsl(' + h2 + ',32%,4%)');
+      ctx.fillStyle = bg;
       ctx.fillRect(0, 0, W, H);
 
-      // 2. Floating 3D Ambient Glowing Orbs
-      for (let d = 0; d < 6; d++) {
-        const ox = W * ((d * 0.18 + t * 0.007 + d * 0.12) % 1);
-        const oy = H * ((d * 0.25 + t * 0.005 + d * 0.09) % 1);
-        const orbScale = 1 + 0.2 * Math.sin(t * 1.2 + d);
-        const oA = 0.04 + 0.025 * Math.sin(t * 0.9 + d);
-        ctx.beginPath();
-        ctx.arc(ox, oy, (85 + d * 20) * orbScale, 0, Math.PI * 2);
-        ctx.fillStyle = d % 2 === 0 ? `rgba(139, 92, 246, ${oA})` : `rgba(16, 185, 129, ${oA * 0.8})`;
-        ctx.fill();
-      }
+      // Orb glow
+      const orb = ctx.createRadialGradient(W*0.18, H*0.18, 0, W*0.18, H*0.18, W*0.6);
+      orb.addColorStop(0, 'hsla(' + h1 + ',75%,58%,0.11)');
+      orb.addColorStop(1, 'transparent');
+      ctx.fillStyle = orb; ctx.fillRect(0, 0, W, H);
 
-      if (slideSnapshots.length === 0) return;
+      // Card panel
+      const cX = PAD, cY = Math.round(H * 0.06);
+      const cH = Math.round(H * 0.84);
+      ctx.save();
+      ctx.shadowBlur = 36; ctx.shadowColor = 'hsla(' + h1 + ',70%,50%,0.28)'; ctx.shadowOffsetY = 8;
+      ctx.fillStyle = 'rgba(14,9,28,0.90)';
+      ctx.beginPath(); ctx.roundRect(cX, cY, cW, cH, 26); ctx.fill();
+      ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+      ctx.strokeStyle = 'hsla(' + h1 + ',62%,54%,0.38)'; ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.restore();
 
-      const slideIdx = t < OUTRO_START ? Math.min(slideSnapshots.length - 1, Math.floor(t / SEC_PER_SLIDE)) : Math.min(2, slideSnapshots.length - 1);
-      const slideLocalT = t < OUTRO_START ? (t % SEC_PER_SLIDE) / SEC_PER_SLIDE : 1;
-      const snap = slideSnapshots[slideIdx];
+      let curY = cY + Math.round(H * 0.038);
 
-      if (snap) {
+      // Slide counter
+      ctx.save();
+      ctx.font = '600 ' + Math.round(W*0.022) + "px 'Outfit',sans-serif";
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      ctx.fillStyle = 'hsla(' + h1 + ',80%,75%,0.6)';
+      ctx.fillText((slideIdx+1) + ' / ' + totalSlides, W/2, curY);
+      curY += Math.round(W * 0.042);
+      ctx.restore();
+
+      // Subtitle
+      if (slideData.subtitle) {
         ctx.save();
-
-        // 3. Apple Spring Recoil Entrance (Elastic Spring Physics)
-        const springProgress = springBack(clamp01(slideLocalT * 2.2));
-        const alpha = easeOutCubic(clamp01(slideLocalT * 4));
-
-        // Slide transition cross-fade
-        const XFADE = 0.14;
-        const withinSlide = t % SEC_PER_SLIDE;
-        let fadeAlpha = 1;
-        if (withinSlide < XFADE * SEC_PER_SLIDE && t > 0.1) {
-          fadeAlpha = easeOutCubic(withinSlide / (XFADE * SEC_PER_SLIDE));
-        } else if (withinSlide > SEC_PER_SLIDE * (1 - XFADE) && t < OUTRO_START) {
-          fadeAlpha = easeOutCubic(1 - (withinSlide - SEC_PER_SLIDE * (1 - XFADE)) / (XFADE * SEC_PER_SLIDE));
-        }
-
-        ctx.globalAlpha = alpha * fadeAlpha;
-
-        // Screen Studio 3D Floating Tilt + Breathing Scale
-        const tiltX = Math.sin(slideLocalT * Math.PI * 2) * 6; // subtle 3D tilt offset
-        const scale = (0.92 + springProgress * 0.08) * (1 + Math.sin(slideLocalT * Math.PI) * 0.02);
-
-        const drawW = W * 0.86 * scale;
-        const drawH = (snap.height / snap.width) * drawW;
-        const drawX = (W - drawW) / 2 + tiltX;
-        const drawY = (H - drawH) / 2 - 12;
-
-        // 4. Premium Drop Shadow & 3D Glass Elevation
-        ctx.shadowBlur = 75; ctx.shadowColor = 'rgba(0, 0, 0, 0.88)'; ctx.shadowOffsetY = 28;
-        ctx.drawImage(snap, drawX, drawY, drawW, drawH);
-        ctx.shadowBlur = 0;
-
-        // 5. Laser Beam Progress Sweep along bottom card edge
-        const sweepProgress = easeInOutSine(slideLocalT);
-        const sweepW = drawW * sweepProgress;
-        
-        // Laser glow
-        ctx.shadowBlur = 16; ctx.shadowColor = '#10b981';
-        ctx.fillStyle = '#10b981';
-        ctx.fillRect(drawX, drawY + drawH - 5, sweepW, 5);
-        ctx.shadowBlur = 0;
-
-        // Sparkle head at edge of laser
-        if (sweepProgress > 0.02 && sweepProgress < 0.98) {
-          ctx.beginPath();
-          ctx.arc(drawX + sweepW, drawY + drawH - 2.5, 6, 0, Math.PI * 2);
-          ctx.fillStyle = '#ffffff';
-          ctx.shadowBlur = 12; ctx.shadowColor = '#ffffff';
-          ctx.fill();
-          ctx.shadowBlur = 0;
-        }
-
+        ctx.font = '700 ' + Math.round(W*0.027) + "px 'Outfit',sans-serif";
+        ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        ctx.fillStyle = 'hsla(' + h1 + ',80%,78%,0.82)';
+        ctx.fillText(String(slideData.subtitle).toUpperCase().slice(0,55), W/2, curY);
+        curY += Math.round(W * 0.048);
         ctx.restore();
       }
 
-      // 6. Outro: Brand Glass Elevation Bar + Watermark
-      if (t >= OUTRO_START) {
-        const pO = mapRange(t, OUTRO_START, TOTAL_SEC);
-        const appear = springBack(clamp01(pO * 2.8));
-        const fadeOut = pO > 0.82 ? easeInOutSine(mapRange(pO, 0.82, 1.0)) : 0;
+      // Divider
+      ctx.save();
+      ctx.strokeStyle = 'hsla(' + h1 + ',60%,55%,0.25)'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(cX + cW*0.08, curY); ctx.lineTo(cX + cW*0.92, curY); ctx.stroke();
+      curY += Math.round(W * 0.030);
+      ctx.restore();
+
+      // Title
+      if (slideData.title) {
+        ctx.save();
+        const tLen = String(slideData.title).length;
+        const tSize = tLen > 55 ? Math.round(W*0.044) : tLen > 35 ? Math.round(W*0.052) : Math.round(W*0.060);
+        ctx.font = '800 ' + tSize + "px 'Outfit',sans-serif";
+        ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        ctx.fillStyle = '#f0e6ff';
+        ctx.shadowBlur = 14; ctx.shadowColor = 'hsla(' + h1 + ',80%,68%,0.5)';
+        curY = reelWrapText(ctx, slideData.title, W/2, curY, cW * 0.88, tSize * 1.28);
+        curY += Math.round(W * 0.025);
+        ctx.restore();
+      }
+
+      // Key metric
+      if (slideData.key_metric && curY < cY + cH * 0.70) {
+        const mW = Math.round(cW * 0.44), mH = Math.round(W * 0.13);
+        const mX = W/2 - mW/2;
+        ctx.save();
+        ctx.fillStyle = 'hsla(' + h1 + ',52%,17%,0.92)';
+        ctx.strokeStyle = 'hsla(' + h1 + ',68%,54%,0.48)'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.roundRect(mX, curY, mW, mH, 12); ctx.fill(); ctx.stroke();
+        ctx.font = '800 ' + Math.round(W*0.068) + "px 'Outfit',sans-serif";
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillStyle = 'hsl(' + h1 + ',88%,76%)';
+        ctx.fillText(String(slideData.key_metric.value||'').slice(0,8), W/2, curY + mH*0.52);
+        ctx.font = '600 ' + Math.round(W*0.023) + "px 'Outfit',sans-serif";
+        ctx.fillStyle = 'rgba(215,195,255,0.62)';
+        ctx.fillText(String(slideData.key_metric.label||'').slice(0,26), W/2, curY + mH*0.85);
+        curY += mH + Math.round(W * 0.030);
+        ctx.restore();
+      }
+
+      // Versus comparison
+      if (slideData.versus_comparison && curY < cY + cH * 0.72) {
+        const vs = slideData.versus_comparison;
+        const halfW = Math.round(cW * 0.44);
+        const vsH   = Math.round(W * 0.20);
+        const oldX  = cX + Math.round(cW * 0.02);
+        const newX  = cX + Math.round(cW * 0.52);
+        ctx.save();
+        ctx.fillStyle = 'rgba(170,25,45,0.20)';
+        ctx.strokeStyle = 'rgba(220,55,75,0.48)'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.roundRect(oldX, curY, halfW, vsH, 10); ctx.fill(); ctx.stroke();
+        ctx.font = '700 ' + Math.round(W*0.021) + "px 'Outfit',sans-serif";
+        ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        ctx.fillStyle = '#ff9090';
+        ctx.fillText('\u2715 OLD WAY', oldX + halfW/2, curY + Math.round(W*0.022));
+        ctx.font = '500 ' + Math.round(W*0.022) + "px 'Outfit',sans-serif";
+        ctx.fillStyle = 'rgba(255,175,175,0.82)';
+        reelWrapText(ctx, String(vs.old_way||'').slice(0,65), oldX + halfW/2, curY + Math.round(W*0.052), halfW*0.88, Math.round(W*0.028));
+        ctx.restore();
+        ctx.save();
+        ctx.fillStyle = 'rgba(14,110,55,0.20)';
+        ctx.strokeStyle = 'rgba(14,190,95,0.48)'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.roundRect(newX, curY, halfW, vsH, 10); ctx.fill(); ctx.stroke();
+        ctx.font = '700 ' + Math.round(W*0.021) + "px 'Outfit',sans-serif";
+        ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        ctx.fillStyle = '#88ffcc';
+        ctx.fillText('\u2713 NEW WAY', newX + halfW/2, curY + Math.round(W*0.022));
+        ctx.font = '500 ' + Math.round(W*0.022) + "px 'Outfit',sans-serif";
+        ctx.fillStyle = 'rgba(155,255,195,0.82)';
+        reelWrapText(ctx, String(vs.new_way||'').slice(0,65), newX + halfW/2, curY + Math.round(W*0.052), halfW*0.88, Math.round(W*0.028));
+        ctx.restore();
+        curY += vsH + Math.round(W * 0.030);
+      }
+
+      // Bullet points
+      const bullets = (slideData.bullet_points || []).slice(0, 4);
+      if (bullets.length > 0 && curY < cY + cH * 0.74) {
+        const bH   = Math.round(W * 0.082);
+        const bGap = Math.round(W * 0.016);
+        for (let i = 0; i < bullets.length; i++) {
+          const b  = bullets[i];
+          const bX = cX + Math.round(cW * 0.03);
+          const bW = Math.round(cW * 0.94);
+          const bY = curY + (bH + bGap) * i;
+          if (bY + bH > cY + cH - Math.round(W*0.07)) break;
+          ctx.save();
+          ctx.fillStyle = 'hsla(' + h1 + ',38%,14%,0.78)';
+          ctx.strokeStyle = 'hsla(' + h1 + ',58%,50%,0.28)'; ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.roundRect(bX, bY, bW, bH, 9); ctx.fill(); ctx.stroke();
+          ctx.font = '700 ' + Math.round(W*0.026) + "px 'Outfit',sans-serif";
+          ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+          ctx.fillStyle = 'hsl(' + h1 + ',78%,78%)';
+          ctx.fillText((i+1) + '.  ' + String(b.point_title||'').slice(0,32), bX + Math.round(W*0.024), bY + Math.round(bH*0.14));
+          ctx.font = '500 ' + Math.round(W*0.022) + "px 'Outfit',sans-serif";
+          ctx.fillStyle = 'rgba(215,195,255,0.68)';
+          ctx.fillText(String(b.point_desc||'').slice(0,55), bX + Math.round(W*0.024), bY + Math.round(bH*0.54));
+          ctx.restore();
+        }
+        curY += (bH + bGap) * bullets.length + Math.round(W * 0.022);
+      }
+
+      // Takeaway quote
+      if (slideData.takeaway_quote && curY < cY + cH - Math.round(W*0.10)) {
+        const qX = cX + Math.round(cW*0.04);
+        const qW = Math.round(cW*0.92);
+        const qH = Math.round(W * 0.096);
+        const qY = Math.min(curY, cY + cH - qH - Math.round(W*0.06));
+        ctx.save();
+        ctx.fillStyle = 'hsla(' + h1 + ',48%,11%,0.82)';
+        ctx.strokeStyle = 'hsla(' + h1 + ',63%,54%,0.42)'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.roundRect(qX, qY, qW, qH, 9); ctx.fill(); ctx.stroke();
+        ctx.font = 'italic 600 ' + Math.round(W*0.024) + "px 'Outfit',sans-serif";
+        ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        ctx.fillStyle = 'rgba(232,212,255,0.84)';
+        reelWrapText(ctx, '"' + String(slideData.takeaway_quote).slice(0,80) + '"', W/2, qY + Math.round(W*0.026), qW * 0.88, Math.round(W*0.030));
+        ctx.restore();
+      }
+
+      // Bottom watermark
+      ctx.save();
+      ctx.font = '600 ' + Math.round(W*0.021) + "px 'Outfit',sans-serif";
+      ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+      ctx.fillStyle = 'hsla(' + h1 + ',68%,64%,0.46)';
+      ctx.fillText('\u26a1 Made with Cardify.ai', W/2, cY + cH - Math.round(W*0.016));
+      ctx.restore();
+    }
+
+    // ---- Main Reel Frame Compositor ----
+    function drawReelFrame(ctx, W, H, t, slides, isPro) {
+      const slideCount  = Math.max(1, slides.length);
+      const SEC_PER     = 3.0;
+      const OUTRO_START = slideCount * SEC_PER;
+      const TOTAL_SEC   = OUTRO_START + 2.5;
+
+      if (slides.length === 0) {
+        ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H); return;
+      }
+
+      const inOutro     = t >= OUTRO_START;
+      const slideIdx    = inOutro ? slides.length - 1 : Math.min(slides.length - 1, Math.floor(t / SEC_PER));
+      const withinSlide = inOutro ? SEC_PER : (t % SEC_PER);
+      const slideLocalT = withinSlide / SEC_PER;
+
+      // Cross-fade alpha
+      const XFADE = 0.11;
+      let fadeAlpha = 1;
+      if (slideLocalT < XFADE && t > 0.05) {
+        fadeAlpha = easeOutCubic(slideLocalT / XFADE);
+      } else if (slideLocalT > (1 - XFADE) && !inOutro) {
+        fadeAlpha = easeOutCubic((1 - slideLocalT) / XFADE);
+      }
+      fadeAlpha = Math.max(0, Math.min(1, fadeAlpha));
+
+      const breathScale = 1 + Math.sin(slideLocalT * Math.PI) * 0.012;
+
+      ctx.save();
+      ctx.globalAlpha = fadeAlpha;
+      ctx.translate(W / 2, H / 2);
+      ctx.scale(breathScale, breathScale);
+      ctx.translate(-W / 2, -H / 2);
+      drawCanvasCard(ctx, W, H, slides[slideIdx], slideIdx, slideCount);
+      ctx.restore();
+
+      // Progress sweep bar
+      if (!inOutro) {
+        ctx.save();
+        const sweepW = W * easeInOutSine(slideLocalT);
+        ctx.fillStyle = 'rgba(16,185,129,0.65)';
+        ctx.shadowBlur = 10; ctx.shadowColor = '#10b981';
+        ctx.fillRect(0, H - 5, sweepW, 5);
+        ctx.shadowBlur = 0;
+        ctx.restore();
+      }
+
+      // Outro: brand bar + fade to black
+      if (inOutro) {
+        const pO      = mapRange(t, OUTRO_START, OUTRO_START + 2.5);
+        const appear  = easeOutCubic(clamp01(pO * 2.0));
+        const fadeOut = pO > 0.76 ? easeInOutSine(mapRange(pO, 0.76, 1.0)) : 0;
 
         ctx.save();
-        ctx.globalAlpha = clamp01(appear) * (1 - fadeOut);
-        const barW = W * 0.84, barH = 66;
-        const barX = (W - barW) / 2, barY = H - barH - 36;
-
-        ctx.fillStyle = 'rgba(18, 10, 44, 0.95)';
-        ctx.strokeStyle = 'rgba(168, 85, 247, 0.55)';
-        ctx.lineWidth = 1.5;
-        ctx.shadowBlur = 25; ctx.shadowColor = 'rgba(168, 85, 247, 0.4)';
+        ctx.globalAlpha = appear * (1 - fadeOut);
+        const barW = Math.round(W * 0.82), barH = 68;
+        const barX = (W - barW) / 2, barY = H / 2 - barH / 2;
+        ctx.fillStyle = 'rgba(14,8,38,0.97)';
+        ctx.strokeStyle = 'rgba(168,85,247,0.62)'; ctx.lineWidth = 1.5;
+        ctx.shadowBlur = 28; ctx.shadowColor = 'rgba(168,85,247,0.45)';
         ctx.beginPath(); ctx.roundRect(barX, barY, barW, barH, 18); ctx.fill(); ctx.stroke();
         ctx.shadowBlur = 0;
-
-        ctx.font = "800 24px 'Outfit', sans-serif";
+        ctx.font = '800 ' + Math.round(W*0.038) + "px 'Outfit',sans-serif";
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.shadowBlur = 16; ctx.shadowColor = 'rgba(168, 85, 247, 0.9)';
         ctx.fillStyle = '#f0e6ff';
-        ctx.fillText('⚡️  cardify.ai  — Make Content That Pops', W / 2, barY + barH / 2);
-        ctx.shadowBlur = 0;
-
+        ctx.fillText('\u26a1\ufe0f  cardify.ai  \u2014 Make Content That Pops', W/2, barY + barH/2);
         if (!isPro) {
-          ctx.font = "600 14px monospace";
+          ctx.font = '600 ' + Math.round(W*0.020) + 'px monospace';
           ctx.textAlign = 'right'; ctx.textBaseline = 'bottom';
-          ctx.fillStyle = 'rgba(192, 132, 252, 0.50)';
-          ctx.fillText('Powered by Cardify.ai', W - 20, H - 12);
+          ctx.fillStyle = 'rgba(192,132,252,0.42)';
+          ctx.fillText('Powered by Cardify.ai', W - 18, H - 10);
         }
         ctx.restore();
 
         if (fadeOut > 0) {
-          ctx.save();
-          ctx.globalAlpha = fadeOut;
-          ctx.fillStyle = '#000';
-          ctx.fillRect(0, 0, W, H);
+          ctx.save(); ctx.globalAlpha = fadeOut;
+          ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
           ctx.restore();
         }
       }
     }
 
-    // ---- Live Motion Reel Preview Handlers ----
-    let _reelRAF = null;
+    // ---- Live Reel Preview State ----
+    let _reelRAF     = null;
     let _reelPlaying = false;
-    let _cachedSnapshots = [];
+    let _reelSlides  = [];
 
     async function openReelPreview() {
-      if (!currentResponseData || !currentResponseData.slides) {
+      if (!currentResponseData || !currentResponseData.slides || currentResponseData.slides.length === 0) {
         showToast('Please generate cards first!', true);
         return;
       }
-
-      showToast('📸 Capturing slide visuals for Screen Studio preview...');
-      _cachedSnapshots = await captureAllDOMSlides();
-      if (_cachedSnapshots.length === 0) {
-        showToast('Failed to snapshot slides', true);
-        return;
-      }
-
+      _reelSlides = currentResponseData.slides;
       const modal = document.getElementById('reelPreviewModal');
       modal.classList.remove('hidden');
       modal.classList.add('flex');
-
       const canvas = document.getElementById('reelPreviewCanvas');
       const W = 1080, H = 1350;
       canvas.width = W; canvas.height = H;
       const ctx = canvas.getContext('2d');
-
-      // Render crisp static first frame
-      drawHybridReelFrame(ctx, W, H, 0.05, _cachedSnapshots, false);
+      drawReelFrame(ctx, W, H, 0.08, _reelSlides, false);
+      showToast('\u25b6 Preview ready \u2014 ' + _reelSlides.length + ' slides loaded!');
     }
 
     function closeReelPreview() {
@@ -2102,44 +2187,33 @@
       modal.classList.add('hidden');
       modal.classList.remove('flex');
       const overlay = document.getElementById('reelOverlay');
-      if (overlay) {
-        overlay.style.opacity = '1';
-        overlay.style.pointerEvents = '';
-      }
+      if (overlay) { overlay.style.opacity = '1'; overlay.style.pointerEvents = ''; }
       const prog = document.getElementById('reelProgressBar');
       if (prog) prog.style.width = '0%';
       const badge = document.getElementById('reelTimeBadge');
-      if (badge) badge.textContent = '0.0s / 14s';
+      if (badge) badge.textContent = '0.0s / Reel';
     }
 
     function startReelPlayback() {
       if (_reelPlaying) return;
+      if (!_reelSlides || _reelSlides.length === 0) { showToast('Open preview first!', true); return; }
       _reelPlaying = true;
-
       const overlay   = document.getElementById('reelOverlay');
       const progBar   = document.getElementById('reelProgressBar');
       const timeBadge = document.getElementById('reelTimeBadge');
-      if (overlay) {
-        overlay.style.opacity = '0';
-        overlay.style.pointerEvents = 'none';
-      }
-
+      if (overlay) { overlay.style.opacity = '0'; overlay.style.pointerEvents = 'none'; }
       const canvas = document.getElementById('reelPreviewCanvas');
       const W = 1080, H = 1350;
       canvas.width = W; canvas.height = H;
       const ctx = canvas.getContext('2d');
-
-      const TOTAL_SEC = (Math.max(1, _cachedSnapshots.length) * 2.8) + 2.5;
-      const startMs = performance.now();
-
+      const TOTAL_SEC = _reelSlides.length * 3.0 + 2.5;
+      const startMs   = performance.now();
       function tick() {
         if (!_reelPlaying) return;
         const t = Math.min((performance.now() - startMs) / 1000, TOTAL_SEC);
-        drawHybridReelFrame(ctx, W, H, t, _cachedSnapshots, false);
-
-        if (progBar) progBar.style.width = `${(t / TOTAL_SEC) * 100}%`;
-        if (timeBadge) timeBadge.textContent = `${t.toFixed(1)}s / ${TOTAL_SEC}s`;
-
+        drawReelFrame(ctx, W, H, t, _reelSlides, false);
+        if (progBar)   progBar.style.width  = ((t / TOTAL_SEC) * 100) + '%';
+        if (timeBadge) timeBadge.textContent = t.toFixed(1) + 's / ' + TOTAL_SEC.toFixed(1) + 's';
         if (t < TOTAL_SEC) {
           _reelRAF = requestAnimationFrame(tick);
         } else {
@@ -2147,83 +2221,68 @@
           if (overlay) {
             overlay.style.opacity = '1';
             overlay.style.pointerEvents = '';
-            overlay.innerHTML = `
-              <button onclick="startReelPlayback()" class="w-14 h-14 rounded-full bg-white/10 hover:bg-white/20 border-2 border-white/40 backdrop-blur-sm flex items-center justify-center text-white text-2xl transition-all hover:scale-110">↺</button>
-              <p class="text-white/70 text-xs font-medium">Replay</p>`;
+            overlay.innerHTML = '<button onclick="startReelPlayback()" class="w-14 h-14 rounded-full bg-white/10 hover:bg-white/20 border-2 border-white/40 backdrop-blur-sm flex items-center justify-center text-white text-2xl transition-all hover:scale-110">\u21ba</button><p class="text-white/70 text-xs font-medium">Replay</p>';
           }
         }
       }
-
       _reelRAF = requestAnimationFrame(tick);
     }
 
-    // ---- Export HD Video Engine ----
+    // ---- Export HD Video (requestAnimationFrame-driven, DOM-attached canvas) ----
     async function exportCardVideo(isPro = false) {
-      if (!currentResponseData || !currentResponseData.slides) {
-        showToast('Please generate cards first!', true);
-        return;
+      if (!currentResponseData || !currentResponseData.slides || currentResponseData.slides.length === 0) {
+        showToast('Please generate cards first!', true); return;
       }
-
       if (isPro) {
-        showToast('⚡️ Redirecting to Pro Checkout...');
-        setTimeout(() => {
-          window.open('https://dodopayments.com', '_blank');
-        }, 800);
+        showToast('\u26a1\ufe0f Redirecting to Pro Checkout...');
+        setTimeout(() => { window.open('https://dodopayments.com', '_blank'); }, 800);
         return;
       }
-
       closeReelPreview();
-      showToast('🎬 Rendering 14s GSAP Screen Studio reel video... (~14s)');
-
-      const snapshots = _cachedSnapshots.length > 0 ? _cachedSnapshots : await captureAllDOMSlides();
-      if (snapshots.length === 0) {
-        showToast('Slide rendering failed', true);
-        return;
-      }
-
+      const slides    = currentResponseData.slides;
+      const TOTAL_SEC = slides.length * 3.0 + 2.5;
+      const FPS       = 60;
       const W = 1080, H = 1350;
-      const TOTAL_SEC = (Math.max(1, _cachedSnapshots.length) * 2.8) + 2.5;
-      const FPS = 60;
-      const TOTAL_FRAMES = TOTAL_SEC * FPS;
-
+      showToast('\ud83c\udfa5 Rendering ' + TOTAL_SEC.toFixed(0) + 's reel (' + slides.length + ' slides)...');
       const canvas = document.createElement('canvas');
       canvas.width = W; canvas.height = H;
-      const ctx = canvas.getContext('2d');
-
-      const audio = buildReelAudio(TOTAL_SEC);
-      const tracks = [canvas.captureStream(FPS).getVideoTracks()[0]];
+      canvas.style.cssText = 'position:fixed;left:-9999px;top:-9999px;pointer-events:none;';
+      document.body.appendChild(canvas);
+      const ctx    = canvas.getContext('2d');
+      const audio  = buildReelAudio(TOTAL_SEC);
+      const stream = canvas.captureStream(FPS);
+      const vTrack = stream.getVideoTracks()[0];
+      const tracks = [vTrack];
       if (audio.stream) tracks.push(audio.stream);
-
       let mimeType = 'video/webm;codecs=vp9';
       if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm';
-
-      const chunks = [];
+      const chunks   = [];
       const recorder = new MediaRecorder(new MediaStream(tracks), { mimeType, videoBitsPerSecond: 12_000_000 });
       recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
       recorder.onstop = () => {
+        document.body.removeChild(canvas);
         const blob = new Blob(chunks, { type: mimeType });
         const url  = URL.createObjectURL(blob);
         const a    = document.createElement('a');
-        a.href = url; a.download = `cardify-reel-${selectedPlatform}-${Date.now()}.webm`;
+        a.href = url; a.download = 'cardify-reel-' + selectedPlatform + '-' + Date.now() + '.webm';
         document.body.appendChild(a); a.click();
         document.body.removeChild(a); URL.revokeObjectURL(url);
-        showToast('✨ 60fps GSAP Screen Studio Reel Video Exported!');
+        showToast('\u2728 Animated Reel Video Exported!');
       };
-
       recorder.start(100);
       const startMs = performance.now();
-
-      for (let f = 0; f <= TOTAL_FRAMES; f++) {
-        const t = f / FPS;
-        drawHybridReelFrame(ctx, W, H, t, snapshots, isPro);
-        const elapsed = performance.now() - startMs;
-        const targetMs = (f + 1) * (1000 / FPS);
-        await new Promise(r => setTimeout(r, Math.max(0, targetMs - elapsed)));
+      function renderExportFrame() {
+        const t = Math.min((performance.now() - startMs) / 1000, TOTAL_SEC);
+        drawReelFrame(ctx, W, H, t, slides, false);
+        if (vTrack.requestFrame) vTrack.requestFrame();
+        if (t < TOTAL_SEC) {
+          requestAnimationFrame(renderExportFrame);
+        } else {
+          recorder.stop();
+        }
       }
-
-      recorder.stop();
+      requestAnimationFrame(renderExportFrame);
     }
-
     async function checkUrlHashForLiveDeck() {
       const hash = window.location.hash;
       if (!hash) return;
