@@ -23,13 +23,13 @@ module.exports = async function handler(req, res) {
 
   if (req.method === 'POST') {
     try {
-      const { slides, preset } = req.body || {};
+      const { slides, preset, ctaType, ctaValue } = req.body || {};
       if (!slides || !Array.isArray(slides)) {
         return res.status(400).json({ error: 'Invalid slides payload' });
       }
 
       const shortId = generateShortId();
-      shareKvStore.set(shortId, { slides, preset, createdAt: Date.now() });
+      shareKvStore.set(shortId, { slides, preset, ctaType, ctaValue, createdAt: Date.now() });
 
       const host = req.headers.host || 'cardifyai.lumiere-private.com';
       const protocol = req.headers['x-forwarded-proto'] || 'https';
