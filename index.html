@@ -1889,8 +1889,15 @@
           // Inject Lead Gen CTA if on last slide
           let ctaHtml = '';
           let scriptToRun = null;
-          if (currentPresenterIndex === cards.length - 1 && currentResponseData.ctaType && currentResponseData.ctaType !== 'none') {
-            if (currentResponseData.ctaType === 'email') {
+          const activeCtaType = (currentResponseData && currentResponseData.ctaType && currentResponseData.ctaType !== 'none')
+            ? currentResponseData.ctaType
+            : (document.getElementById('ctaType') ? document.getElementById('ctaType').value : 'none');
+          const activeCtaValue = (currentResponseData && currentResponseData.ctaValue)
+            ? currentResponseData.ctaValue
+            : (document.getElementById('ctaValue') ? document.getElementById('ctaValue').value : '');
+
+          if (currentPresenterIndex === cards.length - 1 && activeCtaType && activeCtaType !== 'none') {
+            if (activeCtaType === 'email') {
               ctaHtml = `
                 <div class="absolute -bottom-16 left-0 right-0 w-full animate-slide-up-fade">
                   <div class="p-4 bg-gray-900/95 border border-amber-500/50 rounded-2xl flex flex-col gap-3 shadow-[0_0_30px_rgba(245,158,11,0.15)] backdrop-blur-xl">
@@ -1913,7 +1920,7 @@
                 const btn = document.getElementById('leadSubmitBtn');
                 if(btn) btn.onclick = async () => {
                   const email = document.getElementById('leadEmailInput').value;
-                  const wh = currentResponseData.ctaValue;
+                  const wh = activeCtaValue;
                   btn.innerText = 'Sending...';
                   btn.disabled = true;
                   await submitLeadEmail(wh, email);
@@ -1922,8 +1929,8 @@
                   showToast('✨ Success!');
                 };
               };
-            } else if (currentResponseData.ctaType === 'calendly') {
-              const calUrl = currentResponseData.ctaValue || 'https://calendly.com/';
+            } else if (activeCtaType === 'calendly') {
+              const calUrl = activeCtaValue || 'https://calendly.com/';
               ctaHtml = `
                 <div class="absolute -bottom-16 left-0 right-0 w-full animate-slide-up-fade flex justify-center">
                   <button onclick="openCalendlyModal('${calUrl}')" class="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm transition-all shadow-[0_0_30px_rgba(79,70,229,0.3)] hover:scale-105 flex items-center gap-2 border border-blue-400/30">
