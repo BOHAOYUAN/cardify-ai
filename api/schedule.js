@@ -30,15 +30,18 @@ module.exports = async function handler(req, res) {
         // If user provided a webhook (e.g. Zapier / Make / Feishu), trigger it immediately for testing/integration
         if (webhookUrl && typeof webhookUrl === 'string' && webhookUrl.startsWith('http')) {
           try {
-            await fetch(webhookUrl, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                event: 'social_post_scheduled',
-                task,
-                message: 'New B2B Social Post Task ready for automated publishing'
-              })
-            });
+            const fetchFn = typeof fetch === 'function' ? fetch : (globalThis && globalThis.fetch);
+            if (fetchFn) {
+              await fetchFn(webhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  event: 'social_post_scheduled',
+                  task,
+                  message: 'New B2B Social Post Task ready for automated publishing'
+                })
+              });
+            }
           } catch (e) {
             console.warn('[Schedule Webhook Error]:', e.message);
           }
