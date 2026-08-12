@@ -1632,29 +1632,6 @@
 
           const metricValue = card.querySelector('.card-metric-value');
           if (metricValue) metricValue.style.color = cssObj.metricValueColor || '';
-
-          const quoteBox = card.querySelector('.card-quote-box');
-          if (quoteBox) {
-            quoteBox.style.background = cssObj.quoteBg || '';
-            quoteBox.style.border = cssObj.quoteBorder || '';
-          }
-
-          const quoteText = card.querySelector('.card-quote-text');
-          if (quoteText) quoteText.style.color = cssObj.quoteTextColor || '';
-        }
-      }
-    }
-
-    function initSwiper() {
-      if (swiperInstance) swiperInstance.destroy(true, true);
-      swiperInstance = new Swiper('.cardSwiper', {
-        effect: 'cards',
-        grabCursor: true,
-        pagination: { el: '.swiper-pagination', clickable: true },
-      });
-    }
-
-    function getEffectiveLang() {
       if (selectedLang === 'auto') {
         return (navigator.language && navigator.language.startsWith('zh')) ? 'zh' : 'en';
       }
