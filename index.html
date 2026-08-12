@@ -2143,6 +2143,119 @@
       }
     }
 
+    
+    // === CARDIFY GROWTH & AUTOMATION ENGINE ===
+    const RADAR_ITEMS = [
+      {
+        title: "Sam Altman: The $1B Solo Founder Playbook",
+        url: "https://youtube.com/watch?v=example1",
+        summary: "Key takeaways from Sam Altman on how 1-person unicorns will dominate 2026 using AI agents, extreme focus, and leverage."
+      },
+      {
+        title: "DeepSeek LLM Cost Reduction Secrets",
+        url: "https://arxiv.org/abs/example2",
+        summary: "Architectural breakthroughs behind DeepSeek V3/R1. Multi-head latent attention and FP8 mixed precision training explained."
+      },
+      {
+        title: "LinkedIn Organic Growth SOP 2026",
+        url: "https://blog.cardify.ai/linkedin-sop",
+        summary: "The exact framework to post native carousels, drive 200+ comments with 'GROWTH' triggers, and convert views to booked calls."
+      }
+    ];
+
+    function applyRadarItem(index) {
+      const item = RADAR_ITEMS[index];
+      if (!item) return;
+
+      const textInput = document.getElementById('inputText');
+      if (textInput) {
+        textInput.value = `URL: ${item.url}\n\n${item.summary}`;
+        updateCharCount();
+      }
+
+      showToast(`⚡ Selected: ${item.title}. Generating Instant Deck...`);
+      generateContent(false);
+    }
+
+    function openDmModal() {
+      let modal = document.getElementById('dmModal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'dmModal';
+        modal.className = 'fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in';
+        document.body.appendChild(modal);
+      }
+
+      const cardTitle = (currentResponseData && currentResponseData.slides && currentResponseData.slides[0])
+        ? currentResponseData.slides[0].title
+        : "Exclusive Growth Playbook";
+      
+      const h5ShareUrl = window.location.href;
+
+      const copyText = `I condensed the core insights from: "${cardTitle}" into a 5-slide visual carousel.\n\nHere are the key takeaways:\n📌 1. AI Leverage is scaling 1-person startups\n📌 2. Organic reach belongs to native carousels\n📌 3. H5 Lead engines convert views to calls\n\nWant to access the interactive H5 Deck + book a 1-on-1 strategy call?\n\n👉 Comment "GROWTH" below, and I'll DM you the private access link immediately!\n\n(No external link in main post = 100% algorithm push 🚀)`;
+
+      const payload = {
+        trigger_keyword: "GROWTH",
+        target_platform: "LinkedIn",
+        action: "SEND_DM",
+        dm_template: `Hey {first_name}! Thanks for commenting on my post. Here is your private link to the interactive H5 Deck: ${h5ShareUrl}`,
+        card_id: "demo_card_123"
+      };
+
+      modal.innerHTML = `
+        <div class="bg-slate-900 border border-gray-800 rounded-3xl max-w-lg w-full p-6 text-left shadow-2xl relative text-white flex flex-col gap-4">
+          <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="message-square" class="w-5 h-5 text-indigo-400"></i>
+              LinkedIn Comment-to-DM Playbook
+            </h3>
+            <button onclick="document.getElementById('dmModal').remove()" class="text-gray-400 hover:text-white p-1">
+              <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+          </div>
+
+          <p class="text-xs text-gray-400">Zero link penalty in main post. Maximized reach & automatic lead collection.</p>
+
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-mono font-bold text-amber-400">1. High-Converting LinkedIn Post Copy</label>
+            <div class="relative">
+              <textarea id="postCopyText" readonly class="w-full h-32 bg-slate-950 border border-gray-800 rounded-xl p-3 text-xs text-gray-300 font-mono resize-none focus:outline-none">${copyText}</textarea>
+              <button onclick="copyToClipboardText('postCopyText')" class="absolute top-2 right-2 text-[10px] bg-slate-900 hover:bg-slate-800 text-amber-400 px-2.5 py-1 rounded-lg border border-gray-700 font-mono shadow-sm">
+                📋 Copy Copy
+              </button>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-mono font-bold text-emerald-400">2. Automation Webhook Payload (Zapier / ManyChat)</label>
+            <div class="relative">
+              <pre id="webhookPayloadText" class="w-full h-24 bg-slate-950 border border-gray-800 rounded-xl p-3 text-[11px] text-emerald-400 font-mono overflow-x-auto">${JSON.stringify(payload, null, 2)}</pre>
+              <button onclick="copyToClipboardText('webhookPayloadText')" class="absolute top-2 right-2 text-[10px] bg-slate-900 hover:bg-slate-800 text-amber-400 px-2.5 py-1 rounded-lg border border-gray-700 font-mono shadow-sm">
+                📋 Copy JSON
+              </button>
+            </div>
+          </div>
+
+          <div class="flex justify-end pt-2">
+            <button onclick="document.getElementById('dmModal').remove()" class="w-full py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs rounded-xl shadow-lg glow-purple">
+              ✨ Got It! Ready to Publish
+            </button>
+          </div>
+        </div>
+      `;
+
+      modal.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function copyToClipboardText(elementId) {
+      const el = document.getElementById(elementId);
+      const text = el.value || el.innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('🚀 Copied to clipboard!');
+      });
+    }
+
     function openPresenterMode() {
       const wrapper = document.getElementById('swiperWrapper');
       const cards = wrapper ? wrapper.querySelectorAll('.swiper-slide') : [];
