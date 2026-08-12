@@ -390,9 +390,26 @@ export default async function handler(req, res) {
     ? 'Auto Detect (MUST match native language of user input text)' 
     : (LANG_NAMES[target_lang] || 'en-US');
 
-  const platformInjector = PLATFORM_INJECTORS[platformKey] || PLATFORM_INJECTORS.twitter;
+  const modeVal = mode_preference === 'single' ? 'single' : 'carousel';
+  const platformKey = platform || 'linkedin';
+  const langRule = isAutoDetect 
+    ? 'CRITICAL LANGUAGE RULE: Output MUST strictly match and preserve the native language of the user input content (e.g. if input text is Chinese, output Chinese; if input text is English, output English). Do NOT translate.' 
+    : `CRITICAL LANGUAGE RULE: Output MUST strictly translate, adapt, and localize content into ${targetLangCode} with zero language mix.`;
 
-  const finalSystemPrompt = `${BASE_MASTER_PROMPT}\n\n[LANGUAGE INSTRUCTION]: ${langRule}\n[TARGET PLATFORM]: ${platformKey}\n\n${platformInjector}`;
+  const platformStyle = PLATFORM_INJECTORS[platformKey] || PLATFORM_INJECTORS.linkedin;
+  
+  const finalSystemPrompt = `${BASE_MASTER_PROMPT}
+
+### DYNAMIC USER INJECTIONS & SLIDE COUNT TARGET
+- TOTAL SLIDES TARGET: You MUST generate exactly ${targetSlideCount} slides in total.
+- CHAPTER NARRATIVE STRUCTURE: Organize slides into progressive Chapters (Chapter 1: The Hook, Chapter 2: The Trap, Chapter 3: Breakthrough, Chapter 4: Action SOP, Chapter 5: Take Action Lead Magnet CTA). Each slide's 'subtitle' MUST contain the chapter tag (e.g., "Chapter 1: The Hook" or "Chapter 2: Core Trap").
+- TARGET LANGUAGE: ${targetLangCode}
+- PRESET HOOK STRATEGY: ${preset_hook || 'High Impact Viral Hook'}
+- VISUAL THEME DIRECTIVE: ${custom_theme_prompt || target_style || 'Luxury Dark Gold Cyberpunk'}
+
+${langRule}
+
+${platformStyle}`;
 
   let userPrompt = `[Target Language Mode]: ${targetLangCode}\n[Mode Preference]: ${modeVal}\n[Platform]: ${platformKey}\n[Style Profile]: ${target_style || 'cyber'}`;
   if (custom_theme_prompt) userPrompt += `\n[Custom Prompt Visual Theme]: ${custom_theme_prompt}`;

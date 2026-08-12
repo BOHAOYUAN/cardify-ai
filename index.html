@@ -3499,10 +3499,10 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             input_text: payloadText,
+            slide_count: selectedSlideCount,
             target_style: currentPreset,
             target_lang: selectedLang,
             mode_preference: currentMode,
-            target_slide_count: selectedSlideCount,
             platform: selectedPlatform,
             preset_hook: selectedHookTag,
             custom_theme_prompt: customThemePrompt,
@@ -3512,13 +3512,20 @@
           })
         });
 
-        const json = await res.json();
+        let json = null;
+        const contentType = res.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+          json = await res.json();
+        } else {
+          const errText = await res.text();
+          throw new Error(errText.slice(0, 120) || 'Server returned non-JSON error response');
+        }
 
         if (!res.ok) {
           if (res.status === 429) {
             openUpgradeModal();
           }
-          throw new Error(json.message || json.error || 'Generation failed');
+          throw new Error((json && (json.message || json.error)) || 'API Request Failed');
         }
 
         currentResponseData = json.data;
