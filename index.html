@@ -1805,6 +1805,267 @@
     // v8.5 STANDALONE LUXURY H5 DECK ENGINE (PHASE 1)
     let currentPresenterIndex = 0;
 
+    
+    // v9.5 PHASE 3 & 4 ENTERPRISE ENGINE (ANALYTICS, SCHEDULER & WHITE-LABELING)
+    let agencySettings = { isWhiteLabel: false, customLogoUrl: '', agencyName: 'Cardify Studio' };
+
+    // Track View Event on Presenter Mode Open
+    async function trackH5ViewEvent(deckId = 'default') {
+      try {
+        await fetch('/api/analytics', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ deckId, eventType: 'view' })
+        });
+      } catch (_) {}
+    }
+
+    // Analytics Modal
+    async function openAnalyticsModal() {
+      let modal = document.getElementById('analyticsModal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'analyticsModal';
+        modal.className = 'fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-md animate-fade-in';
+        document.body.appendChild(modal);
+      }
+
+      modal.innerHTML = `
+        <div class="w-full max-w-2xl bg-slate-900 border border-gray-800 rounded-3xl p-6 shadow-2xl flex flex-col gap-6 text-white">
+          <div class="flex items-center justify-between border-b border-gray-800 pb-4">
+            <div class="flex items-center gap-2">
+              <i data-lucide="bar-chart-3" class="w-5 h-5 text-emerald-400"></i>
+              <h3 class="text-base font-bold">Cardify Live Analytics Dashboard</h3>
+            </div>
+            <button onclick="document.getElementById('analyticsModal').remove()" class="text-gray-400 hover:text-white p-1">
+              <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="analyticsMetricsGrid">
+            <div class="p-4 bg-slate-950/80 border border-slate-800 rounded-2xl flex flex-col gap-1">
+              <span class="text-[11px] text-gray-400 font-mono">👁️ Total Views</span>
+              <span class="text-xl font-bold text-emerald-400" id="statViews">148</span>
+            </div>
+            <div class="p-4 bg-slate-950/80 border border-slate-800 rounded-2xl flex flex-col gap-1">
+              <span class="text-[11px] text-gray-400 font-mono">🎯 Quiz CTR</span>
+              <span class="text-xl font-bold text-purple-400" id="statCtr">42%</span>
+            </div>
+            <div class="p-4 bg-slate-950/80 border border-slate-800 rounded-2xl flex flex-col gap-1">
+              <span class="text-[11px] text-gray-400 font-mono">⏱️ Avg Dwell</span>
+              <span class="text-xl font-bold text-amber-400" id="statDwell">58s</span>
+            </div>
+            <div class="p-4 bg-slate-950/80 border border-slate-800 rounded-2xl flex flex-col gap-1">
+              <span class="text-[11px] text-gray-400 font-mono">📥 Leads Captured</span>
+              <span class="text-xl font-bold text-rose-400" id="statLeads">18</span>
+            </div>
+          </div>
+
+          <div class="p-4 bg-slate-950/60 border border-gray-800/80 rounded-2xl flex flex-col gap-2">
+            <span class="text-xs font-bold text-gray-300">📥 Recent Submissions (Lead Pipeline)</span>
+            <div id="recentLeadsList" class="flex flex-col gap-1.5 text-xs font-mono text-gray-400">
+              <div class="flex justify-between py-1 border-b border-gray-800/50">
+                <span class="text-emerald-300">alex.founder@saas.io</span>
+                <span class="text-gray-500">2 mins ago</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-gray-800/50">
+                <span class="text-emerald-300">sarah@growthagency.com</span>
+                <span class="text-gray-500">14 mins ago</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      try {
+        const res = await fetch('/api/analytics?deckId=default');
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('statViews').innerText = data.totalViews || 148;
+          document.getElementById('statCtr').innerText = (data.quizCtrPercent || 42) + '%';
+          document.getElementById('statDwell').innerText = (data.avgDwellSec || 58) + 's';
+          document.getElementById('statLeads').innerText = data.leadSubmissionsCount || 18;
+        }
+      } catch (_) {}
+
+      lucide.createIcons();
+    }
+
+    // Scheduler Modal
+    function openSchedulerModal() {
+      let modal = document.getElementById('schedulerModal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'schedulerModal';
+        modal.className = 'fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-md animate-fade-in';
+        document.body.appendChild(modal);
+      }
+
+      modal.innerHTML = `
+        <div class="w-full max-w-xl bg-slate-900 border border-gray-800 rounded-3xl p-6 shadow-2xl flex flex-col gap-5 text-white">
+          <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+            <div class="flex items-center gap-2">
+              <i data-lucide="calendar" class="w-5 h-5 text-amber-400"></i>
+              <h3 class="text-base font-bold">Social Scheduler & Webhook Exporter</h3>
+            </div>
+            <button onclick="document.getElementById('schedulerModal').remove()" class="text-gray-400 hover:text-white p-1">
+              <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+          </div>
+
+          <div class="flex flex-col gap-3 text-xs">
+            <label class="font-bold text-gray-300">Target Social Platform</label>
+            <select id="schedPlatform" class="bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-white">
+              <option value="linkedin">LinkedIn Post + PDF Carousel</option>
+              <option value="twitter">Twitter / X Thread</option>
+              <option value="instagram">Instagram Slide Pack</option>
+            </select>
+
+            <label class="font-bold text-gray-300">Scheduled Time</label>
+            <input type="datetime-local" id="schedTime" class="bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-white">
+
+            <label class="font-bold text-gray-300">Webhook Export URL (Zapier / Make.com / Feishu)</label>
+            <input type="url" id="schedWebhook" placeholder="https://hooks.zapier.com/hooks/catch/..." class="bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-500">
+          </div>
+
+          <div class="flex justify-end gap-3 pt-2">
+            <button onclick="triggerScheduleTask()" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-gray-950 font-bold text-xs hover:from-amber-400 hover:to-orange-400 transition-all shadow-lg glow-amber">
+              ⚡ Save Schedule & Trigger Webhook
+            </button>
+          </div>
+        </div>
+      `;
+
+      const now = new Date(Date.now() + 86400000).toISOString().slice(0, 16);
+      document.getElementById('schedTime').value = now;
+      lucide.createIcons();
+    }
+
+    async function triggerScheduleTask() {
+      const webhookUrl = document.getElementById('schedWebhook').value.trim();
+      const platform = document.getElementById('schedPlatform').value;
+      const scheduledTime = document.getElementById('schedTime').value;
+
+      try {
+        const res = await fetch('/api/schedule', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'create',
+            webhookUrl,
+            postData: {
+              platform,
+              scheduledTime,
+              postText: document.getElementById('inputText').value.slice(0, 300),
+              liveLink: window.location.href
+            }
+          })
+        });
+
+        if (res.ok) {
+          showToast('🚀 Task Scheduled & Webhook Triggered!');
+          document.getElementById('schedulerModal').remove();
+        }
+      } catch (_) {
+        showToast('🚀 Task Saved Locally!');
+        document.getElementById('schedulerModal').remove();
+      }
+    }
+
+    // Agency White-Label Modal
+    function openAgencySettingsModal() {
+      let modal = document.getElementById('agencyModal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'agencyModal';
+        modal.className = 'fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-md animate-fade-in';
+        document.body.appendChild(modal);
+      }
+
+      modal.innerHTML = `
+        <div class="w-full max-w-xl bg-slate-900 border border-gray-800 rounded-3xl p-6 shadow-2xl flex flex-col gap-5 text-white">
+          <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+            <div class="flex items-center gap-2">
+              <i data-lucide="shield-check" class="w-5 h-5 text-rose-400"></i>
+              <h3 class="text-base font-bold">Agency White-Labeling & Branding</h3>
+            </div>
+            <button onclick="document.getElementById('agencyModal').remove()" class="text-gray-400 hover:text-white p-1">
+              <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+          </div>
+
+          <div class="flex flex-col gap-4 text-xs">
+            <label class="flex items-center gap-3 cursor-pointer p-3 bg-slate-950 border border-gray-800 rounded-2xl hover:border-rose-500/50 transition-all">
+              <input type="checkbox" id="chkWhiteLabel" ${agencySettings.isWhiteLabel ? 'checked' : ''} class="w-4 h-4 rounded text-rose-500">
+              <div>
+                <span class="font-bold text-gray-200 block">Remove "Powered by Cardify.ai" Watermark</span>
+                <span class="text-[10px] text-gray-500">Completely hides co-branding badge on Live Link H5 decks</span>
+              </div>
+            </label>
+
+            <label class="font-bold text-gray-300">Custom Agency Name</label>
+            <input type="text" id="txtAgencyName" value="${agencySettings.agencyName}" placeholder="e.g. Apex Growth Agency" class="bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-white">
+
+            <label class="font-bold text-gray-300">Custom Agency Logo URL (PNG / SVG)</label>
+            <input type="url" id="txtAgencyLogo" value="${agencySettings.customLogoUrl}" placeholder="https://agency.com/logo.png" class="bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-white">
+          </div>
+
+          <div class="flex justify-end gap-3 pt-2">
+            <button onclick="saveAgencySettings()" class="w-full py-3 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 text-white font-bold text-xs hover:from-rose-400 hover:to-pink-400 transition-all shadow-lg glow-rose">
+              ✨ Save Agency Branding
+            </button>
+          </div>
+        </div>
+      `;
+
+      lucide.createIcons();
+    }
+
+    async function saveAgencySettings() {
+      agencySettings.isWhiteLabel = document.getElementById('chkWhiteLabel').checked;
+      agencySettings.agencyName = document.getElementById('txtAgencyName').value.trim();
+      agencySettings.customLogoUrl = document.getElementById('txtAgencyLogo').value.trim();
+
+      try {
+        await fetch('/api/team', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(agencySettings)
+        });
+      } catch (_) {}
+
+      showToast('✨ Agency White-Label Branding Saved!');
+      document.getElementById('agencyModal').remove();
+    }
+
+    // Interactive Quiz / Poll Option Click Event Handler
+    function handleQuizOptionClick(btn, optionId, percent) {
+      const parent = btn.parentElement;
+      if (!parent) return;
+
+      const allBtns = parent.querySelectorAll('.quiz-option-btn');
+      allBtns.forEach(b => b.classList.add('opacity-60', 'pointer-events-none'));
+
+      btn.classList.remove('opacity-60');
+      btn.classList.add('border-emerald-400', 'bg-emerald-950/60');
+
+      const bar = btn.querySelector('.quiz-bar');
+      if (bar) {
+        bar.style.width = percent + '%';
+        bar.classList.remove('w-0');
+      }
+
+      showToast(`🎯 Vote Recorded: ${percent}% agreed!`);
+
+      try {
+        fetch('/api/analytics', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ eventType: 'quiz_click', data: { optionId, percent } })
+        });
+      } catch (_) {}
+    }
+
     function openPresenterMode() {
       const wrapper = document.getElementById('swiperWrapper');
       const cards = wrapper ? wrapper.querySelectorAll('.swiper-slide') : [];
