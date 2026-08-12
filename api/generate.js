@@ -251,7 +251,8 @@ async function callGroq(apiKey, sysInstruction, userPrompt) {
         { role: 'system', content: sysInstruction },
         { role: 'user', content: userPrompt }
       ],
-      temperature: 0.7,
+      temperature: 0.6,
+      max_tokens: 4096,
       response_format: { type: 'json_object' }
     })
   });
@@ -273,7 +274,8 @@ async function callGeminiRest(apiKey, sysInstruction, userPrompt) {
       systemInstruction: { parts: [{ text: sysInstruction }] },
       contents: [{ parts: [{ text: userPrompt }] }],
       generationConfig: {
-        temperature: 0.7,
+        temperature: 0.6,
+        maxOutputTokens: 8192,
         responseMimeType: 'application/json'
       }
     })
