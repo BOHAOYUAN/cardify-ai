@@ -355,8 +355,9 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'METHOD_NOT_ALLOWED' });
   }
 
-  const { input_text, cta_value, target_style, target_lang, mode_preference, platform, preset_hook, custom_theme_prompt, userApiKey, licenseKey } = req.body || {};
+  const { input_text, slide_count, cta_value, target_style, target_lang, mode_preference, platform, preset_hook, custom_theme_prompt, userApiKey, licenseKey } = req.body || {};
   const resolvedInputText = await resolveUrlContentIfPresent(input_text, cta_value);
+  const targetSlideCount = Math.min(40, Math.max(3, Number(slide_count) || 5));
 
   if (!input_text || typeof input_text !== 'string' || resolvedInputText.trim().length < 2) {
     return res.status(400).json({ error: 'INPUT_TOO_SHORT', message: 'Input text must be at least 2 characters long.' });
@@ -389,12 +390,6 @@ export default async function handler(req, res) {
     ? 'Auto Detect (MUST match native language of user input text)' 
     : (LANG_NAMES[target_lang] || 'en-US');
 
-  const langRule = isAutoDetect
-    ? 'CRITICAL LANGUAGE RULE: Output MUST strictly match and preserve the native language of the user input content (e.g. if input text is Chinese, output Chinese; if input text is English, output English). Do NOT translate.'
-    : `CRITICAL LANGUAGE RULE: Output MUST strictly translate, adapt, and localize content into ${targetLangCode} with zero language mix.`;
-
-  const modeVal = mode_preference === 'single' ? 'single' : 'carousel';
-  const platformKey = platform || 'twitter';
   const platformInjector = PLATFORM_INJECTORS[platformKey] || PLATFORM_INJECTORS.twitter;
 
   const finalSystemPrompt = `${BASE_MASTER_PROMPT}\n\n[LANGUAGE INSTRUCTION]: ${langRule}\n[TARGET PLATFORM]: ${platformKey}\n\n${platformInjector}`;

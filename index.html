@@ -333,7 +333,29 @@
             <span class="flex items-center gap-1.5"><i data-lucide="magnet" class="w-4 h-4"></i> Live Link Lead Gen CTA</span>
             <span class="text-[10px] text-amber-300 bg-amber-900/40 px-2 py-0.5 rounded-full font-mono border border-amber-700/40">PLG Feature</span>
           </label>
-          <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
+          
+        <!-- 🚀 TIERED SLIDE LENGTH SELECTOR (5 / 15 / 30+ DEEP DECK) -->
+        <div class="mb-3 p-3 rounded-2xl bg-slate-950/80 border border-purple-900/40 flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono font-bold text-purple-300 flex items-center gap-1.5">
+              <i data-lucide="layers" class="w-3.5 h-3.5 text-purple-400"></i> SLIDE DECK LENGTH & DEPTH
+            </span>
+            <span class="text-[10px] font-mono text-amber-400 bg-amber-950/60 px-2 py-0.5 rounded-full border border-amber-800/60">Unlock Deep Decks (Pro/Agency)</span>
+          </div>
+          <div class="flex flex-wrap gap-2 text-xs font-bold" id="slideLengthSelector">
+            <button type="button" onclick="selectSlideCount(5)" id="btnSlide5" class="px-3 py-1.5 rounded-xl bg-purple-600 text-white shadow-sm border border-purple-400/40 transition-all flex items-center gap-1">
+              ⚡ 5 Slides (Free)
+            </button>
+            <button type="button" onclick="selectSlideCount(15)" id="btnSlide15" class="px-3 py-1.5 rounded-xl bg-slate-900 text-purple-300 border border-slate-700 hover:border-purple-500 transition-all flex items-center gap-1">
+              👑 15 Slides (Pro)
+            </button>
+            <button type="button" onclick="selectSlideCount(30)" id="btnSlide30" class="px-3 py-1.5 rounded-xl bg-slate-900 text-amber-300 border border-slate-700 hover:border-amber-500 transition-all flex items-center gap-1">
+              🚀 30+ Deep Deck (Agency)
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
             <select id="ctaType" onchange="window.handleCtaChange && window.handleCtaChange()" class="sm:col-span-4 w-full bg-gray-900 border border-gray-800 rounded-md px-3 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-amber-500 transition-all">
               <option value="none">Disabled</option>
               <option value="email">Email Micro-Form</option>
@@ -2266,6 +2288,62 @@
       navigator.clipboard.writeText(text).then(() => {
         showToast('🚀 Copied to clipboard!');
       });
+    }
+
+    
+    // === CARDIFY AI 2.0 (DEEP DECK, INLINE EDIT, NARRATIVE BRIDGE) ===
+    let selectedSlideCount = 5;
+
+    function selectSlideCount(count) {
+      selectedSlideCount = count;
+      const b5 = document.getElementById('btnSlide5');
+      const b15 = document.getElementById('btnSlide15');
+      const b30 = document.getElementById('btnSlide30');
+
+      [b5, b15, b30].forEach(b => {
+        if(b) b.className = 'px-3 py-1.5 rounded-xl bg-slate-900 text-gray-400 border border-slate-700 transition-all flex items-center gap-1';
+      });
+
+      if (count === 15) {
+        if(b15) b15.className = 'px-3 py-1.5 rounded-xl bg-purple-600 text-white shadow-sm border border-purple-400/40 transition-all flex items-center gap-1';
+        showToast('👑 15 Slides Selected! Pro Deep Deck Mode.');
+      } else if (count === 30) {
+        if(b30) b30.className = 'px-3 py-1.5 rounded-xl bg-amber-500 text-gray-950 font-extrabold shadow-sm border border-amber-400 transition-all flex items-center gap-1';
+        showToast('🚀 30+ Slides Selected! Agency Masterclass Deck Mode.');
+      } else {
+        if(b5) b5.className = 'px-3 py-1.5 rounded-xl bg-purple-600 text-white shadow-sm border border-purple-400/40 transition-all flex items-center gap-1';
+        showToast('⚡ 5 Slides Selected.');
+      }
+    }
+
+    // Bind Inline Quick-Edit (contenteditable) to Card Preview DOM Elements
+    function setupInlineQuickEdit(cardEl, slideIndex) {
+      if (!cardEl || !currentResponseData || !currentResponseData.slides) return;
+      
+      const titleEl = cardEl.querySelector('.card-title') || cardEl.querySelector('h3') || cardEl.querySelector('.text-xl');
+      if (titleEl) {
+        titleEl.setAttribute('contenteditable', 'true');
+        titleEl.setAttribute('title', 'Click or double-click to edit text live!');
+        titleEl.classList.add('hover:outline-dashed', 'hover:outline-1', 'hover:outline-purple-400', 'rounded', 'px-1', 'transition-all');
+        titleEl.onblur = () => {
+          if (currentResponseData.slides[slideIndex]) {
+            currentResponseData.slides[slideIndex].title = titleEl.innerText.trim();
+            showToast('✏️ Title Updated Live!');
+          }
+        };
+      }
+
+      const subEl = cardEl.querySelector('.card-subtitle');
+      if (subEl) {
+        subEl.setAttribute('contenteditable', 'true');
+        subEl.classList.add('hover:outline-dashed', 'hover:outline-1', 'hover:outline-amber-400', 'rounded', 'px-1', 'transition-all');
+        subEl.onblur = () => {
+          if (currentResponseData.slides[slideIndex]) {
+            currentResponseData.slides[slideIndex].subtitle = subEl.innerText.trim();
+            showToast('✏ Subtitle Updated Live!');
+          }
+        };
+      }
     }
 
     function openPresenterMode() {
