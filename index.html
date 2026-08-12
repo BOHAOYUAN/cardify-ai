@@ -1922,7 +1922,19 @@
           document.getElementById('statViews').innerText = data.totalViews || 148;
           document.getElementById('statCtr').innerText = (data.quizCtrPercent || 42) + '%';
           document.getElementById('statDwell').innerText = (data.avgDwellSec || 58) + 's';
-          document.getElementById('statLeads').innerText = data.leadSubmissionsCount || 18;
+          document.getElementById('statLeads').innerText = data.leadSubmissionsCount || (data.recentLeads ? data.recentLeads.length : 0);
+
+          if (data.recentLeads && data.recentLeads.length > 0) {
+            const listEl = document.getElementById('recentLeadsList');
+            if (listEl) {
+              listEl.innerHTML = data.recentLeads.map(l => `
+                <div class="flex justify-between py-1 border-b border-gray-800/50">
+                  <span class="text-emerald-300 font-bold">${l.email}</span>
+                  <span class="text-gray-500 text-[10px]">${new Date(l.timestamp).toLocaleTimeString()}</span>
+                </div>
+              `).join('');
+            }
+          }
         }
       } catch (_) {}
 
