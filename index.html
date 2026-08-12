@@ -2867,19 +2867,22 @@
 
       // Key metric
       if (slideData.key_metric && curY < cY + cH * 0.70) {
-        const mW = Math.round(cW * 0.44), mH = Math.round(W * 0.13);
+        const valStr = String(slideData.key_metric.value || '').trim();
+        const mW = Math.min(Math.round(cW * 0.85), Math.max(Math.round(cW * 0.46), Math.round(cW * 0.055 * valStr.length)));
+        const mH = Math.round(W * 0.135);
         const mX = W/2 - mW/2;
         ctx.save();
         ctx.fillStyle = 'hsla(' + h1 + ',52%,17%,0.92)';
         ctx.strokeStyle = 'hsla(' + h1 + ',68%,54%,0.48)'; ctx.lineWidth = 1.5;
         ctx.beginPath(); ctx.roundRect(mX, curY, mW, mH, 12); ctx.fill(); ctx.stroke();
-        ctx.font = '800 ' + Math.round(W*0.068) + "px 'Outfit',sans-serif";
+        const mValSize = valStr.length > 12 ? Math.round(W*0.042) : valStr.length > 7 ? Math.round(W*0.052) : Math.round(W*0.068);
+        ctx.font = '800 ' + mValSize + "px 'Outfit',sans-serif";
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         ctx.fillStyle = 'hsl(' + h1 + ',88%,76%)';
-        ctx.fillText(String(slideData.key_metric.value||'').slice(0,8), W/2, curY + mH*0.52);
-        ctx.font = '600 ' + Math.round(W*0.023) + "px 'Outfit',sans-serif";
+        ctx.fillText(valStr.slice(0, 18), W/2, curY + mH*0.42);
+        ctx.font = '600 ' + Math.round(W*0.022) + "px 'Outfit',sans-serif";
         ctx.fillStyle = 'rgba(215,195,255,0.62)';
-        ctx.fillText(String(slideData.key_metric.label||'').slice(0,26), W/2, curY + mH*0.85);
+        ctx.fillText(String(slideData.key_metric.label||'').slice(0,32), W/2, curY + mH*0.82);
         curY += mH + Math.round(W * 0.030);
         ctx.restore();
       }
