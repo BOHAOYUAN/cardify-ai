@@ -410,10 +410,21 @@
             <i data-lucide="layers" class="w-4 h-4 text-purple-400"></i>
             Visual Studio Engine
           </h2>
-          <div class="flex items-center gap-2">
-            <button onclick="openPresenterMode()" title="Fullscreen Deck Mode" class="px-2.5 py-0.5 rounded-full bg-purple-900/60 text-purple-200 border border-purple-500/40 hover:bg-purple-700/80 text-[10px] font-bold transition-all flex items-center gap-1 shadow-sm">
-              <i data-lucide="maximize-2" class="w-3 h-3 text-purple-300"></i> Presenter Mode
+          <div class="flex items-center gap-1.5 flex-wrap justify-end">
+            <button onclick="openPresenterMode()" title="Fullscreen Deck Mode" class="px-2.5 py-1 rounded-full bg-purple-900/60 text-purple-200 border border-purple-500/40 hover:bg-purple-700/80 text-[10px] font-bold transition-all flex items-center gap-1 shadow-sm">
+              <i data-lucide="maximize-2" class="w-3 h-3 text-purple-300"></i> Presenter
             </button>
+            <button onclick="openAnalyticsModal()" title="Analytics Dashboard" class="px-2.5 py-1 rounded-full bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 text-emerald-300 text-[10px] font-bold transition-all flex items-center gap-1 shadow-sm">
+              <i data-lucide="bar-chart-2" class="w-3 h-3 text-emerald-400"></i> Analytics
+            </button>
+            <button onclick="openSchedulerModal()" title="Social Scheduler" class="px-2.5 py-1 rounded-full bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 text-amber-300 text-[10px] font-bold transition-all flex items-center gap-1 shadow-sm">
+              <i data-lucide="calendar" class="w-3 h-3 text-amber-400"></i> Scheduler
+            </button>
+            <button onclick="openAgencySettingsModal()" title="Agency White-Labeling" class="px-2.5 py-1 rounded-full bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 text-rose-300 text-[10px] font-bold transition-all flex items-center gap-1 shadow-sm">
+              <i data-lucide="shield-check" class="w-3 h-3 text-rose-400"></i> White-Label
+            </button>
+          </div>
+          <div class="flex items-center gap-2">
             <span id="aspectBadge" class="text-[10px] bg-indigo-900/40 text-indigo-300 border border-indigo-700/40 px-2 py-0.5 rounded-full font-mono">📐 16:9 Ratio</span>
             <span id="modeBadge" class="text-[10px] bg-purple-900/40 text-purple-300 border border-purple-700/40 px-2 py-0.5 rounded-full font-mono">Carousel Pack</span>
           </div>
