@@ -2285,6 +2285,15 @@
     // === CARDIFY AI 2.0 (DEEP DECK, INLINE EDIT, NARRATIVE BRIDGE) ===
 
     function selectSlideCount(count) {
+      if (count > 5 && !isProUser) {
+        const userKey = document.getElementById('userApiKey')?.value;
+        if (!userKey || userKey.trim().length < 10) {
+          openUpgradeModal();
+          showToast('🔒 15~30+ Deep Decks require Pro/Agency Plan or custom API key!', true);
+          return;
+        }
+      }
+
       selectedSlideCount = count;
       const b5 = document.getElementById('btnSlide5');
       const b15 = document.getElementById('btnSlide15');
