@@ -252,7 +252,7 @@ async function callGroq(apiKey, sysInstruction, userPrompt) {
         { role: 'user', content: userPrompt }
       ],
       temperature: 0.6,
-      max_tokens: 4096,
+      max_tokens: 8192,
       response_format: { type: 'json_object' }
     })
   });
