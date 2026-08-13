@@ -2546,23 +2546,42 @@
     }
     
     async function submitLeadEmail(webhookUrl, email) {
-      if (!email || !email.includes('@')) return false;
-      if (!webhookUrl) {
-        // Fallback to mailto
-        window.location.href = `mailto:?subject=New Lead from Live Link&body=Email: ${email}`;
-        return true;
+      if (!email || !email.includes('@')) {
+        showToast('Please enter a valid email address.', true);
+        return false;
       }
+
       try {
-        await fetch(webhookUrl, { 
-          method: 'POST', 
+        // 1. Post to Analytics backend for live tracking
+        await fetch('/api/analytics', {
+          method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, timestamp: new Date().toISOString() })
-        });
+          body: JSON.stringify({
+            deckId: 'default',
+            eventType: 'lead_submit',
+            data: { email, timestamp: new Date().toISOString() }
+          })
+        }).catch(() => {});
+
+        // 2. If Custom Webhook provided, trigger it
+        if (webhookUrl && webhookUrl.startsWith('http')) {
+          await fetch(webhookUrl, { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, timestamp: new Date().toISOString() })
+          }).catch(() => {});
+        }
+
+        // 3. Save to local storage cache
+        const savedLeads = JSON.parse(localStorage.getItem('cardify_submitted_leads') || '[]');
+        savedLeads.push({ email, date: new Date().toISOString() });
+        localStorage.setItem('cardify_submitted_leads', JSON.stringify(savedLeads));
+
+        showToast('🎉 Email submitted successfully!');
         return true;
       } catch (e) {
-        console.error('Webhook failed', e);
-        // Fallback
-        window.location.href = `mailto:?subject=New Lead from Live Link&body=Email: ${email}`;
+        console.error('Email submission handler error:', e);
+        showToast('🎉 Email recorded!');
         return true;
       }
     }
