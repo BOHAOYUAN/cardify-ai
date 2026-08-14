@@ -193,9 +193,9 @@
         </div>
 
         <!-- Upgrade Pro Button -->
-        <button onclick="openUpgradeModal()" id="btnUpgradeHeader" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold text-xs transition-all shadow-md hover:shadow-purple-500/25 active:scale-95">
-          <i data-lucide="crown" class="w-4 h-4 text-amber-300"></i>
-          <span id="txtUpgradeHeader">Upgrade Pro ($19.9/mo)</span>
+        <button onclick="openUpgradeModal()" id="btnUpgradeHeader" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-500 via-purple-600 to-indigo-600 hover:from-emerald-400 hover:to-indigo-500 text-white font-bold text-xs transition-all shadow-md hover:shadow-emerald-500/25 active:scale-95 animate-pulse">
+          <i data-lucide="zap" class="w-4 h-4 text-amber-300"></i>
+          <span id="txtUpgradeHeader">🚀 7-Day Free Trial ($0 Today)</span>
         </button>
 
       </div>
@@ -611,11 +611,11 @@
       </button>
 
       <div class="text-center flex flex-col items-center gap-2">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-900/40 border border-purple-500/40 text-purple-300 text-xs font-bold font-mono">
-          <i data-lucide="crown" class="w-3.5 h-3.5 text-amber-300"></i> B2B Thought Leadership & Agency Suite
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-xs font-extrabold font-mono shadow-md animate-pulse">
+          <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-300"></i> ⚡️ 7-DAY FREE TRIAL ($0 TODAY) · CANCEL ANYTIME
         </div>
-        <h3 class="text-2xl font-black text-white font-outfit">Upgrade to Cardify Pro Studio</h3>
-        <p class="text-xs text-gray-300 max-w-md">Turn your posts, articles & PDFs into high-converting 60FPS visual reels & LinkedIn PDF carousels.</p>
+        <h3 class="text-2xl font-black text-white font-outfit">Start Your 7-Day Cardify Pro Trial</h3>
+        <p class="text-xs text-emerald-200/90 max-w-md font-medium">Try full Pro features for 7 days at $0.00 today. Auto-renews after 7 days unless canceled.</p>
 
         <!-- Monthly vs Annual Billing Switch -->
         <div class="flex items-center gap-2 bg-gray-950 p-1 rounded-xl border border-gray-800 mt-2">
@@ -631,25 +631,28 @@
       <!-- Pricing Tier Cards Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <!-- Tier 1: Pro Founder -->
-        <div class="p-4 rounded-xl bg-gray-950 border border-purple-800/60 flex flex-col justify-between gap-4 relative">
+        <div class="p-4 rounded-xl bg-gray-950 border border-emerald-500/50 flex flex-col justify-between gap-4 relative shadow-lg">
           <div class="flex flex-col gap-2">
-            <div class="text-xs font-bold text-purple-300 uppercase tracking-wider">🚀 Pro Founder</div>
-            <div class="flex items-baseline gap-1">
-              <span class="text-2xl font-black text-white font-outfit" id="priceFounder">$19</span>
-              <span class="text-xs text-gray-400" id="periodFounder">/ mo</span>
+            <div class="text-xs font-bold text-emerald-300 uppercase tracking-wider flex items-center justify-between">
+              <span>🚀 Pro Founder</span>
+              <span class="text-[10px] text-emerald-300 bg-emerald-950 px-1.5 py-0.5 rounded border border-emerald-500/40">$0.00 Today</span>
             </div>
-            <p class="text-[11px] text-gray-400 leading-snug">Perfect for founders, consultants & creators looking to dominate LinkedIn & X.</p>
+            <div class="flex items-baseline gap-1">
+              <span class="text-3xl font-black text-emerald-400 font-outfit" id="priceFounder">$0</span>
+              <span class="text-xs text-emerald-300 font-bold" id="periodFounder">for 7 days (then $19.9/mo)</span>
+            </div>
+            <p class="text-[11px] text-gray-300 leading-snug">Perfect for founders & creators looking to dominate LinkedIn with 30-slide PDF decks.</p>
             
             <div class="flex flex-col gap-2 text-xs text-gray-300 mt-2 border-t border-gray-900 pt-3">
-              <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> <span>Unlimited 1080p Video Reels</span></div>
-              <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> <span class="font-bold text-sky-300">3-5x Reach LinkedIn PDF Export</span></div>
-              <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> <span>Personal Brand Watermark</span></div>
-              <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> <span>Priority AI Response Speed</span></div>
+              <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> <span>Instant 30-Slide PDF Deck Export</span></div>
+              <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> <span class="font-bold text-sky-300">Unlimited 1080p Video Reels</span></div>
+              <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> <span>Double-Click Live Inline Editing</span></div>
+              <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> <span>Built-in H5 Lead Magnet & Webhook</span></div>
             </div>
           </div>
 
-          <a href="https://dodopayments.com" target="_blank" onclick="trackAnalyticsEvent('checkout_click_founder')" id="linkCheckoutFounder" href="https://checkout.dodopayments.com/buy/pdt_0Nl75urVq1XA2yhi6ZPJ9?quantity=1" target="_blank" class="w-full py-2.5 text-center rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition-all shadow-md">
-            Get Pro Founder ($149/yr)
+          <a href="https://checkout.dodopayments.com/buy/pdt_0Nl75urVq1XA2yhi6ZPJ9?quantity=1" target="_blank" onclick="trackAnalyticsEvent('checkout_click_founder')" id="linkCheckoutFounder" class="w-full py-3 text-center rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-gray-950 font-extrabold text-xs transition-all shadow-lg glow-amber active:scale-95">
+            🚀 Start 7-Day Free Trial ($0 Today)
           </a>
         </div>
 
@@ -662,11 +665,11 @@
           <div class="flex flex-col gap-2 pt-1">
             <div class="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center justify-between">
               <span>🏢 Agency & Team</span>
-              <span class="text-[10px] text-amber-200 bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-500/40">White-Label Included</span>
+              <span class="text-[10px] text-amber-200 bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-500/40">$0.00 Today</span>
             </div>
             <div class="flex items-baseline gap-1">
-              <span class="text-2xl font-black text-white font-outfit" id="priceAgency">$49</span>
-              <span class="text-xs text-gray-400" id="periodAgency">/ mo</span>
+              <span class="text-3xl font-black text-amber-400 font-outfit" id="priceAgency">$0</span>
+              <span class="text-xs text-amber-300 font-bold" id="periodAgency">for 7 days (then $49.9/mo)</span>
             </div>
             <p class="text-[11px] text-purple-200/80 leading-snug">For agencies & growth teams managing multi-client visual campaigns.</p>
 
@@ -678,8 +681,8 @@
             </div>
           </div>
 
-          <a href="https://dodopayments.com" target="_blank" onclick="trackAnalyticsEvent('checkout_click_agency')" id="linkCheckoutAgency" href="https://checkout.dodopayments.com/buy/pdt_0Nl76OLdrjeGkk3fMse8Y?quantity=1" target="_blank" class="w-full py-2.5 text-center rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-extrabold text-xs transition-all shadow-lg shadow-amber-500/30">
-            Get Agency Plan ($399/yr)
+          <a href="https://checkout.dodopayments.com/buy/pdt_0Nl76OLdrjeGkk3fMse8Y?quantity=1" target="_blank" onclick="trackAnalyticsEvent('checkout_click_agency')" id="linkCheckoutAgency" class="w-full py-3 text-center rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-extrabold text-xs transition-all shadow-lg shadow-amber-500/30 active:scale-95">
+            👑 Start Agency 7-Day Free Trial ($0 Today)
           </a>
         </div>
       </div>
