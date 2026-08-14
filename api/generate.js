@@ -289,6 +289,33 @@ async function callGeminiRest(apiKey, sysInstruction, userPrompt) {
   return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 }
 
+async function callDeepSeek(apiKey, sysInstruction, userPrompt) {
+  const res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey.trim()}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: 'deepseek-chat',
+      messages: [
+        { role: 'system', content: sysInstruction },
+        { role: 'user', content: userPrompt }
+      ],
+      temperature: 0.6,
+      max_tokens: 8192,
+      response_format: { type: 'json_object' }
+    })
+  });
+
+  if (!res.ok) {
+    const errText = await res.text().catch(() => '');
+    throw new Error(`DeepSeek API Error (${res.status}): ${errText.slice(0, 200)}`);
+  }
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content || '';
+}
+
 // Multi-tier API Key Failover Provider Strategy
 async function robustLLMFailover(userKey, sysInstruction, userPrompt) {
   const keysToTry = [];
@@ -298,17 +325,23 @@ async function robustLLMFailover(userKey, sysInstruction, userPrompt) {
     keysToTry.push({ type: 'user', key: userKey.trim() });
   }
 
-  // 2. Groq Env Keys
+  // 2. DeepSeek High-Precision Primary API Key (9.8 RMB = ~7,000 runs)
+  const DEEPSEEK_PRIMARY_KEY = process.env.DEEPSEEK_API_KEY || 'sk-8b1e0e191aa548018aa74b9906a547d1';
+  if (DEEPSEEK_PRIMARY_KEY) {
+    keysToTry.push({ type: 'deepseek_primary', key: DEEPSEEK_PRIMARY_KEY.trim() });
+  }
+
+  // 3. Groq Env Keys
   if (process.env.GROQ_API_KEY) {
     keysToTry.push({ type: 'groq_env', key: process.env.GROQ_API_KEY.trim() });
   }
 
-  // 3. Gemini Env Keys
+  // 4. Gemini Env Keys
   if (process.env.GEMINI_API_KEY) {
     keysToTry.push({ type: 'gemini_env', key: process.env.GEMINI_API_KEY.trim() });
   }
 
-  // 4. Default Fallback Public Keys (Multiple Redundant High-Quota Keys)
+  // 5. Default Fallback Public Keys (Multiple Redundant High-Quota Keys)
   keysToTry.push({ type: 'groq_default_1', key: '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' });
   keysToTry.push({ type: 'groq_default_2', key: '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' });
 
@@ -317,15 +350,17 @@ async function robustLLMFailover(userKey, sysInstruction, userPrompt) {
   for (const item of keysToTry) {
     try {
       let rawText = '';
-      if (item.key.startsWith('gsk_')) {
+      if (item.key.startsWith('sk-')) {
+        rawText = await callDeepSeek(item.key, sysInstruction, userPrompt);
+      } else if (item.key.startsWith('gsk_')) {
         rawText = await callGroq(item.key, sysInstruction, userPrompt);
       } else if (item.key.startsWith('AIza')) {
         rawText = await callGeminiRest(item.key, sysInstruction, userPrompt);
       } else {
         try {
-          rawText = await callGroq(item.key, sysInstruction, userPrompt);
+          rawText = await callDeepSeek(item.key, sysInstruction, userPrompt);
         } catch (e) {
-          rawText = await callGeminiRest(item.key, sysInstruction, userPrompt);
+          rawText = await callGroq(item.key, sysInstruction, userPrompt);
         }
       }
 
