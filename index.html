@@ -2,7 +2,7 @@
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <!-- OpenGraph & Twitter Social Card Engine -->
   <meta property="og:title" content="Cardify Studio — 15~30 Slide Thought Token & Visual Deck Engine">
   <meta property="og:description" content="Turn long podcasts, PDFs, and articles into 15~30 slide high-density masterclass decks with 1-click 60FPS video reels and interactive H5 reader.">
@@ -56,10 +56,28 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=Fira+Code:wght@500;700&display=swap" rel="stylesheet">
 
   <style>
-    body {
+    html, body {
       font-family: 'Inter', sans-serif;
       background-color: #0b0f17;
       color: #f3f4f6;
+      width: 100%;
+      max-width: 100vw;
+      overflow-x: hidden !important;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    #presenterModal {
+      width: 100% !important;
+      max-width: 100vw !important;
+      overflow-x: hidden !important;
+      box-sizing: border-box !important;
     }
     .font-outfit { font-family: 'Outfit', sans-serif; }
     .font-mono-code { font-family: 'Fira Code', monospace; }
@@ -3944,33 +3962,33 @@ Explore here: ${liveUrl}`)}`;
         </div>
 
                         <!-- 🏛️ GAMMA / APPLE KEYNOTE STYLE AIRY FLOATING TOPBAR -->
-        <div class="w-full max-w-6xl z-20 flex items-center justify-between gap-4 bg-slate-900/90 backdrop-blur-2xl border border-slate-800/80 px-4 py-2.5 rounded-2xl shadow-2xl">
+        <div class="w-full max-w-6xl z-20 flex items-center justify-between gap-2 sm:gap-4 bg-slate-900/95 backdrop-blur-2xl border border-slate-800/80 px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl shadow-2xl overflow-x-hidden">
           
           <!-- Left: Brand + View Switch Pill -->
-          <div class="flex items-center gap-3 shrink-0">
-            <span class="text-xs font-extrabold font-outfit text-white hidden sm:flex items-center gap-1.5">
+          <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
+            <span class="text-xs font-extrabold font-outfit text-white hidden md:flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></span>
               Cardify <span class="text-purple-400 font-mono text-[10px] bg-purple-950/60 px-1.5 py-0.5 rounded border border-purple-500/30">DECK</span>
             </span>
 
             <!-- 🎴 Slides vs 🌐 Webpage Dual-Mode Segmented Control -->
             <div class="flex items-center bg-slate-950 p-0.5 rounded-xl border border-slate-800 shadow-inner">
-              <button id="btnModeSlides" onclick="setPresenterDisplayMode('slides')" class="px-3 py-1 rounded-lg bg-purple-600 text-white font-bold text-xs shadow-md transition-all">
+              <button id="btnModeSlides" onclick="setPresenterDisplayMode('slides')" class="px-2.5 sm:px-3 py-1 rounded-lg bg-purple-600 text-white font-bold text-xs shadow-md transition-all">
                 🎴 Slides
               </button>
-              <button id="btnModeWeb" onclick="setPresenterDisplayMode('webpage')" class="px-3 py-1 rounded-lg bg-transparent text-slate-400 hover:text-white font-semibold text-xs transition-all">
+              <button id="btnModeWeb" onclick="setPresenterDisplayMode('webpage')" class="px-2.5 sm:px-3 py-1 rounded-lg bg-transparent text-slate-400 hover:text-white font-semibold text-xs transition-all">
                 🌐 Webpage
               </button>
             </div>
 
             <!-- Slide Counter Pill -->
-            <span class="text-[11px] font-mono font-bold text-slate-300 bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800">
-              <span id="presenterSlideCounter">Slide 1 of ${cards.length}</span>
+            <span class="text-[10px] sm:text-[11px] font-mono font-bold text-slate-300 bg-slate-950 px-2 sm:px-2.5 py-1 rounded-lg border border-slate-800">
+              <span id="presenterSlideCounter">1 / ${cards.length}</span>
             </span>
           </div>
 
           <!-- Center / Secondary Controls: Theme Selector + Soundtrack -->
-          <div class="hidden md:flex items-center gap-2">
+          <div class="hidden lg:flex items-center gap-2">
             <!-- 🎨 Live Theme Selector Dropdown -->
             <select onchange="switchPresenterSkin(this.value)" class="bg-slate-950 border border-slate-800 text-amber-300 hover:text-white text-xs font-bold rounded-xl px-3 py-1.5 focus:outline-none cursor-pointer shadow-sm transition-all">
               <option value="luxury" ${currentPreset === 'luxury' ? 'selected' : ''}>👑 Luxury Gold</option>
@@ -3988,24 +4006,19 @@ Explore here: ${liveUrl}`)}`;
           </div>
 
           <!-- Right: Core Action Buttons (Mobile QR, PDF, Fullscreen, Close) -->
-          <div class="flex items-center gap-2 shrink-0">
+          <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <!-- 📱 Mobile QR & Share Pill -->
-            <button onclick="openMobileQrModal()" title="Scan with Phone or Copy Link" class="px-3.5 py-1.5 rounded-xl bg-purple-950/60 hover:bg-purple-900/80 border border-purple-500/50 text-purple-200 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm active:scale-95">
-              <i data-lucide="smartphone" class="w-3.5 h-3.5 text-purple-300"></i> <span>📱 Share QR</span>
+            <button onclick="openMobileQrModal()" title="Scan with Phone or Copy Link" class="px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-purple-950/60 hover:bg-purple-900/80 border border-purple-500/50 text-purple-200 text-xs font-bold flex items-center gap-1 transition-all shadow-sm active:scale-95">
+              <i data-lucide="smartphone" class="w-3.5 h-3.5 text-purple-300"></i> <span class="hidden sm:inline">Share</span><span>QR</span>
             </button>
 
             <!-- 📥 Export PDF (Luxury Gold) -->
-            <button onclick="exportLinkedInPdf()" title="Download full deck as PDF Carousel" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-gray-950 text-xs font-black transition-all shadow-md flex items-center gap-1.5 active:scale-95">
+            <button onclick="exportLinkedInPdf()" title="Download full deck as PDF Carousel" class="px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-gray-950 text-xs font-black transition-all shadow-md flex items-center gap-1 active:scale-95">
               <i data-lucide="download" class="w-3.5 h-3.5 text-gray-950"></i> <span>PDF</span>
             </button>
 
-            <!-- ⛶ Keynote True Fullscreen Icon Button -->
-            <button id="btnPresenterFs" onclick="togglePresenterFullscreen()" title="Keynote True Fullscreen (Hotkey: F)" class="w-8 h-8 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white flex items-center justify-center transition-all shadow-sm active:scale-95">
-              <i data-lucide="maximize" class="w-4 h-4 text-slate-300"></i>
-            </button>
-
             <!-- ✕ Close Icon Button -->
-            <button onclick="closePresenterMode()" title="Close (Esc)" class="w-8 h-8 rounded-xl bg-slate-950 hover:bg-slate-800 text-gray-400 hover:text-white border border-slate-800 flex items-center justify-center transition-all font-bold text-base active:scale-95">
+            <button onclick="closePresenterMode()" title="Close (Esc)" class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-slate-950 hover:bg-slate-800 text-gray-400 hover:text-white border border-slate-800 flex items-center justify-center transition-all font-bold text-sm sm:text-base active:scale-95">
               &times;
             </button>
           </div>
@@ -5107,6 +5120,16 @@ Explore here: ${liveUrl}`)}`;
           ctx.fillRect(0, 0, W, H);
           ctx.restore();
         }
+      }
+    }
+
+    
+    // ⚡️ INSTANT IMMEDIATE BOOTSTRAP FOR WECHAT & MOBILE BROWSERS
+    if (typeof window !== 'undefined') {
+      const q = window.location.search || '';
+      const h = window.location.hash || '';
+      if (q.includes('read=') || q.includes('deck=') || h.includes('#read=') || h.includes('#deck=')) {
+        setTimeout(detectAndLaunchDirectReader, 10);
       }
     }
 
