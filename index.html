@@ -2598,6 +2598,28 @@
     let cardifyAudio = null;
     let isAudioPlaying = false;
 
+        // Custom Local Audio Ingestion Handler
+    function handleCustomAudioUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      if (!file.type.includes('audio') && !file.name.endsWith('.mp3') && !file.name.endsWith('.wav')) {
+        showToast('Please select a valid .mp3 or .wav audio file', true);
+        return;
+      }
+
+      const localBlobUrl = URL.createObjectURL(file);
+      const customTrack = {
+        id: Date.now(),
+        title: `🎧 ${file.name.replace(/\.[^/.]+$/, '').slice(0, 20)}`,
+        file: localBlobUrl
+      };
+
+      SOUNDTRACK_PLAYLIST.unshift(customTrack);
+      currentAudioTrackIndex = 0;
+      playCurrentTrack();
+      showToast(`🎵 Loaded Custom Audio: ${file.name}`);
+    }
+
     function initCardifyAudio() {
       if (!cardifyAudio) {
         cardifyAudio = new Audio();
@@ -2727,6 +2749,19 @@
             <div class="flex flex-col gap-1.5">
               <label class="font-bold text-gray-300">Author Tagline / Title</label>
               <input type="text" id="brandTitleInput" value="${customBrandKit.title}" placeholder="e.g. Founder & CEO • AI Architect" class="bg-slate-950 border border-gray-700 rounded-xl px-3 py-2.5 text-white focus:border-purple-500 focus:outline-none">
+            </div>
+
+                        <!-- Local Audio Upload Block -->
+            <div class="flex flex-col gap-1.5 pt-1">
+              <label class="font-bold text-gray-300 flex items-center justify-between">
+                <span>Custom Local BGM (.mp3 / .wav)</span>
+                <span class="text-[10px] text-purple-400 font-mono">100% Freedom</span>
+              </label>
+              <label class="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-slate-950 border border-dashed border-purple-500/50 hover:border-purple-400 text-purple-300 text-xs font-bold cursor-pointer transition-all hover:bg-purple-950/30">
+                <i data-lucide="upload-cloud" class="w-4 h-4 text-purple-400"></i>
+                <span id="txtLocalAudioName">Upload Your Own Soundtrack</span>
+                <input type="file" accept="audio/*" onchange="handleCustomAudioUpload(event); document.getElementById('txtLocalAudioName').innerText = '🎵 ' + this.files[0].name.slice(0,22);" class="hidden">
+              </label>
             </div>
 
             <div class="p-3 bg-purple-950/40 border border-purple-500/30 rounded-xl flex flex-col gap-1">
@@ -3084,7 +3119,77 @@
                   </div>
                 ` : '';
 
-                const quoteHtml = slide.takeaway_quote ? `
+                        // 1. 2x2 Strategy Matrix Diagram Component
+        const matrixHtml = (slide.diagram_type === 'matrix_2x2' || slide.matrix_2x2) ? `
+          <div class="my-3 p-3 rounded-2xl bg-slate-950/80 border border-purple-500/40 backdrop-blur-md shadow-lg flex flex-col gap-2">
+            <div class="text-[10px] font-mono font-bold text-purple-300 flex items-center justify-between border-b border-gray-800 pb-1.5">
+              <span>📊 2x2 VALUE / EFFORT MATRIX</span>
+              <span class="text-amber-400 font-bold">HIGH IMPACT</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-[10px]">
+              <div class="p-2 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-200">
+                <div class="font-extrabold text-[9px] uppercase text-emerald-400 mb-0.5">⚡ QUICK WINS (High Value · Low Effort)</div>
+                <div>${slide.matrix_2x2?.quick_wins || 'High-leverage visual assets & automated funnels'}</div>
+              </div>
+              <div class="p-2 rounded-xl bg-purple-950/60 border border-purple-500/40 text-purple-200">
+                <div class="font-extrabold text-[9px] uppercase text-purple-400 mb-0.5">👑 STRATEGIC MOATS (High Value · High Effort)</div>
+                <div>${slide.matrix_2x2?.major_projects || 'Proprietary AI workflows & audience brand equity'}</div>
+              </div>
+              <div class="p-2 rounded-xl bg-slate-900/60 border border-slate-700 text-slate-300">
+                <div class="font-extrabold text-[9px] uppercase text-slate-400 mb-0.5">⏱️ FILL-INS (Low Value · Low Effort)</div>
+                <div>${slide.matrix_2x2?.fill_ins || 'Routine social reposts & daily housekeeping'}</div>
+              </div>
+              <div class="p-2 rounded-xl bg-red-950/50 border border-red-500/30 text-red-300">
+                <div class="font-extrabold text-[9px] uppercase text-red-400 mb-0.5">❌ TIME TRAPS (Low Value · High Effort)</div>
+                <div>${slide.matrix_2x2?.time_traps || 'Manual 4-hour Figma alignment pixel pushing'}</div>
+              </div>
+            </div>
+          </div>
+        ` : '';
+
+        // 2. Growth Flywheel Cycle Component (4-Step Self-Reinforcing Loop)
+        const flywheelHtml = (slide.diagram_type === 'flywheel' || slide.flywheel) ? `
+          <div class="my-3 p-3 rounded-2xl bg-slate-950/80 border border-indigo-500/40 backdrop-blur-md shadow-lg flex flex-col gap-2">
+            <div class="text-[10px] font-mono font-bold text-indigo-300 flex items-center gap-1 border-b border-gray-800 pb-1.5">
+              <span>🔄 4-STEP GROWTH FLYWHEEL</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-[10px]">
+              <div class="p-2 rounded-xl bg-indigo-950/60 border border-indigo-500/40 text-indigo-200 flex items-center gap-1.5">
+                <span class="w-4 h-4 rounded-full bg-indigo-500 text-white font-black text-[9px] flex items-center justify-center shrink-0">1</span>
+                <div>${slide.flywheel?.step1 || 'Drop 2h Podcast / Article'}</div>
+              </div>
+              <div class="p-2 rounded-xl bg-purple-950/60 border border-purple-500/40 text-purple-200 flex items-center gap-1.5">
+                <span class="w-4 h-4 rounded-full bg-purple-500 text-white font-black text-[9px] flex items-center justify-center shrink-0">2</span>
+                <div>${slide.flywheel?.step2 || 'Mint 30-Slide Master Deck'}</div>
+              </div>
+              <div class="p-2 rounded-xl bg-amber-950/60 border border-amber-500/40 text-amber-200 flex items-center gap-1.5">
+                <span class="w-4 h-4 rounded-full bg-amber-500 text-gray-950 font-black text-[9px] flex items-center justify-center shrink-0">3</span>
+                <div>${slide.flywheel?.step3 || 'Viral Multi-Platform Reach'}</div>
+              </div>
+              <div class="p-2 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-200 flex items-center gap-1.5">
+                <span class="w-4 h-4 rounded-full bg-emerald-500 text-gray-950 font-black text-[9px] flex items-center justify-center shrink-0">4</span>
+                <div>${slide.flywheel?.step4 || 'High-Ticket Inbound Leads'}</div>
+              </div>
+            </div>
+          </div>
+        ` : '';
+
+        // 3. Strategy Pyramid Hierarchy Component
+        const pyramidHtml = (slide.diagram_type === 'pyramid' || slide.pyramid) ? `
+          <div class="my-3 flex flex-col gap-1.5 text-[10px] items-center">
+            <div class="w-3/5 p-2 rounded-xl bg-amber-500/20 border border-amber-400 text-amber-200 text-center font-bold shadow-md">
+              👑 APEX: Verified Thought Token & Monopolistic Status
+            </div>
+            <div class="w-4/5 p-2 rounded-xl bg-purple-500/20 border border-purple-400 text-purple-200 text-center font-semibold">
+              ⚡ CORE: 15~30 Slide High-Density Systems & SOPs
+            </div>
+            <div class="w-full p-2 rounded-xl bg-slate-800/60 border border-slate-700 text-slate-300 text-center font-medium">
+              🧱 BASE: Raw Insights, Longform Audio & Deep Research
+            </div>
+          </div>
+        ` : '';
+
+        const quoteHtml = slide.takeaway_quote ? `
                   <div class="rounded-xl p-4 my-3 bg-purple-950/40 border border-purple-500/30 backdrop-blur-sm shadow-sm">
                     <p class="text-xs sm:text-sm italic leading-relaxed text-purple-200 font-medium">“${slide.takeaway_quote}”</p>
                   </div>
@@ -4353,6 +4458,38 @@
       checkUrlHashForLiveDeck();
     });
 
+        async function handleQuickUrlParse() {
+      const urlInput = document.getElementById('quickUrlInput');
+      const url = urlInput ? urlInput.value.trim() : '';
+      if (!url || !url.startsWith('http')) {
+        showToast('Please enter a valid HTTP/HTTPS video or article URL', true);
+        return;
+      }
+
+      showToast('🎙️ Extracting YouTube / Podcast transcript & chapters...');
+      try {
+        const res = await fetch('/api/parse-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url })
+        });
+        const data = await res.json();
+        if (data && (data.text || data.title)) {
+          const content = `${data.title || 'Extracted URL Masterclass'}\n\n${data.text || data.description || ''}`;
+          document.getElementById('inputText').value = content;
+          showToast(`✨ Extracted "${data.title || 'URL'}"! Auto-Generating Visual Deck...`);
+          generateContent(true);
+        } else {
+          showToast('Could not extract transcript automatically. Pasting URL directly.');
+          document.getElementById('inputText').value = `Comprehensive breakdown of: ${url}`;
+          generateContent(true);
+        }
+      } catch (e) {
+        document.getElementById('inputText').value = `Comprehensive breakdown of: ${url}`;
+        generateContent(true);
+      }
+    }
+
     async function handlePdfUploadFileObj(file) {
       if (!file || file.type !== 'application/pdf') {
         showToast('Please select a valid PDF file.', true);
@@ -4597,6 +4734,76 @@
           </div>
         ` : '';
 
+                // 1. 2x2 Strategy Matrix Diagram Component
+        const matrixHtml = (slide.diagram_type === 'matrix_2x2' || slide.matrix_2x2) ? `
+          <div class="my-3 p-3 rounded-2xl bg-slate-950/80 border border-purple-500/40 backdrop-blur-md shadow-lg flex flex-col gap-2">
+            <div class="text-[10px] font-mono font-bold text-purple-300 flex items-center justify-between border-b border-gray-800 pb-1.5">
+              <span>📊 2x2 VALUE / EFFORT MATRIX</span>
+              <span class="text-amber-400 font-bold">HIGH IMPACT</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-[10px]">
+              <div class="p-2 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-200">
+                <div class="font-extrabold text-[9px] uppercase text-emerald-400 mb-0.5">⚡ QUICK WINS (High Value · Low Effort)</div>
+                <div>${slide.matrix_2x2?.quick_wins || 'High-leverage visual assets & automated funnels'}</div>
+              </div>
+              <div class="p-2 rounded-xl bg-purple-950/60 border border-purple-500/40 text-purple-200">
+                <div class="font-extrabold text-[9px] uppercase text-purple-400 mb-0.5">👑 STRATEGIC MOATS (High Value · High Effort)</div>
+                <div>${slide.matrix_2x2?.major_projects || 'Proprietary AI workflows & audience brand equity'}</div>
+              </div>
+              <div class="p-2 rounded-xl bg-slate-900/60 border border-slate-700 text-slate-300">
+                <div class="font-extrabold text-[9px] uppercase text-slate-400 mb-0.5">⏱️ FILL-INS (Low Value · Low Effort)</div>
+                <div>${slide.matrix_2x2?.fill_ins || 'Routine social reposts & daily housekeeping'}</div>
+              </div>
+              <div class="p-2 rounded-xl bg-red-950/50 border border-red-500/30 text-red-300">
+                <div class="font-extrabold text-[9px] uppercase text-red-400 mb-0.5">❌ TIME TRAPS (Low Value · High Effort)</div>
+                <div>${slide.matrix_2x2?.time_traps || 'Manual 4-hour Figma alignment pixel pushing'}</div>
+              </div>
+            </div>
+          </div>
+        ` : '';
+
+        // 2. Growth Flywheel Cycle Component (4-Step Self-Reinforcing Loop)
+        const flywheelHtml = (slide.diagram_type === 'flywheel' || slide.flywheel) ? `
+          <div class="my-3 p-3 rounded-2xl bg-slate-950/80 border border-indigo-500/40 backdrop-blur-md shadow-lg flex flex-col gap-2">
+            <div class="text-[10px] font-mono font-bold text-indigo-300 flex items-center gap-1 border-b border-gray-800 pb-1.5">
+              <span>🔄 4-STEP GROWTH FLYWHEEL</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-[10px]">
+              <div class="p-2 rounded-xl bg-indigo-950/60 border border-indigo-500/40 text-indigo-200 flex items-center gap-1.5">
+                <span class="w-4 h-4 rounded-full bg-indigo-500 text-white font-black text-[9px] flex items-center justify-center shrink-0">1</span>
+                <div>${slide.flywheel?.step1 || 'Drop 2h Podcast / Article'}</div>
+              </div>
+              <div class="p-2 rounded-xl bg-purple-950/60 border border-purple-500/40 text-purple-200 flex items-center gap-1.5">
+                <span class="w-4 h-4 rounded-full bg-purple-500 text-white font-black text-[9px] flex items-center justify-center shrink-0">2</span>
+                <div>${slide.flywheel?.step2 || 'Mint 30-Slide Master Deck'}</div>
+              </div>
+              <div class="p-2 rounded-xl bg-amber-950/60 border border-amber-500/40 text-amber-200 flex items-center gap-1.5">
+                <span class="w-4 h-4 rounded-full bg-amber-500 text-gray-950 font-black text-[9px] flex items-center justify-center shrink-0">3</span>
+                <div>${slide.flywheel?.step3 || 'Viral Multi-Platform Reach'}</div>
+              </div>
+              <div class="p-2 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-200 flex items-center gap-1.5">
+                <span class="w-4 h-4 rounded-full bg-emerald-500 text-gray-950 font-black text-[9px] flex items-center justify-center shrink-0">4</span>
+                <div>${slide.flywheel?.step4 || 'High-Ticket Inbound Leads'}</div>
+              </div>
+            </div>
+          </div>
+        ` : '';
+
+        // 3. Strategy Pyramid Hierarchy Component
+        const pyramidHtml = (slide.diagram_type === 'pyramid' || slide.pyramid) ? `
+          <div class="my-3 flex flex-col gap-1.5 text-[10px] items-center">
+            <div class="w-3/5 p-2 rounded-xl bg-amber-500/20 border border-amber-400 text-amber-200 text-center font-bold shadow-md">
+              👑 APEX: Verified Thought Token & Monopolistic Status
+            </div>
+            <div class="w-4/5 p-2 rounded-xl bg-purple-500/20 border border-purple-400 text-purple-200 text-center font-semibold">
+              ⚡ CORE: 15~30 Slide High-Density Systems & SOPs
+            </div>
+            <div class="w-full p-2 rounded-xl bg-slate-800/60 border border-slate-700 text-slate-300 text-center font-medium">
+              🧱 BASE: Raw Insights, Longform Audio & Deep Research
+            </div>
+          </div>
+        ` : '';
+
         const quoteHtml = slide.takeaway_quote ? `
           <div class="card-quote-box rounded-xl p-3.5 mb-3 bg-purple-950/40 border border-purple-500/30 backdrop-blur-sm shadow-sm">
             <p class="card-quote-text text-xs italic leading-relaxed font-medium"><span class="text-purple-400 font-bold text-sm">“</span>${slide.takeaway_quote}<span class="text-purple-400 font-bold text-sm">”</span></p>
@@ -4633,7 +4840,7 @@
               <div class="card-subtitle text-[10px] font-bold uppercase tracking-widest opacity-75 mb-2">${slide.subtitle || '🔥 HIGHLIGHTS'}</div>
               <h3 class="card-title text-lg font-extrabold font-outfit leading-snug mb-3">${highlightedTitle}</h3>
               <!-- Smart layout hierarchy: render signature elements per slide to prevent text overlapping -->
-              ${versusHtml ? (versusHtml + (quoteHtml || bulletsHtml)) : (flowHtml || (metricHtml ? (metricHtml + bulletsHtml) : (quoteHtml ? (quoteHtml + bulletsHtml) : bulletsHtml)))}
+              ${matrixHtml || flywheelHtml || pyramidHtml || (versusHtml ? (versusHtml + (quoteHtml || bulletsHtml)) : (flowHtml || (metricHtml ? (metricHtml + bulletsHtml) : (quoteHtml ? (quoteHtml + bulletsHtml) : bulletsHtml))))}
             </div>
 
             <div class="pt-3 border-t border-gray-800/60 flex items-center justify-between gap-2 overflow-hidden">
