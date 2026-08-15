@@ -160,6 +160,7 @@
     }
     .swiper-pagination-bullet { background: rgba(255,255,255,0.3); }
   </style>
+  <script src="/qrcode-engine.js"></script>
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-purple-500 selection:text-white">
 
@@ -3055,12 +3056,11 @@
       });
     }
 
-    function openMobileQrModal() {
+        function openMobileQrModal() {
       const p = currentPreset || 'exec';
       const deckKey = (p === 'luxury' || p === 'exec') ? 'exec' : (p === 'cyberpunk' || p === 'demo1' ? 'demo1' : (p === 'matrix' || p === 'demo2' ? 'demo2' : (p === 'morandi' || p === 'demo3' ? 'demo3' : 'exec')));
       
       const directReaderUrl = `${window.location.origin}/#read=${deckKey}`;
-      const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(directReaderUrl)}&color=a855f7&bgcolor=030712`;
       
       let modal = document.getElementById('mobileQrModal');
       if (!modal) {
@@ -3072,15 +3072,18 @@
 
       modal.innerHTML = `
         <div class="bg-slate-900 border border-purple-500/50 rounded-3xl p-6 max-w-sm w-full text-center flex flex-col items-center gap-4 shadow-2xl relative text-white">
-          <button onclick="document.getElementById('mobileQrModal').remove()" class="absolute top-4 right-4 text-gray-400 hover:text-white p-1">
+          <button onclick="document.getElementById('mobileQrModal').remove()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
             <i data-lucide="x" class="w-5 h-5"></i>
           </button>
           <div class="flex items-center gap-2 text-purple-300 font-bold text-sm">
             <i data-lucide="smartphone" class="w-4 h-4"></i> Scan to Read on Mobile
           </div>
-          <div class="p-3 bg-slate-950 rounded-2xl border border-purple-500/40 shadow-inner">
-            <img src="${qrApiUrl}" alt="Mobile QR Code" class="w-52 h-52 rounded-xl object-contain">
+          
+          <!-- 100% Offline Local HTML5 Canvas QR Code (Zero Network Lag) -->
+          <div class="p-3 bg-slate-950 rounded-2xl border border-purple-500/40 shadow-inner flex items-center justify-center">
+            <canvas id="mobileQrCanvas" width="220" height="220" class="rounded-xl shadow-lg"></canvas>
           </div>
+
           <p class="text-xs text-gray-300 leading-tight">
             Scan with your iPhone, Android camera, or WeChat to open the <strong class="text-purple-300">Direct Full-Screen Mobile Reader</strong>!
           </p>
@@ -3089,7 +3092,21 @@
           </button>
         </div>
       `;
-      lucide.createIcons();
+
+      modal.classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+
+      // Render QR Code onto Canvas
+      setTimeout(() => {
+        const canvas = document.getElementById('mobileQrCanvas');
+        if (canvas && window.QRCodeLib && window.QRCodeLib.renderQrToCanvas) {
+          try {
+            window.QRCodeLib.renderQrToCanvas(directReaderUrl, canvas, 220);
+          } catch (err) {
+            console.warn('Canvas QR render error, using fallback:', err);
+          }
+        }
+      }, 50);
     }
 
         // =========================================================================
