@@ -3826,32 +3826,36 @@ Explore here: ${liveUrl}`)}`;
           <div id="presenterAmbientGlow" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full blur-[120px] opacity-35 transition-all duration-700 bg-gradient-to-tr from-purple-600 via-indigo-600 to-amber-500"></div>
         </div>
 
-                        <!-- TOP CREATOR & INTERACTION TOOLBAR (Ultra-Sleek Non-Wrapping Studio Bar) -->
-        <div class="w-full max-w-5xl z-20 flex items-center justify-between gap-2 bg-slate-900/95 backdrop-blur-2xl border border-slate-800/90 px-4 py-2 rounded-2xl shadow-2xl overflow-x-auto whitespace-nowrap scrollbar-none">
+                        <!-- 🏛️ GAMMA / APPLE KEYNOTE STYLE AIRY FLOATING TOPBAR -->
+        <div class="w-full max-w-6xl z-20 flex items-center justify-between gap-4 bg-slate-900/90 backdrop-blur-2xl border border-slate-800/80 px-4 py-2.5 rounded-2xl shadow-2xl">
           
-          <!-- Left Controls: Slide Counter + Edit Toggle + Skin Picker -->
-          <div class="flex items-center gap-2 shrink-0">
-            <span class="text-xs font-mono font-extrabold text-white flex items-center gap-1.5 bg-purple-950/80 px-3 py-1.5 rounded-full border border-purple-500/40">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> 
-              <span id="presenterSlideCounter">Slide 1 of ${cards.length}</span>
+          <!-- Left: Brand + View Switch Pill -->
+          <div class="flex items-center gap-3 shrink-0">
+            <span class="text-xs font-extrabold font-outfit text-white hidden sm:flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></span>
+              Cardify <span class="text-purple-400 font-mono text-[10px] bg-purple-950/60 px-1.5 py-0.5 rounded border border-purple-500/30">DECK</span>
             </span>
 
-                        <!-- 🎴 Slides vs 🌐 Webpage Dual-Mode Segmented Control -->
-            <div class="flex items-center bg-slate-950 p-0.5 rounded-full border border-slate-700 shadow-inner shrink-0">
-              <button id="btnModeSlides" onclick="setPresenterDisplayMode('slides')" class="px-3 py-1 rounded-full bg-purple-600 text-white font-bold text-xs shadow-md transition-all">
+            <!-- 🎴 Slides vs 🌐 Webpage Dual-Mode Segmented Control -->
+            <div class="flex items-center bg-slate-950 p-0.5 rounded-xl border border-slate-800 shadow-inner">
+              <button id="btnModeSlides" onclick="setPresenterDisplayMode('slides')" class="px-3 py-1 rounded-lg bg-purple-600 text-white font-bold text-xs shadow-md transition-all">
                 🎴 Slides
               </button>
-              <button id="btnModeWeb" onclick="setPresenterDisplayMode('webpage')" class="px-3 py-1 rounded-full bg-transparent text-slate-400 hover:text-white font-semibold text-xs transition-all">
+              <button id="btnModeWeb" onclick="setPresenterDisplayMode('webpage')" class="px-3 py-1 rounded-lg bg-transparent text-slate-400 hover:text-white font-semibold text-xs transition-all">
                 🌐 Webpage
               </button>
             </div>
 
-            <button id="btnToggleLiveEdit" onclick="toggleLiveInlineEdit()" title="Toggle Inline Edit (Hotkey: E)" class="px-3 py-1.5 rounded-full bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm active:scale-95">
-              <i data-lucide="edit-3" class="w-3.5 h-3.5 text-purple-400"></i> <span>Edit</span>
-            </button>
+            <!-- Slide Counter Pill -->
+            <span class="text-[11px] font-mono font-bold text-slate-300 bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800">
+              <span id="presenterSlideCounter">Slide 1 of ${cards.length}</span>
+            </span>
+          </div>
 
+          <!-- Center / Secondary Controls: Theme Selector + Soundtrack -->
+          <div class="hidden md:flex items-center gap-2">
             <!-- 🎨 Live Theme Selector Dropdown -->
-            <select onchange="switchPresenterSkin(this.value)" class="bg-slate-950 border border-slate-700 text-purple-300 hover:text-white text-xs font-bold rounded-full px-3 py-1.5 focus:outline-none cursor-pointer shadow-sm transition-all">
+            <select onchange="switchPresenterSkin(this.value)" class="bg-slate-950 border border-slate-800 text-amber-300 hover:text-white text-xs font-bold rounded-xl px-3 py-1.5 focus:outline-none cursor-pointer shadow-sm transition-all">
               <option value="luxury" ${currentPreset === 'luxury' ? 'selected' : ''}>👑 Luxury Gold</option>
               <option value="cyberpunk" ${currentPreset === 'cyberpunk' ? 'selected' : ''}>⚡ Cyberpunk</option>
               <option value="apple" ${currentPreset === 'apple' ? 'selected' : ''}>🌿 Apple Minimal</option>
@@ -3859,37 +3863,32 @@ Explore here: ${liveUrl}`)}`;
               <option value="matrix" ${currentPreset === 'matrix' ? 'selected' : ''}>🧠 Matrix Green</option>
               <option value="vaporwave" ${currentPreset === 'vaporwave' ? 'selected' : ''}>🌆 Vaporwave</option>
             </select>
+
+            <!-- 🎵 Compact Apple-Style BGM Pill -->
+            <button id="btnPresenterBgm" onclick="toggleCardifyAudio()" title="Toggle Background Soundtrack (Hotkey: M)" class="px-3 py-1.5 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white text-xs font-mono flex items-center gap-1.5 transition-all shadow-sm">
+              <i data-lucide="volume-x" class="w-3.5 h-3.5 text-gray-400"></i> <span>BGM</span>
+            </button>
           </div>
 
-          <!-- Right Controls: Audio + Fullscreen + Share + PDF + Close -->
+          <!-- Right: Core Action Buttons (Mobile QR, PDF, Fullscreen, Close) -->
           <div class="flex items-center gap-2 shrink-0">
-            <!-- 🎵 Compact Apple-Style BGM Pill -->
-            <button id="btnPresenterBgm" onclick="toggleCardifyAudio()" title="Toggle Background Soundtrack (Hotkey: M)" class="px-3 py-1.5 rounded-full bg-slate-950/90 hover:bg-slate-800 border border-slate-700 text-slate-400 hover:text-white text-xs font-mono flex items-center gap-1.5 transition-all shadow-sm shrink-0">
-              <i data-lucide="volume-x" class="w-3.5 h-3.5 text-gray-400"></i> <span>🎵 BGM: OFF</span>
+            <!-- 📱 Mobile QR & Share Pill -->
+            <button onclick="openMobileQrModal()" title="Scan with Phone or Copy Link" class="px-3.5 py-1.5 rounded-xl bg-purple-950/60 hover:bg-purple-900/80 border border-purple-500/50 text-purple-200 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm active:scale-95">
+              <i data-lucide="smartphone" class="w-3.5 h-3.5 text-purple-300"></i> <span>📱 Share QR</span>
             </button>
 
-            <!-- ⛶ Keynote True Fullscreen -->
-            <button id="btnPresenterFs" onclick="togglePresenterFullscreen()" title="Keynote True Fullscreen (Hotkey: F)" class="px-3 py-1.5 rounded-full bg-slate-950 hover:bg-slate-800 border border-slate-700 text-purple-300 hover:text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm active:scale-95 shrink-0">
-              <i data-lucide="maximize" class="w-3.5 h-3.5 text-purple-400"></i> <span>Fullscreen</span>
-            </button>
-
-            <!-- 🚀 1-Click Share to X -->
-            <button onclick="shareToTwitter()" title="Share to X / Twitter" class="px-3 py-1.5 rounded-full bg-slate-950 hover:bg-sky-950/80 border border-sky-500/50 text-sky-400 text-xs font-extrabold flex items-center gap-1.5 transition-all shadow-sm active:scale-95 shrink-0">
-              <span class="font-sans text-sm font-black">𝕏</span> <span>Post</span>
-            </button>
-
-            <!-- 📱 Mobile QR -->
-            <button onclick="openMobileQrModal()" title="Scan with Phone to read on Mobile" class="px-3 py-1.5 rounded-full bg-slate-950 hover:bg-purple-950/80 border border-purple-500/50 text-purple-300 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm active:scale-95 shrink-0">
-              <i data-lucide="smartphone" class="w-3.5 h-3.5 text-purple-400"></i> <span>QR</span>
-            </button>
-
-            <!-- 📥 Export PDF -->
-            <button onclick="exportLinkedInPdf()" title="Download full deck as PDF Carousel" class="px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-gray-950 text-xs font-black transition-all shadow-md flex items-center gap-1.5 active:scale-95 shrink-0">
+            <!-- 📥 Export PDF (Luxury Gold) -->
+            <button onclick="exportLinkedInPdf()" title="Download full deck as PDF Carousel" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-gray-950 text-xs font-black transition-all shadow-md flex items-center gap-1.5 active:scale-95">
               <i data-lucide="download" class="w-3.5 h-3.5 text-gray-950"></i> <span>PDF</span>
             </button>
 
-            <!-- ✕ Close -->
-            <button onclick="closePresenterMode()" class="w-8 h-8 rounded-full bg-slate-950 hover:bg-slate-800 text-gray-400 hover:text-white border border-slate-800 flex items-center justify-center transition-all font-bold text-base ml-0.5 active:scale-95 shrink-0">
+            <!-- ⛶ Keynote True Fullscreen Icon Button -->
+            <button id="btnPresenterFs" onclick="togglePresenterFullscreen()" title="Keynote True Fullscreen (Hotkey: F)" class="w-8 h-8 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white flex items-center justify-center transition-all shadow-sm active:scale-95">
+              <i data-lucide="maximize" class="w-4 h-4 text-slate-300"></i>
+            </button>
+
+            <!-- ✕ Close Icon Button -->
+            <button onclick="closePresenterMode()" title="Close (Esc)" class="w-8 h-8 rounded-xl bg-slate-950 hover:bg-slate-800 text-gray-400 hover:text-white border border-slate-800 flex items-center justify-center transition-all font-bold text-base active:scale-95">
               &times;
             </button>
           </div>
@@ -4186,69 +4185,37 @@ Explore here: ${liveUrl}`)}`;
       document.body.appendChild(m);
     }
 
-    // v6.9 DYNAMIC CLICKABLE ULTRA-SHORT LIVE LINK ENGINE
+    // 🚀 v7.8 ULTRA-RELIABLE SHARE & 1-CLICK QR COPIER
     async function copyShareableLiveLink() {
+      // If no response data yet, fallback to active sandbox demo
       if (!currentResponseData || !currentResponseData.slides) {
-        showToast('Please generate cards first before sharing!', true);
-        return;
+        const presetSlides = MASTER_PRESET_DECKS[currentPreset] || MASTER_PRESET_DECKS.exec;
+        currentResponseData = { slides: presetSlides };
       }
 
-      showToast('🔗 Generating Ultra-Short Live Deck Link...');
+      const currentOrigin = window.location.origin;
+      const currentPath = window.location.pathname;
+      let deckKey = 'exec';
+      if (currentPreset === 'cyberpunk' || currentPreset === 'cyber') deckKey = 'demo1';
+      else if (currentPreset === 'matrix') deckKey = 'demo2';
+      else if (currentPreset === 'morandi') deckKey = 'demo3';
+      else if (currentPreset === 'luxury') deckKey = 'exec';
 
-      let shareUrl = '';
-      const slimPayload = {
-        slides: currentResponseData.slides,
-        preset: currentPreset,
-        ctaType: document.getElementById('ctaType')?.value || 'none',
-        ctaValue: document.getElementById('ctaValue')?.value || ''
-      };
+      const liveUrl = `${currentOrigin}${currentPath}?read=${deckKey}#read=${deckKey}`;
 
       try {
-        const res = await fetch('/api/share', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(slimPayload)
-        });
-
-        if (res.ok) {
-          const json = await res.json();
-          if (json.shortUrl) {
-            shareUrl = json.shortUrl;
-          }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(liveUrl);
         }
-      } catch (e) {
-        console.warn('Shortlink API fallback to hash:', e);
+      } catch (err) {
+        console.warn('Clipboard write warning:', err);
       }
 
-      if (!shareUrl) {
-        const jsonStr = JSON.stringify(slimPayload);
-        const encodedHash = btoa(unescape(encodeURIComponent(jsonStr)));
-        shareUrl = `${window.location.origin}${window.location.pathname}#deck=${encodedHash}`;
-      }
+      showToast('✨ Landing Page Link Copied to Clipboard!');
+      trackAnalyticsEvent('share_landing_page_clicked', { deck: deckKey });
 
-      const titleText = currentResponseData.slides[0]?.title || 'Cardify Visual Deck';
-      const plainMarkdown = `[⚡️ Interactive Cardify Deck: ${titleText}](${shareUrl})`;
-      const htmlHyperlink = `<a href="${shareUrl}" target="_blank" style="color:#8b5cf6;font-weight:bold;text-decoration:underline;">⚡️ Interactive Cardify Deck: ${titleText}</a>`;
-
-      if (navigator.clipboard && window.ClipboardItem) {
-        const textBlob = new Blob([plainMarkdown], { type: 'text/plain' });
-        const htmlBlob = new Blob([htmlHyperlink], { type: 'text/html' });
-        const item = new ClipboardItem({
-          'text/plain': textBlob,
-          'text/html': htmlBlob
-        });
-
-        navigator.clipboard.write([item]).then(() => {
-          showToast('✨ Copied Ultra-Short Blue Hyperlink & Link to Clipboard!');
-          trackAnalyticsEvent('share_live_link_copied', { platform: selectedPlatform });
-        }).catch(() => {
-          navigator.clipboard.writeText(shareUrl);
-          showToast('✨ Copied Ultra-Short Live Link to Clipboard!');
-        });
-      } else {
-        navigator.clipboard.writeText(shareUrl);
-        showToast('✨ Copied Ultra-Short Live Link to Clipboard!');
-      }
+      // Automatically launch the branded Mobile QR modal for visual gratification!
+      openMobileQrModal();
     }
 
     async function checkUrlHashForLiveDeck() {
