@@ -716,40 +716,59 @@
           <p class="text-xs text-emerald-200/90 max-w-md font-medium">Try full Pro features for 7 days at $0.00 today. Auto-renews after 7 days unless canceled.</p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <!-- Tier 1: Pro Founder -->
-          <div class="p-4 rounded-xl bg-gray-950 border border-emerald-500/50 flex flex-col justify-between gap-4 relative shadow-lg">
-            <div class="flex flex-col gap-2">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <!-- Tier 1: Monthly Creator -->
+          <div class="p-3.5 rounded-xl bg-slate-900/90 border border-emerald-500/40 flex flex-col justify-between gap-3 shadow-md">
+            <div class="flex flex-col gap-1.5">
               <div class="text-xs font-bold text-emerald-300 uppercase tracking-wider flex items-center justify-between">
-                <span>🚀 Pro Founder</span>
-                <span class="text-[10px] text-emerald-300 bg-emerald-950 px-1.5 py-0.5 rounded border border-emerald-500/40">$0.00 Today</span>
+                <span>🚀 Monthly Pro</span>
+                <span class="text-[10px] text-emerald-300 bg-emerald-950 px-1.5 py-0.5 rounded border border-emerald-500/40">$0 Today</span>
               </div>
               <div class="flex items-baseline gap-1">
-                <span class="text-3xl font-black text-emerald-400 font-outfit">$0</span>
-                <span class="text-xs text-emerald-300 font-bold">for 7 days (then $19.9/mo)</span>
+                <span class="text-2xl font-black text-white font-outfit">$19.9</span>
+                <span class="text-[10px] text-gray-400 font-normal">/month</span>
               </div>
-              <p class="text-[11px] text-gray-300 leading-snug">Perfect for founders & creators looking to dominate LinkedIn with 30-slide PDF decks.</p>
+              <p class="text-[10px] text-gray-300 leading-tight">7-Day Free Trial ($0 Today). Cancel anytime.</p>
             </div>
-            <a href="https://checkout.dodopayments.com/buy/pdt_0Nl75urVq1XA2yhi6ZPJ9?quantity=1" target="_blank" onclick="trackAnalyticsEvent('checkout_click_founder')" class="w-full py-3 text-center rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-gray-950 font-extrabold text-xs transition-all shadow-lg glow-amber active:scale-95">
-              🚀 Start 7-Day Free Trial ($0 Today)
+            <a href="https://checkout.dodopayments.com/buy/pdt_0Nl75urVq1XA2yhi6ZPJ9?quantity=1" target="_blank" onclick="trackAnalyticsEvent('checkout_click_founder')" class="w-full py-2 text-center rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md active:scale-95">
+              Start Free Trial
             </a>
           </div>
 
-          <!-- Tier 2: Agency & Team -->
-          <div class="p-4 rounded-xl bg-gradient-to-b from-purple-950/70 to-indigo-950/70 border-2 border-amber-500/60 flex flex-col justify-between gap-4 relative shadow-xl shadow-purple-950/50">
-            <div class="flex flex-col gap-2">
+          <!-- Tier 2: Annual VIP Pass (BEST VALUE - 38% OFF) -->
+          <div class="p-3.5 rounded-xl bg-gradient-to-b from-amber-950/80 to-slate-900 border-2 border-amber-500 text-center flex flex-col justify-between gap-3 relative shadow-xl shadow-amber-950/60">
+            <span class="absolute -top-2.5 right-2 px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-gray-950 text-[9px] font-black uppercase">🔥 38% OFF</span>
+            <div class="flex flex-col gap-1.5">
               <div class="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center justify-between">
-                <span>🏢 Agency & Team</span>
-                <span class="text-[10px] text-amber-200 bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-500/40">$0.00 Today</span>
+                <span>👑 Annual VIP Pass</span>
+                <span class="text-[9px] text-amber-200 bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-500/40">$12.4/mo</span>
+              </div>
+              <div class="flex items-baseline justify-center gap-1">
+                <span class="text-2xl font-black text-amber-400 font-outfit">$149</span>
+                <span class="text-[10px] text-amber-200 font-normal">/year</span>
+              </div>
+              <p class="text-[10px] text-amber-200/80 leading-tight">Unlimited 30-slide master decks + commercial license.</p>
+            </div>
+            <a href="https://checkout.dodopayments.com/buy/pdt_0Nl75urVq1XA2yhi6ZPJ9?quantity=1" target="_blank" onclick="trackAnalyticsEvent('checkout_click_annual')" class="w-full py-2 text-center rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-gray-950 font-black text-xs shadow-lg active:scale-95">
+              👑 Get Annual VIP ($149/yr)
+            </a>
+          </div>
+
+          <!-- Tier 3: Agency & Team -->
+          <div class="p-3.5 rounded-xl bg-slate-900/90 border border-purple-500/40 flex flex-col justify-between gap-3 shadow-md">
+            <div class="flex flex-col gap-1.5">
+              <div class="text-xs font-bold text-purple-300 uppercase tracking-wider flex items-center justify-between">
+                <span>🏢 Agency Team</span>
+                <span class="text-[10px] text-purple-300 bg-purple-950 px-1.5 py-0.5 rounded border border-purple-500/40">Multi-Seat</span>
               </div>
               <div class="flex items-baseline gap-1">
-                <span class="text-3xl font-black text-amber-400 font-outfit">$0</span>
-                <span class="text-xs text-amber-300 font-bold">for 7 days (then $49.9/mo)</span>
+                <span class="text-2xl font-black text-purple-300 font-outfit">$49.9</span>
+                <span class="text-[10px] text-gray-400 font-normal">/month</span>
               </div>
-              <p class="text-[11px] text-purple-200/80 leading-snug">For agencies & growth teams managing multi-client visual campaigns.</p>
+              <p class="text-[10px] text-purple-200/80 leading-tight">Multi-client workspaces & brand kits.</p>
             </div>
-            <a href="https://checkout.dodopayments.com/buy/pdt_0Nl76OLdrjeGkk3fMse8Y?quantity=1" target="_blank" onclick="trackAnalyticsEvent('checkout_click_agency')" class="w-full py-3 text-center rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-extrabold text-xs transition-all shadow-lg shadow-amber-500/30 active:scale-95">
-              👑 Start Agency 7-Day Free Trial ($0 Today)
+            <a href="https://checkout.dodopayments.com/buy/pdt_0Nl76OLdrjeGkk3fMse8Y?quantity=1" target="_blank" onclick="trackAnalyticsEvent('checkout_click_agency')" class="w-full py-2 text-center rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-md active:scale-95">
+              Get Agency Pass
             </a>
           </div>
         </div>
