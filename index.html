@@ -1743,87 +1743,71 @@
       trackAnalyticsEvent('sandbox_demo_clicked', { demo: demoId, lang: selectedLang });
     }
 
-    function previewThemeStyle(promptName) {
-      const preset = PROMPT_THEME_PRESETS[promptName];
-      if (preset) {
-        applyCustomCssToCards(preset);
-      }
+        function previewThemeStyle(promptName) {
+      const lower = (promptName || '').toLowerCase();
+      let themeKey = 'luxury';
+      if (lower.includes('cyberpunk')) themeKey = 'cyberpunk';
+      else if (lower.includes('apple')) themeKey = 'apple';
+      else if (lower.includes('morandi')) themeKey = 'morandi';
+      else if (lower.includes('matrix')) themeKey = 'matrix';
+      else if (lower.includes('vaporwave')) themeKey = 'vaporwave';
+      else if (lower.includes('luxury') || lower.includes('gold')) themeKey = 'luxury';
+      
+      setTheme(themeKey);
     }
 
     function restoreThemeStyle() {
-      if (customThemeStyleCss) {
-        applyCustomCssToCards(customThemeStyleCss);
-      }
+      setTheme(currentPreset || 'luxury');
     }
 
     function applyThemePrompt(promptName) {
-      document.getElementById('customThemePromptInput').value = promptName;
+      const inputEl = document.getElementById('customThemePromptInput');
+      if (inputEl) inputEl.value = promptName;
       customThemePrompt = promptName;
-      const preset = PROMPT_THEME_PRESETS[promptName];
 
+      const lower = (promptName || '').toLowerCase();
+      let themeKey = 'luxury';
+      if (lower.includes('cyberpunk')) themeKey = 'cyberpunk';
+      else if (lower.includes('apple')) themeKey = 'apple';
+      else if (lower.includes('morandi')) themeKey = 'morandi';
+      else if (lower.includes('matrix')) themeKey = 'matrix';
+      else if (lower.includes('vaporwave')) themeKey = 'vaporwave';
+      else if (lower.includes('luxury') || lower.includes('gold')) themeKey = 'luxury';
+
+      currentPreset = themeKey;
+      setTheme(themeKey);
+
+      const preset = PROMPT_THEME_PRESETS[promptName];
       if (preset) {
         customThemeStyleCss = preset;
         applyCustomCssToCards(preset);
-        showToast(`🎨 Applied Visual Style: ${promptName}`);
-        trackAnalyticsEvent('theme_prompt_applied', { prompt: promptName });
       }
+
+      showToast(`🎨 Applied Visual Style: ${promptName}`);
+      trackAnalyticsEvent('theme_prompt_applied', { prompt: promptName, theme: themeKey });
     }
 
     function applyPromptThemeFromInput() {
-      const text = document.getElementById('customThemePromptInput').value.trim();
+      const text = document.getElementById('customThemePromptInput')?.value.trim() || '';
       if (!text) return;
-      customThemePrompt = text;
-
-      const preset = PROMPT_THEME_PRESETS[text] || {
-        bg: 'linear-gradient(135deg, #111827 0%, #1f2937 100%)',
-        titleColor: '#c084fc',
-        subtitleColor: '#a78bfa',
-        metricBg: '#1f2937',
-        metricValueColor: '#c084fc',
-        quoteBg: '#111827',
-        quoteBorder: '1px solid #7c3aed',
-        quoteTextColor: '#e9d5ff',
-        border: '1px solid #7c3aed',
-        textColor: '#f3f4f6',
-        fontFamily: "'Outfit', sans-serif"
-      };
-
-      customThemeStyleCss = preset;
-      applyCustomCssToCards(preset);
-      showToast(`🎨 Applied Custom Theme: "${text}"`);
+      applyThemePrompt(text);
     }
 
     function applyCustomCssToCards(cssObj) {
-      for (let i = 1; i <= 10; i++) {
-        const card = document.getElementById(`card-${i}`);
-        if (card) {
-          card.style.background = cssObj.bg || '';
-          card.style.border = cssObj.border || '';
-          card.style.fontFamily = cssObj.fontFamily || '';
-          card.style.color = cssObj.textColor || '';
+      if (!cssObj) return;
+      const allCards = document.querySelectorAll('#swiperWrapper .swiper-slide > div, #presenterCardContainer, [id^="card-"]');
+      allCards.forEach(card => {
+        if (cssObj.bg) card.style.background = cssObj.bg;
+        if (cssObj.border) card.style.border = cssObj.border;
+        if (cssObj.fontFamily) card.style.fontFamily = cssObj.fontFamily;
+        if (cssObj.textColor) card.style.color = cssObj.textColor;
 
-          const title = card.querySelector('.card-title');
-          if (title) title.style.color = cssObj.titleColor || '';
+        const title = card.querySelector('.card-title, h2, h3');
+        if (title && cssObj.titleColor) title.style.color = cssObj.titleColor;
 
-          const subtitle = card.querySelector('.card-subtitle');
-          if (subtitle) subtitle.style.color = cssObj.subtitleColor || '';
-
-          const metricBox = card.querySelector('.card-metric-box');
-          if (metricBox) metricBox.style.background = cssObj.metricBg || '';
-
-          const metricValue = card.querySelector('.card-metric-value');
-          if (metricValue) metricValue.style.color = cssObj.metricValueColor || '';
-
-          const quoteBox = card.querySelector('.card-quote-box');
-          if (quoteBox) {
-            quoteBox.style.background = cssObj.quoteBg || '';
-            quoteBox.style.border = cssObj.quoteBorder || '';
-          }
-
-          const quoteText = card.querySelector('.card-quote-text');
-          if (quoteText) quoteText.style.color = cssObj.quoteTextColor || '';
-        }
-      }
+        const subtitle = card.querySelector('.card-subtitle, p');
+        if (subtitle && cssObj.subtitleColor) subtitle.style.color = cssObj.subtitleColor;
+      });
     }
 
     function getEffectiveLang() {
