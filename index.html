@@ -3853,13 +3853,6 @@
     }
 
     async function exportLinkedInPdf() {
-      if (!isProUser) {
-        openUpgradeModal();
-        showToast('Unwatermarked LinkedIn PDF Deck is a Pro feature!', true);
-        trackAnalyticsEvent('paywall_pdf_intercept');
-        return;
-      }
-
       const slides = (currentResponseData && currentResponseData.slides && currentResponseData.slides.length > 0)
         ? currentResponseData.slides
         : (LOCALIZED_DEFAULT_SLIDES[selectedLang] || LOCALIZED_DEFAULT_SLIDES.en);
