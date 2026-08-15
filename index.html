@@ -500,9 +500,9 @@
         <!-- High-Conversion Quick Action Toolbar -->
         <div class="grid grid-cols-2 sm:grid-cols-6 gap-2 mt-1">
           <!-- HERO Action 1: Export PDF Carousel (Bright Amber/Gold) -->
-          <button id="btnExportPdf" onclick="exportLinkedInPdf()" title="Export multi-page PDF for LinkedIn Carousel posts" class="col-span-2 sm:col-span-3 py-3 px-3 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-gray-950 font-extrabold text-xs flex items-center justify-center gap-2 transition-all shadow-lg glow-amber hover:scale-[1.02] active:scale-95">
+          <button id="btnExportPdf" onclick="exportLinkedInPdf()" title="Export multi-page PDF Deck for all social platforms" class="col-span-2 sm:col-span-3 py-3 px-3 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-gray-950 font-extrabold text-xs flex items-center justify-center gap-2 transition-all shadow-lg glow-amber hover:scale-[1.02] active:scale-95">
             <i data-lucide="file-text" class="w-4 h-4 text-gray-950"></i>
-            <span id="txtExportPdfBtn">⬇️ Export PDF Carousel (LinkedIn)</span>
+            <span id="txtExportPdfBtn">⬇️ Export Multi-Page PDF Deck</span>
           </button>
 
           <!-- HERO Action 2: Live Link (Gradient Purple) -->
@@ -4324,7 +4324,7 @@
         showToast('PDF Export failed: ' + e.message, true);
       } finally {
         if (btn) btn.disabled = false;
-        if (txt) txt.innerText = '📄 LinkedIn PDF';
+        if (txt) txt.innerText = '📄 Export PDF Deck';
       }
     }
 
