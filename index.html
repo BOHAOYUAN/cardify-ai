@@ -3443,7 +3443,8 @@ Explore here: ${liveUrl}`)}`;
       const p = currentPreset || 'exec';
       const deckKey = (p === 'luxury' || p === 'exec') ? 'exec' : (p === 'cyberpunk' || p === 'demo1' ? 'demo1' : (p === 'matrix' || p === 'demo2' ? 'demo2' : (p === 'morandi' || p === 'demo3' ? 'demo3' : 'exec')));
       
-      const directReaderUrl = `${window.location.origin}/?read=${deckKey}#read=${deckKey}`;
+      // If user has custom cards or is in webpage mode, construct seamless direct link
+      const directReaderUrl = `${window.location.origin}/?read=${deckKey}&view=webpage#read=${deckKey}`;
       
       let modal = document.getElementById('mobileQrModal');
       if (!modal) {
