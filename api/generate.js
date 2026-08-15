@@ -7,8 +7,22 @@ async function resolveUrlContentIfPresent(inputText, ctaValue) {
 
   const targetUrl = urlMatch[1].trim();
 
-  // 1. YouTube Video URL via oEmbed
+  // 1. YouTube Video URL Transcript Extraction via Jina Reader Engine + oEmbed Fallback
   if (targetUrl.includes('youtube.com/') || targetUrl.includes('youtu.be/')) {
+    try {
+      const jinaYtUrl = 'https://r.jina.ai/' + targetUrl;
+      const res = await fetch(jinaYtUrl, { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' } });
+      if (res.ok) {
+        const markdown = await res.text();
+        if (markdown && markdown.length > 300 && !markdown.includes('Target URL returned error')) {
+          const titleMatch = markdown.match(/Title:\s*(.+)/i);
+          const title = titleMatch ? titleMatch[1].trim() : 'YouTube Video Podcast';
+          const transcriptSnippet = markdown.slice(0, 15000);
+          return `[YOUTUBE PODCAST TITLE]: ${title}\n[SOURCE VIDEO URL]: ${targetUrl}\n\n[FULL EXTRACTED YOUTUBE TRANSCRIPT & CONTENT]:\n${transcriptSnippet}\n\nCRITICAL INSTRUCTION FOR AI: The user provided a 2+ hour YouTube podcast/video titled "${title}". You MUST analyze the extracted transcript content and generate 30 detailed slides with specific quotes, statistics, speaker insights, and step-by-step takeaways derived directly from this transcript.`;
+        }
+      }
+    } catch (_) {}
+
     try {
       const oembedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(targetUrl)}&format=json`;
       const res = await fetch(oembedUrl);
