@@ -1,7 +1,6 @@
-// /api/share.js — Cardify AI v6.9 Ultra-Short Link Gateway
-// In-Memory & Failover KV Shortener Store
+// /api/share.js — Cardify AI Ultra-Short Link Gateway (Powered by Upstash Redis)
 
-const shareKvStore = new Map();
+const db = require('./db.js');
 
 function generateShortId() {
   const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -29,7 +28,9 @@ module.exports = async function handler(req, res) {
       }
 
       const shortId = generateShortId();
-      shareKvStore.set(shortId, { slides, preset, ctaType, ctaValue, createdAt: Date.now() });
+      const payload = { slides, preset, ctaType, ctaValue, createdAt: Date.now() };
+
+      await db.set(`cardify:share:${shortId}`, payload);
 
       const host = req.headers.host || 'cardifyai.lumiere-private.com';
       const protocol = req.headers['x-forwarded-proto'] || 'https';
@@ -39,17 +40,29 @@ module.exports = async function handler(req, res) {
         shortUrl: `${protocol}://${host}/#d=${shortId}`
       });
     } catch (e) {
+      console.warn('Share POST error:', e);
       return res.status(500).json({ error: e.message });
     }
   }
 
   if (req.method === 'GET') {
-    const { id } = req.query || {};
-    if (!id || !shareKvStore.has(id)) {
-      return res.status(404).json({ error: 'Short link not found' });
-    }
+    try {
+      const { id } = req.query || {};
+      if (!id) {
+        return res.status(400).json({ error: 'Missing shortlink id' });
+      }
 
-    return res.status(200).json({ data: shareKvStore.get(id) });
+      const raw = await db.get(`cardify:share:${id}`);
+      if (!raw) {
+        return res.status(404).json({ error: 'Short link not found' });
+      }
+
+      const data = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      return res.status(200).json({ data });
+    } catch (e) {
+      console.warn('Share GET error:', e);
+      return res.status(500).json({ error: e.message });
+    }
   }
 
   return res.status(405).json({ error: 'Method not allowed' });
