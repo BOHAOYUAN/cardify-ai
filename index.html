@@ -2413,7 +2413,188 @@
       lucide.createIcons();
     }
 
-        let presenterReactions = { fire: 342, light: 189, star: 95 };
+            // =========================================================================
+    // 🎵 CARDIFY STUDIO IMMERSIVE SOUNDTRACK & AUDIO ENGINE (7 HQ TRACKS)
+    // =========================================================================
+    const SOUNDTRACK_PLAYLIST = [
+      { id: 1, title: '🌌 Downtempo Chill Electronic', file: '/audio/track1.mp3' },
+      { id: 2, title: '⚡ Synthwave Neon Horizon', file: '/audio/track2.mp3' },
+      { id: 3, title: '🌿 Ambient Instrumental Flow', file: '/audio/track3.mp3' },
+      { id: 4, title: '⚔️ Samurai 8D Spatial Flow', file: '/audio/track4.mp3' },
+      { id: 5, title: '☕ Minimalist Creator Flow', file: '/audio/track5.mp3' },
+      { id: 6, title: '🎸 TikTok Energy Beat', file: '/audio/track6.mp3' },
+      { id: 7, title: '🏔️ Upbeat Creator Pop', file: '/audio/track7.mp3' }
+    ];
+
+    let currentAudioTrackIndex = Math.floor(Math.random() * SOUNDTRACK_PLAYLIST.length);
+    let cardifyAudio = null;
+    let isAudioPlaying = false;
+
+    function initCardifyAudio() {
+      if (!cardifyAudio) {
+        cardifyAudio = new Audio();
+        cardifyAudio.volume = 0.45;
+        cardifyAudio.addEventListener('ended', () => {
+          nextAudioTrack(true);
+        });
+      }
+    }
+
+    function toggleCardifyAudio() {
+      initCardifyAudio();
+      if (!isAudioPlaying) {
+        playCurrentTrack();
+      } else {
+        pauseCardifyAudio();
+      }
+    }
+
+    function playCurrentTrack() {
+      initCardifyAudio();
+      const track = SOUNDTRACK_PLAYLIST[currentAudioTrackIndex];
+      cardifyAudio.src = track.file;
+      cardifyAudio.play().then(() => {
+        isAudioPlaying = true;
+        updateAudioUi(true, track.title);
+        showToast(`🎵 Now Playing: ${track.title}`);
+      }).catch(err => {
+        console.warn('Audio autoplay prevented:', err);
+        showToast('Click anywhere on the page to allow audio playback');
+      });
+    }
+
+    function pauseCardifyAudio() {
+      if (cardifyAudio) {
+        cardifyAudio.pause();
+      }
+      isAudioPlaying = false;
+      updateAudioUi(false);
+      showToast('🔇 Audio Paused');
+    }
+
+    function nextAudioTrack(auto = false) {
+      currentAudioTrackIndex = (currentAudioTrackIndex + 1) % SOUNDTRACK_PLAYLIST.length;
+      const track = SOUNDTRACK_PLAYLIST[currentAudioTrackIndex];
+      if (isAudioPlaying || auto) {
+        playCurrentTrack();
+      } else {
+        updateAudioUi(false, track.title);
+        showToast(`🎵 Selected: ${track.title} (Click Play)`);
+      }
+    }
+
+    function shuffleAudioTrack() {
+      let nextIdx = Math.floor(Math.random() * SOUNDTRACK_PLAYLIST.length);
+      if (nextIdx === currentAudioTrackIndex) nextIdx = (nextIdx + 1) % SOUNDTRACK_PLAYLIST.length;
+      currentAudioTrackIndex = nextIdx;
+      playCurrentTrack();
+    }
+
+    function updateAudioUi(isPlaying, trackTitle) {
+      const title = trackTitle || SOUNDTRACK_PLAYLIST[currentAudioTrackIndex].title;
+      
+      // Header Audio Button
+      const headerBtn = document.getElementById('btnHeaderAudio');
+      if (headerBtn) {
+        if (isPlaying) {
+          headerBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-xs font-bold transition-all shadow-md animate-pulse';
+          headerBtn.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400"></span> <span class="max-w-[140px] truncate">${title}</span> <i data-lucide="pause" class="w-3.5 h-3.5"></i>`;
+        } else {
+          headerBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/80 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold transition-all';
+          headerBtn.innerHTML = `<i data-lucide="music" class="w-3.5 h-3.5 text-purple-400"></i> <span>Play Soundtrack</span>`;
+        }
+      }
+
+      // Presenter Modal Audio Button
+      const presenterBtn = document.getElementById('btnPresenterBgm');
+      if (presenterBtn) {
+        if (isPlaying) {
+          presenterBtn.className = 'hidden md:flex px-3 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-xs font-mono items-center gap-1.5 transition-all shadow-md';
+          presenterBtn.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> <span class="max-w-[150px] truncate">${title}</span> <i data-lucide="shuffle" class="w-3.5 h-3.5 text-emerald-400" onclick="event.stopPropagation(); shuffleAudioTrack();"></i>`;
+        } else {
+          presenterBtn.className = 'hidden md:flex px-3 py-1.5 rounded-full bg-slate-950 border border-slate-800 text-slate-400 hover:text-white text-xs font-mono items-center gap-1 transition-all';
+          presenterBtn.innerHTML = `<i data-lucide="volume-x" class="w-3.5 h-3.5 text-gray-400"></i> Ambient: OFF`;
+        }
+      }
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // =========================================================================
+    // 👑 BRAND KIT MODAL (CUSTOM CREATOR WATERMARK & AVATAR)
+    // =========================================================================
+    let customBrandKit = {
+      handle: '@haoyuanbo',
+      title: 'Verified Thought Leader',
+      color: '#a855f7'
+    };
+
+    function openBrandKitModal() {
+      let modal = document.getElementById('brandKitModal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'brandKitModal';
+        modal.className = 'fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-md animate-fade-in';
+        document.body.appendChild(modal);
+      }
+
+      modal.innerHTML = `
+        <div class="w-full max-w-md bg-slate-900 border border-purple-500/40 rounded-3xl p-6 shadow-2xl flex flex-col gap-5 text-white">
+          <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+            <div class="flex items-center gap-2">
+              <i data-lucide="sparkles" class="w-5 h-5 text-amber-400"></i>
+              <h3 class="text-base font-bold">Creator Brand Kit & Custom CI</h3>
+            </div>
+            <button onclick="document.getElementById('brandKitModal').remove()" class="text-gray-400 hover:text-white p-1">
+              <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+          </div>
+
+          <div class="flex flex-col gap-3 text-xs">
+            <div class="flex flex-col gap-1.5">
+              <label class="font-bold text-gray-300">Creator Handle / Name</label>
+              <input type="text" id="brandHandleInput" value="${customBrandKit.handle}" placeholder="@YourName" class="bg-slate-950 border border-gray-700 rounded-xl px-3 py-2.5 text-white font-mono focus:border-purple-500 focus:outline-none">
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+              <label class="font-bold text-gray-300">Author Tagline / Title</label>
+              <input type="text" id="brandTitleInput" value="${customBrandKit.title}" placeholder="e.g. Founder & CEO • AI Architect" class="bg-slate-950 border border-gray-700 rounded-xl px-3 py-2.5 text-white focus:border-purple-500 focus:outline-none">
+            </div>
+
+            <div class="p-3 bg-purple-950/40 border border-purple-500/30 rounded-xl flex flex-col gap-1">
+              <span class="text-[10px] uppercase font-mono text-purple-300 font-bold">Live Watermark Preview:</span>
+              <span class="text-xs font-mono text-amber-300" id="brandWatermarkPreview">💎 Minted by ${customBrandKit.handle} • ${customBrandKit.title}</span>
+            </div>
+          </div>
+
+          <div class="flex gap-2 pt-2">
+            <button onclick="saveBrandKit()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg active:scale-95">
+              ✨ Apply Brand Kit to All Decks
+            </button>
+          </div>
+        </div>
+      `;
+
+      modal.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function saveBrandKit() {
+      const handle = document.getElementById('brandHandleInput')?.value.trim() || '@Creator';
+      const title = document.getElementById('brandTitleInput')?.value.trim() || 'Verified Thought Leader';
+      customBrandKit.handle = handle;
+      customBrandKit.title = title;
+
+      const fullWatermark = `💎 Minted by ${handle} • ${title}`;
+      if (currentResponseData && currentResponseData.slides) {
+        renderSlides(currentResponseData.slides, fullWatermark);
+      }
+      const brandModal = document.getElementById('brandKitModal');
+      if (brandModal) brandModal.remove();
+      showToast(`👑 Brand Kit Applied: ${handle}`);
+    }
+
+    let presenterReactions = { fire: 342, light: 189, star: 95 };
     let isPresenterBgmPlaying = false;
     let presenterAudioContext = null;
 
@@ -2564,7 +2745,7 @@
 
           <!-- Central Interactive Tools: BGM & Mobile QR & Live CTA -->
           <div class="flex items-center gap-2">
-            <button id="btnPresenterBgm" onclick="togglePresenterBgm()" title="Toggle Lo-Fi Ambient Background Sound" class="hidden md:flex px-2.5 py-1.5 rounded-full bg-slate-950 border border-slate-800 text-slate-400 hover:text-white text-xs font-mono items-center gap-1 transition-all">
+            <button id="btnPresenterBgm" onclick="toggleCardifyAudio()" title="Toggle Lo-Fi Ambient Background Sound" class="hidden md:flex px-2.5 py-1.5 rounded-full bg-slate-950 border border-slate-800 text-slate-400 hover:text-white text-xs font-mono items-center gap-1 transition-all">
               <i data-lucide="volume-x" class="w-3.5 h-3.5 text-gray-400"></i> Ambient: OFF
             </button>
             <button onclick="openMobileQrModal()" title="Scan with Phone to read on Mobile" class="px-2.5 py-1.5 rounded-full bg-slate-950 border border-purple-500/40 text-purple-300 hover:text-white text-xs font-bold flex items-center gap-1 transition-all shadow-sm">
@@ -3974,9 +4155,9 @@
               ${versusHtml ? (versusHtml + (quoteHtml || bulletsHtml)) : (flowHtml || (metricHtml ? (metricHtml + bulletsHtml) : (quoteHtml ? (quoteHtml + bulletsHtml) : bulletsHtml)))}
             </div>
 
-            <div class="pt-3 border-t border-gray-800/60 flex items-center justify-between">
-              <span class="card-footer-brand text-[11px] font-bold font-mono">${footerText || (isProUser ? '⚡️ Cardify Pro' : '💎 Minted via Cardify Studio • Verified Thought Leader')}</span>
-              <span class="text-[10px] opacity-60 font-mono">${idx + 1} / ${slides.length}</span>
+            <div class="pt-3 border-t border-gray-800/60 flex items-center justify-between gap-2 overflow-hidden">
+              <span class="card-footer-brand text-[11px] font-bold font-mono truncate max-w-[75%]">${footerText || (isProUser ? '⚡️ Cardify Pro' : '💎 Minted via Cardify Studio • Verified Thought Leader')}</span>
+              <span class="text-[10px] opacity-60 font-mono whitespace-nowrap shrink-0">${idx + 1} / ${slides.length}</span>
             </div>
           </div>
         `;
