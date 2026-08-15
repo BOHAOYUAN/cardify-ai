@@ -138,7 +138,79 @@
     .theme-linkedin .card-footer-brand { color: #0284c7 !important; font-weight: 700; }
 
     .glow-purple {
-      box-shadow: 0 0 35px -5px rgba(139, 92, 246, 0.4);
+      box-shadow: 0 0 45px -5px rgba(139, 92, 246, 0.45), 0 0 20px -2px rgba(168, 85, 247, 0.3);
+    }
+    .glow-amber {
+      box-shadow: 0 0 45px -5px rgba(245, 158, 11, 0.45), 0 0 20px -2px rgba(251, 191, 36, 0.3);
+    }
+
+    /* 💎 Apple Studio Ambient Mesh Glow & Border Beam Keyframes */
+    @keyframes ambientMeshRotate {
+      0% { transform: rotate(0deg) scale(1); filter: blur(70px); }
+      50% { transform: rotate(180deg) scale(1.15); filter: blur(90px); }
+      100% { transform: rotate(360deg) scale(1); filter: blur(70px); }
+    }
+
+    @keyframes borderBeamRun {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(200%); }
+    }
+
+    @keyframes holographicShine {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .ambient-glow-backdrop {
+      position: absolute;
+      inset: -20px;
+      background: radial-gradient(circle at 30% 30%, rgba(139, 92, 246, 0.25), transparent 60%),
+                  radial-gradient(circle at 70% 70%, rgba(245, 158, 11, 0.2), transparent 60%),
+                  radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.15), transparent 70%);
+      animation: ambientMeshRotate 20s linear infinite;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.85;
+    }
+
+    .border-beam-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .border-beam-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 60%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.9), rgba(168, 85, 247, 0.9), transparent);
+      animation: borderBeamRun 4s ease-in-out infinite;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .holographic-text {
+      background: linear-gradient(135deg, #fef08a, #fed7aa, #e9d5ff, #a7f3d0, #fef08a);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: holographicShine 6s ease infinite;
+    }
+
+    /* Screen Studio Card Luxury Glass Reflections */
+    .card-preview-container {
+      position: relative;
+      z-index: 1;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    .card-preview-container:hover {
+      box-shadow: 0 30px 70px -10px rgba(0, 0, 0, 0.9), 0 0 45px -5px rgba(139, 92, 246, 0.3);
     }
 
     /* Pulse animation for 3-second Sandbox Demos */
@@ -495,7 +567,8 @@
         </div>
 
         <!-- SWIPER CAROUSEL CONTAINED IN SCREEN STUDIO SHELL -->
-        <div class="w-full overflow-hidden py-3 relative bg-gradient-to-b from-slate-950/40 via-slate-900/60 to-slate-950/40 rounded-2xl border border-slate-800/80 p-2 sm:p-4">
+        <div class="w-full overflow-hidden py-3 relative bg-gradient-to-b from-slate-950/40 via-slate-900/60 to-slate-950/40 rounded-2xl border border-slate-800/80 p-2 sm:p-4 border-beam-card">
+          <div class="ambient-glow-backdrop"></div>
           <div class="swiper cardSwiper w-full max-w-[340px] sm:max-w-[380px] mx-auto">
             <div class="swiper-wrapper" id="swiperWrapper">
               <!-- Swiper Slides dynamically rendered -->
