@@ -82,60 +82,125 @@
       animation: reelMetricPulse 1.8s ease-in-out infinite !important;
     }
 
-    /* Dynamic Themes */
-    .theme-cyber {
-      background: linear-gradient(135deg, rgba(30, 41, 59, 0.98) 0%, rgba(15, 23, 42, 0.99) 100%);
-      border: 1px solid rgba(139, 92, 246, 0.35);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+        /* ============================================================
+       🎨 COMPLETE 6 MASTER THEMES CSS ENGINE
+       ============================================================ */
+    /* 1. 👑 Luxury Gold */
+    .theme-luxury, .theme-exec {
+      background: linear-gradient(135deg, #181104 0%, #0c0a09 100%) !important;
+      border: 1px solid rgba(245, 158, 11, 0.6) !important;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(245, 158, 11, 0.2) !important;
+      color: #fef3c7 !important;
+    }
+    .theme-luxury .card-subtitle, .theme-exec .card-subtitle { color: #f59e0b !important; font-weight: 700; }
+    .theme-luxury .card-title, .theme-exec .card-title { color: #ffffff !important; font-weight: 800; }
+    .theme-luxury .card-metric-box, .theme-exec .card-metric-box { background: rgba(30, 20, 5, 0.9) !important; border: 1px solid rgba(245, 158, 11, 0.4) !important; }
+    .theme-luxury .card-metric-value, .theme-exec .card-metric-value { color: #fbbf24 !important; }
+    .theme-luxury .card-metric-label, .theme-exec .card-metric-label { color: #d97706 !important; }
+    .theme-luxury .card-bullet-num, .theme-exec .card-bullet-num { background: rgba(245, 158, 11, 0.25) !important; color: #fbbf24 !important; }
+    .theme-luxury .card-bullet-title, .theme-exec .card-bullet-title { color: #ffffff !important; font-weight: 700; }
+    .theme-luxury .card-bullet-desc, .theme-exec .card-bullet-desc { color: #e2e8f0 !important; }
+    .theme-luxury .card-quote-box, .theme-exec .card-quote-box { background: rgba(40, 25, 5, 0.7) !important; border: 1px solid rgba(245, 158, 11, 0.5) !important; }
+    .theme-luxury .card-quote-text, .theme-exec .card-quote-text { color: #fef08a !important; }
+    .theme-luxury .card-footer-brand, .theme-exec .card-footer-brand { color: #f59e0b !important; }
+
+    /* 2. ⚡ Cyberpunk / Cyber */
+    .theme-cyberpunk, .theme-cyber {
+      background: linear-gradient(135deg, #1e1035 0%, #0f0a1c 100%) !important;
+      border: 1px solid rgba(168, 85, 247, 0.6) !important;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(168, 85, 247, 0.25) !important;
       color: #f8fafc !important;
     }
-    .theme-cyber .card-subtitle { color: #c084fc !important; }
-    .theme-cyber .card-title { color: #ffffff !important; }
-    .theme-cyber .card-metric-box { background: rgba(15, 23, 42, 0.8) !important; border: 1px solid rgba(139, 92, 246, 0.25) !important; }
-    .theme-cyber .card-metric-value { color: #c084fc !important; }
-    .theme-cyber .card-metric-label { color: #94a3b8 !important; }
-    .theme-cyber .card-bullet-num { background: rgba(139, 92, 246, 0.2) !important; color: #c084fc !important; }
-    .theme-cyber .card-bullet-title { color: #ffffff !important; }
-    .theme-cyber .card-bullet-desc { color: #cbd5e1 !important; }
-    .theme-cyber .card-quote-box { background: rgba(88, 28, 135, 0.35) !important; border: 1px solid rgba(168, 85, 247, 0.3) !important; }
-    .theme-cyber .card-quote-text { color: #e9d5ff !important; }
-    .theme-cyber .card-footer-brand { color: #a78bfa !important; }
+    .theme-cyberpunk .card-subtitle, .theme-cyber .card-subtitle { color: #c084fc !important; }
+    .theme-cyberpunk .card-title, .theme-cyber .card-title { color: #ffffff !important; }
+    .theme-cyberpunk .card-metric-box, .theme-cyber .card-metric-box { background: rgba(15, 23, 42, 0.8) !important; border: 1px solid rgba(139, 92, 246, 0.35) !important; }
+    .theme-cyberpunk .card-metric-value, .theme-cyber .card-metric-value { color: #e879f9 !important; }
+    .theme-cyberpunk .card-metric-label, .theme-cyber .card-metric-label { color: #94a3b8 !important; }
+    .theme-cyberpunk .card-bullet-num, .theme-cyber .card-bullet-num { background: rgba(139, 92, 246, 0.25) !important; color: #c084fc !important; }
+    .theme-cyberpunk .card-bullet-title, .theme-cyber .card-bullet-title { color: #ffffff !important; }
+    .theme-cyberpunk .card-bullet-desc, .theme-cyber .card-bullet-desc { color: #cbd5e1 !important; }
+    .theme-cyberpunk .card-quote-box, .theme-cyber .card-quote-box { background: rgba(88, 28, 135, 0.35) !important; border: 1px solid rgba(168, 85, 247, 0.4) !important; }
+    .theme-cyberpunk .card-quote-text, .theme-cyber .card-quote-text { color: #e9d5ff !important; }
+    .theme-cyberpunk .card-footer-brand, .theme-cyber .card-footer-brand { color: #a78bfa !important; }
 
-    .theme-xhs {
-      background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%) !important;
-      border: 1px solid #fecdd3 !important;
-      box-shadow: 0 20px 40px rgba(244, 63, 94, 0.15) !important;
-      color: #1f2937 !important;
+    /* 3. 🧠 Matrix Green */
+    .theme-matrix {
+      background: linear-gradient(135deg, #022c22 0%, #061e18 50%, #02110e 100%) !important;
+      border: 1px solid rgba(16, 185, 129, 0.7) !important;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(16, 185, 129, 0.25) !important;
+      color: #d1fae5 !important;
+      font-family: 'Fira Code', monospace !important;
     }
-    .theme-xhs .card-subtitle { color: #e11d48 !important; font-weight: 700; }
-    .theme-xhs .card-title { color: #881337 !important; font-weight: 800; }
-    .theme-xhs .card-metric-box { background: #ffffff !important; border: 1px solid #fecdd3 !important; }
-    .theme-xhs .card-metric-value { color: #be123c !important; }
-    .theme-xhs .card-metric-label { color: #9f1239 !important; }
-    .theme-xhs .card-bullet-num { background: #ffe4e6 !important; color: #be123c !important; }
-    .theme-xhs .card-bullet-title { color: #881337 !important; font-weight: 700; }
-    .theme-xhs .card-bullet-desc { color: #4c0519 !important; }
-    .theme-xhs .card-quote-box { background: #fff0f3 !important; border: 1px solid #fda4af !important; }
-    .theme-xhs .card-quote-text { color: #9f1239 !important; }
-    .theme-xhs .card-footer-brand { color: #e11d48 !important; font-weight: 700; }
+    .theme-matrix .card-subtitle { color: #34d399 !important; font-weight: 700; }
+    .theme-matrix .card-title { color: #ffffff !important; font-weight: 800; }
+    .theme-matrix .card-metric-box { background: rgba(2, 44, 34, 0.9) !important; border: 1px solid rgba(16, 185, 129, 0.5) !important; }
+    .theme-matrix .card-metric-value { color: #10b981 !important; }
+    .theme-matrix .card-metric-label { color: #6ee7b7 !important; }
+    .theme-matrix .card-bullet-num { background: rgba(16, 185, 129, 0.25) !important; color: #34d399 !important; }
+    .theme-matrix .card-bullet-title { color: #ffffff !important; }
+    .theme-matrix .card-bullet-desc { color: #a7f3d0 !important; }
+    .theme-matrix .card-quote-box { background: rgba(6, 78, 59, 0.4) !important; border: 1px solid rgba(16, 185, 129, 0.5) !important; }
+    .theme-matrix .card-quote-text { color: #6ee7b7 !important; }
+    .theme-matrix .card-footer-brand { color: #10b981 !important; }
 
-    .theme-linkedin {
-      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
-      border: 1px solid #cbd5e1 !important;
-      box-shadow: 0 20px 40px rgba(14, 165, 233, 0.15) !important;
-      color: #0f172a !important;
+    /* 4. 🌿 Apple Minimal */
+    .theme-apple {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+      border: 1px solid rgba(148, 163, 184, 0.3) !important;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7) !important;
+      color: #f8fafc !important;
+      font-family: 'Inter', sans-serif !important;
     }
-    .theme-linkedin .card-subtitle { color: #0284c7 !important; font-weight: 700; }
-    .theme-linkedin .card-title { color: #0f172a !important; font-weight: 800; }
-    .theme-linkedin .card-metric-box { background: #ffffff !important; border: 1px solid #cbd5e1 !important; }
-    .theme-linkedin .card-metric-value { color: #0369a1 !important; }
-    .theme-linkedin .card-metric-label { color: #334155 !important; }
-    .theme-linkedin .card-bullet-num { background: #e0f2fe !important; color: #0284c7 !important; }
-    .theme-linkedin .card-bullet-title { color: #0f172a !important; font-weight: 700; }
-    .theme-linkedin .card-bullet-desc { color: #1e293b !important; }
-    .theme-linkedin .card-quote-box { background: #f0f9ff !important; border: 1px solid #7dd3fc !important; }
-    .theme-linkedin .card-quote-text { color: #075985 !important; }
-    .theme-linkedin .card-footer-brand { color: #0284c7 !important; font-weight: 700; }
+    .theme-apple .card-subtitle { color: #38bdf8 !important; font-weight: 600; }
+    .theme-apple .card-title { color: #ffffff !important; font-weight: 800; }
+    .theme-apple .card-metric-box { background: rgba(30, 41, 59, 0.8) !important; border: 1px solid rgba(148, 163, 184, 0.2) !important; }
+    .theme-apple .card-metric-value { color: #38bdf8 !important; }
+    .theme-apple .card-metric-label { color: #94a3b8 !important; }
+    .theme-apple .card-bullet-num { background: rgba(56, 189, 248, 0.2) !important; color: #38bdf8 !important; }
+    .theme-apple .card-bullet-title { color: #ffffff !important; }
+    .theme-apple .card-bullet-desc { color: #cbd5e1 !important; }
+    .theme-apple .card-quote-box { background: rgba(30, 41, 59, 0.5) !important; border: 1px solid rgba(56, 189, 248, 0.3) !important; }
+    .theme-apple .card-quote-text { color: #e0f2fe !important; }
+    .theme-apple .card-footer-brand { color: #38bdf8 !important; }
+
+    /* 5. ☕ Morandi Soft */
+    .theme-morandi {
+      background: linear-gradient(135deg, #292524 0%, #1c1917 100%) !important;
+      border: 1px solid rgba(214, 211, 209, 0.3) !important;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7) !important;
+      color: #f5f5f4 !important;
+    }
+    .theme-morandi .card-subtitle { color: #fb923c !important; font-weight: 600; }
+    .theme-morandi .card-title { color: #ffffff !important; font-weight: 800; }
+    .theme-morandi .card-metric-box { background: rgba(41, 37, 36, 0.9) !important; border: 1px solid rgba(214, 211, 209, 0.2) !important; }
+    .theme-morandi .card-metric-value { color: #fdba74 !important; }
+    .theme-morandi .card-metric-label { color: #a8a29e !important; }
+    .theme-morandi .card-bullet-num { background: rgba(251, 146, 60, 0.2) !important; color: #fdba74 !important; }
+    .theme-morandi .card-bullet-title { color: #ffffff !important; }
+    .theme-morandi .card-bullet-desc { color: #d6d3d1 !important; }
+    .theme-morandi .card-quote-box { background: rgba(41, 37, 36, 0.6) !important; border: 1px solid rgba(251, 146, 60, 0.3) !important; }
+    .theme-morandi .card-quote-text { color: #fed7aa !important; }
+    .theme-morandi .card-footer-brand { color: #fb923c !important; }
+
+    /* 6. 🌆 Vaporwave */
+    .theme-vaporwave {
+      background: linear-gradient(135deg, #18092e 0%, #091a2e 100%) !important;
+      border: 1px solid rgba(244, 114, 182, 0.6) !important;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(6, 182, 212, 0.25) !important;
+      color: #fdf2f8 !important;
+    }
+    .theme-vaporwave .card-subtitle { color: #22d3ee !important; font-weight: 700; }
+    .theme-vaporwave .card-title { color: #ffffff !important; font-weight: 800; }
+    .theme-vaporwave .card-metric-box { background: rgba(24, 9, 46, 0.9) !important; border: 1px solid rgba(244, 114, 182, 0.4) !important; }
+    .theme-vaporwave .card-metric-value { color: #f472b6 !important; }
+    .theme-vaporwave .card-metric-label { color: #67e8f9 !important; }
+    .theme-vaporwave .card-bullet-num { background: rgba(244, 114, 182, 0.25) !important; color: #f472b6 !important; }
+    .theme-vaporwave .card-bullet-title { color: #ffffff !important; }
+    .theme-vaporwave .card-bullet-desc { color: #cffafe !important; }
+    .theme-vaporwave .card-quote-box { background: rgba(24, 9, 46, 0.6) !important; border: 1px solid rgba(6, 182, 212, 0.4) !important; }
+    .theme-vaporwave .card-quote-text { color: #a5f3fc !important; }
+    .theme-vaporwave .card-footer-brand { color: #f472b6 !important; }
+
 
     .glow-purple {
       box-shadow: 0 0 45px -5px rgba(139, 92, 246, 0.45), 0 0 20px -2px rgba(168, 85, 247, 0.3);
@@ -3450,11 +3515,62 @@ Explore here: ${liveUrl}`)}`;
       if (window.lucide) lucide.createIcons();
     }
 
+    // ============================================================
+    // 🎨 MASTER THEME ENGINE & INSTANT SKIN SWITCHER
+    // ============================================================
+    function setTheme(themeName) {
+      if (!themeName) return;
+      currentPreset = themeName;
+      
+      const themeClassMap = {
+        luxury: 'theme-luxury',
+        exec: 'theme-luxury',
+        cyber: 'theme-cyberpunk',
+        cyberpunk: 'theme-cyberpunk',
+        matrix: 'theme-matrix',
+        apple: 'theme-apple',
+        morandi: 'theme-morandi',
+        vaporwave: 'theme-vaporwave'
+      };
+      
+      const activeClass = themeClassMap[themeName] || `theme-${themeName}`;
+      
+      // 1. Update all swiper slides in editor
+      document.querySelectorAll('.swiper-slide > div, .card-preview-container').forEach(card => {
+        // Remove old theme classes
+        card.className = card.className.replace(/theme-\w+/g, '').trim();
+        card.classList.add(activeClass);
+      });
+
+      // 2. Update ambient glow color in Presenter mode
+      const ambientGlow = document.getElementById('presenterAmbientGlow');
+      if (ambientGlow) {
+        if (themeName === 'luxury' || themeName === 'exec') {
+          ambientGlow.className = 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full blur-[120px] opacity-40 transition-all duration-700 bg-gradient-to-tr from-amber-600 via-yellow-600 to-orange-500';
+        } else if (themeName === 'matrix') {
+          ambientGlow.className = 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full blur-[120px] opacity-40 transition-all duration-700 bg-gradient-to-tr from-emerald-600 via-teal-600 to-green-500';
+        } else if (themeName === 'vaporwave') {
+          ambientGlow.className = 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full blur-[120px] opacity-40 transition-all duration-700 bg-gradient-to-tr from-pink-600 via-purple-600 to-cyan-500';
+        } else {
+          ambientGlow.className = 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full blur-[120px] opacity-40 transition-all duration-700 bg-gradient-to-tr from-purple-600 via-indigo-600 to-amber-500';
+        }
+      }
+    }
+
     function switchPresenterSkin(skin) {
       currentPreset = skin;
       setTheme(skin);
+      
+      // Update Slide View card
       updatePresenterCard();
-      showToast(`🎨 Switched Visual Skin to: ${skin.toUpperCase()}`);
+
+      // If in Webpage vertical scroll mode, immediately re-render all sections with the new theme!
+      if (presenterDisplayMode === 'webpage') {
+        const slides = (currentResponseData && currentResponseData.slides) ? currentResponseData.slides : (MASTER_PRESET_DECKS[skin] || MASTER_PRESET_DECKS.exec);
+        renderWebpageView(slides);
+      }
+      
+      showToast(`🎨 Switched Visual Theme to: ${skin.toUpperCase()}`);
     }
 
     function shareToTwitter() {
