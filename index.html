@@ -3689,6 +3689,48 @@ Explore here: ${liveUrl}`)}`;
       if (window.lucide) lucide.createIcons();
     }
 
+        // ============================================================
+    // ✨ NOTION-STYLE 1-CLICK DUPLICATE & REMIX TEMPLATE FLYWHEEL
+    // ============================================================
+    function duplicateDeckToWorkspace() {
+      const slides = (currentResponseData && currentResponseData.slides && currentResponseData.slides.length > 0)
+        ? currentResponseData.slides
+        : (MASTER_PRESET_DECKS[currentPreset] || MASTER_PRESET_DECKS.exec);
+      
+      // 1. Ingest full slides into current editor workspace
+      currentResponseData = {
+        slides: JSON.parse(JSON.stringify(slides)),
+        ctaType: 'email',
+        ctaValue: 'https://hooks.zapier.com/demo'
+      };
+
+      // 2. Apply current theme
+      setTheme(currentPreset || 'luxury');
+
+      // 3. Render slides into editor Swiper
+      renderSlides(currentResponseData.slides);
+
+      // 4. Ingest text into input editor
+      const firstTitle = slides[0]?.title || 'Master Deck';
+      const summaryText = slides.map((s, idx) => `Chapter ${idx+1}: ${s.title}\n${s.subtitle || ''}\n${s.takeaway_quote ? '“' + s.takeaway_quote + '”' : ''}`).join('\n\n');
+      const inputEl = document.getElementById('inputText');
+      if (inputEl) {
+        inputEl.value = `### ${firstTitle}\n\n${summaryText}`;
+        updateCharCount();
+      }
+
+      // 5. Reveal editor container and close reader view
+      closePresenterMode();
+      const outputContainer = document.getElementById('outputContainer');
+      if (outputContainer) outputContainer.classList.remove('hidden');
+
+      // 6. Smooth scroll to workspace
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      showToast('✨ Master Deck Cloned to Workspace! Customize and export anytime.');
+      trackAnalyticsEvent('template_duplicated', { preset: currentPreset });
+    }
+
     function renderGammaWebpageView() {
       const webContainer = document.getElementById('presenterWebpageView');
       if (!webContainer) return;
@@ -3721,16 +3763,16 @@ Explore here: ${liveUrl}`)}`;
               ${firstSubtitle} • A comprehensive ${slides.length}-part strategic framework converted into high-density interactive thought tokens.
             </p>
 
-            <!-- Quick Action Bar -->
+            <!-- Quick Action Bar (With 1-Click Notion-Style Duplicate & Remix) -->
             <div class="flex items-center justify-center gap-3 flex-wrap pt-2">
+              <button onclick="duplicateDeckToWorkspace()" class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-lg flex items-center gap-2 active:scale-95 glow-purple">
+                <i data-lucide="sparkles" class="w-4 h-4 text-amber-300"></i> ✨ Duplicate & Remix (一键克隆)
+              </button>
               <button onclick="exportLinkedInPdf()" class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-gray-950 font-black text-xs shadow-lg flex items-center gap-2 active:scale-95">
                 <i data-lucide="download" class="w-4 h-4 text-gray-950"></i> Download Full PDF (${slides.length} Slides)
               </button>
               <button onclick="copyFullDeckMarkdown()" class="px-4 py-2.5 rounded-2xl bg-slate-950 hover:bg-slate-800 border border-slate-700 text-slate-300 font-bold text-xs shadow-md flex items-center gap-1.5 active:scale-95">
                 <i data-lucide="file-text" class="w-4 h-4 text-sky-400"></i> Copy Markdown
-              </button>
-              <button onclick="shareToTwitter()" class="px-4 py-2.5 rounded-2xl bg-slate-950 hover:bg-sky-950 border border-sky-500/40 text-sky-400 font-bold text-xs shadow-md flex items-center gap-1.5 active:scale-95">
-                <i data-lucide="twitter" class="w-4 h-4 text-sky-400"></i> Share to X
               </button>
             </div>
           </div>
@@ -4019,8 +4061,13 @@ Explore here: ${liveUrl}`)}`;
             </button>
           </div>
 
-          <!-- Right: Core Action Buttons (Mobile QR, PDF, Fullscreen, Close) -->
+          <!-- Right: Core Action Buttons (Duplicate, Mobile QR, PDF, Fullscreen, Close) -->
           <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <!-- ✨ 1-Click Duplicate & Remix Pill -->
+            <button onclick="duplicateDeckToWorkspace()" title="Clone this deck into your workspace to edit" class="px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-black flex items-center gap-1 transition-all shadow-md active:scale-95">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-300"></i> <span class="hidden sm:inline">Remix</span><span>Deck</span>
+            </button>
+
             <!-- 📱 Mobile QR & Share Pill -->
             <button onclick="openMobileQrModal()" title="Scan with Phone or Copy Link" class="px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-purple-950/60 hover:bg-purple-900/80 border border-purple-500/50 text-purple-200 text-xs font-bold flex items-center gap-1 transition-all shadow-sm active:scale-95">
               <i data-lucide="smartphone" class="w-3.5 h-3.5 text-purple-300"></i> <span class="hidden sm:inline">Share</span><span>QR</span>
