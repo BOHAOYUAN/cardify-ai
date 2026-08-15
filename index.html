@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cardify.ai v8.0 — Global AI Visual Cards & Viral Studio Engine</title>
-  <meta name="description" content="Turn any article or idea into viral social media cards with 1-click sandbox demos & prompt-driven visual art in 9 global languages.">
+  <title>Cardify Studio — Turn Long Content into High-Impact Visual Decks</title>
+  <meta name="description" content="Transform podcasts, PDFs, and longform articles into sleek LinkedIn carousels and visual decks in seconds.">
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -161,7 +161,7 @@
         <div>
           <span class="text-xl font-extrabold font-outfit tracking-tight text-white flex items-center gap-2">
             Cardify<span class="text-purple-400">.ai</span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-500/20 via-purple-500/20 to-indigo-500/20 text-emerald-300 border border-emerald-500/30 animate-pulse">v8.0 Canvas Studio</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-500/20 via-purple-500/20 to-indigo-500/20 text-emerald-300 border border-emerald-500/30 animate-pulse">Studio Edition</span>
           </span>
         </div>
       </div>
@@ -173,7 +173,7 @@
         <div class="relative">
           <select id="langSelect" onchange="handleLangChange(this.value)" class="bg-gray-900/90 text-gray-200 text-xs font-medium px-3 py-2 rounded-lg border border-gray-700/80 focus:outline-none focus:border-purple-500 transition-all cursor-pointer">
             <option value="auto">🌐 Auto Detect (Native Language)</option>
-            <option value="en" selected>🇺🇸 English (en-US)</option>
+            <option value="en" selected>🇺🇸 English (US)</option>
             <option value="zh">🇨🇳 简体中文 (zh-CN)</option>
             <option value="hi">🇮🇳 हिन्दी (hi-IN)</option>
             <option value="es">🇪🇸 Español (es-ES)</option>
@@ -213,9 +213,9 @@
         <div class="flex items-center justify-between">
           <span id="txtSandboxHeader" class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
             <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
-            ⚡ 3-Second Aha Moment: 1-Click Sandbox Demos (Instant Hollywood Visual Cards)
+            ✦ Instant Inspiration (1-Click Templates)
           </span>
-          <span class="text-[10px] text-purple-300 bg-purple-900/40 px-2 py-0.5 rounded-full font-mono border border-purple-700/40">Zero Typing</span>
+          <span class="text-[10px] text-purple-300 bg-purple-900/40 px-2 py-0.5 rounded-full font-mono border border-purple-700/40">1-Click Load</span>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -257,13 +257,13 @@
           <div class="flex items-center justify-between">
             <label id="txtThemeLabel" class="text-xs font-bold text-purple-300 flex items-center gap-1.5">
               <i data-lucide="palette" class="w-4 h-4 text-purple-400"></i>
-              🎨 Prompt-Driven Visual Theme (Hover for Instant Real-Time Preview)
+              Visual Aesthetics & Palette
             </label>
-            <span class="text-[10px] text-purple-300 bg-purple-900/40 px-2 py-0.5 rounded-full font-mono border border-purple-700/40">Real-time Hover</span>
+            <span class="text-[10px] text-purple-300 bg-purple-900/40 px-2 py-0.5 rounded-full font-mono border border-purple-700/40">Hover Preview</span>
           </div>
 
           <div class="relative">
-            <input type="text" id="customThemePromptInput" onchange="applyPromptThemeFromInput()" placeholder="Type any aesthetic... e.g. 'Cyberpunk 2077', 'Morandi Soft', 'Matrix Green', 'Apple Minimalist', 'Vaporwave Sunset'..."
+            <input type="text" id="customThemePromptInput" onchange="applyPromptThemeFromInput()" placeholder="Type an aesthetic: e.g. Cyberpunk, Apple Minimalist, Morandi, Luxury Gold..."
               class="w-full bg-gray-900 border border-purple-800/50 rounded-lg px-3 py-2 text-xs text-purple-200 placeholder-gray-500 focus:outline-none focus:border-purple-400 transition-all font-mono">
           </div>
 
@@ -280,7 +280,7 @@
 
         <!-- One-Click Preset Hooks (Quick Tags) -->
         <div>
-          <label class="block text-xs font-medium text-gray-400 mb-1.5" id="txtHookTagsLabel">⚡ One-Click Hook Tags (Click to inject viral focus)</label>
+          <label class="block text-xs font-medium text-gray-400 mb-1.5" id="txtHookTagsLabel">Topic Focus & Narrative Angles</label>
           <div class="flex flex-wrap gap-2" id="hookTagsContainer">
             <!-- Dynamically populated based on Language -->
           </div>
@@ -310,7 +310,7 @@
             </div>
             <div>
               <div id="pdfFileName" class="text-xs font-bold text-white font-mono">document.pdf</div>
-              <div id="pdfMetaText" class="text-[10px] text-purple-300 opacity-80">12 Pages Extracted • Ready for AI Fusion</div>
+              <div id="pdfMetaText" class="text-[10px] text-purple-300 opacity-80">12 Pages Extracted • Ready to Render</div>
             </div>
           </div>
           <button onclick="removeUploadedPdf()" title="Remove attached PDF" class="p-1.5 rounded-lg hover:bg-purple-900/80 text-purple-300 hover:text-white transition-all">
@@ -320,7 +320,7 @@
 
         <!-- Dynamic Platform Matrix Selector (Languages-dependent) -->
         <div>
-          <label class="block text-xs font-medium text-gray-400 mb-2" id="txtPlatformMatrixLabel">🎯 Dynamic Platform Matrix</label>
+          <label class="block text-xs font-medium text-gray-400 mb-2" id="txtPlatformMatrixLabel">Destination Platform & Layout</label>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="platformMatrixContainer">
             <!-- Dynamically populated based on selected Language -->
           </div>
@@ -331,26 +331,26 @@
         <div class="p-3.5 rounded-xl bg-gray-950 border border-amber-900/40 flex flex-col gap-2.5">
           <label class="text-xs font-bold text-amber-300 flex items-center justify-between">
             <span class="flex items-center gap-1.5"><i data-lucide="magnet" class="w-4 h-4"></i> Live Link Lead Gen CTA</span>
-            <span class="text-[10px] text-amber-300 bg-amber-900/40 px-2 py-0.5 rounded-full font-mono border border-amber-700/40">PLG Feature</span>
+            <span class="text-[10px] text-amber-300 bg-amber-900/40 px-2 py-0.5 rounded-full font-mono border border-amber-700/40">Lead Capture</span>
           </label>
           
         <!-- 🚀 TIERED SLIDE LENGTH SELECTOR (5 / 15 / 30+ DEEP DECK) -->
         <div class="mb-3 p-3 rounded-2xl bg-slate-950/80 border border-purple-900/40 flex flex-col gap-2">
           <div class="flex items-center justify-between">
             <span class="text-xs font-mono font-bold text-purple-300 flex items-center gap-1.5">
-              <i data-lucide="layers" class="w-3.5 h-3.5 text-purple-400"></i> SLIDE DECK LENGTH & DEPTH
+              <i data-lucide="layers" class="w-3.5 h-3.5 text-purple-400"></i> DECK SLIDE COUNT
             </span>
-            <span class="text-[10px] font-mono text-amber-400 bg-amber-950/60 px-2 py-0.5 rounded-full border border-amber-800/60">Unlock Deep Decks (Pro/Agency)</span>
+            <span class="text-[10px] font-mono text-amber-400 bg-amber-950/60 px-2 py-0.5 rounded-full border border-amber-800/60">Multi-Slide Formats</span>
           </div>
           <div class="flex flex-wrap gap-2 text-xs font-bold" id="slideLengthSelector">
             <button type="button" onclick="selectSlideCount(5)" id="btnSlide5" class="px-3 py-1.5 rounded-xl bg-purple-600 text-white shadow-sm border border-purple-400/40 transition-all flex items-center gap-1">
-              ⚡ 5 Slides (Free)
+              5 Slides (Standard)
             </button>
             <button type="button" onclick="selectSlideCount(15)" id="btnSlide15" class="px-3 py-1.5 rounded-xl bg-slate-900 text-purple-300 border border-slate-700 hover:border-purple-500 transition-all flex items-center gap-1">
-              👑 15 Slides (Pro)
+              15 Slides (Deep Dive)
             </button>
             <button type="button" onclick="selectSlideCount(30)" id="btnSlide30" class="px-3 py-1.5 rounded-xl bg-slate-900 text-amber-300 border border-slate-700 hover:border-amber-500 transition-all flex items-center gap-1">
-              🚀 30+ Deep Deck (Agency)
+              30+ Slides (Master Deck)
             </button>
           </div>
         </div>
@@ -370,7 +370,7 @@
           <button onclick="toggleApiKeyInput()" class="w-full flex items-center justify-between bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-xs text-gray-400 hover:text-gray-200 transition-all">
             <span id="keyStatusText" class="flex items-center gap-1.5">
               <i data-lucide="key" class="w-3.5 h-3.5 text-emerald-400"></i>
-              <span id="keyLabel">Bypass limits with custom Groq / Gemini Key</span>
+              <span id="keyLabel">Advanced Engine Settings (Custom API Key)</span>
             </span>
             <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
           </button>
@@ -386,12 +386,12 @@
         <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
           <button id="generateBtn" onclick="generateContent(false)" class="sm:col-span-9 py-3.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-sm flex items-center justify-center gap-2 glow-purple transition-all active:scale-[0.99]">
             <i data-lucide="wand-2" class="w-4 h-4"></i>
-            <span id="generateBtnText">Generate Carousel Pack & Post</span>
+            <span id="generateBtnText">Render Visual Deck & Post</span>
           </button>
           
           <button onclick="generateContent(true)" title="Force regenerate AI content bypassing cache" class="sm:col-span-3 py-3.5 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-purple-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]">
             <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-            <span id="txtRegenerateBtn">⚡️ Regenerate</span>
+            <span id="txtRegenerateBtn">↻ Re-Render</span>
           </button>
         </div>
 
@@ -438,7 +438,7 @@
               <span class="w-3 h-3 rounded-full bg-emerald-500/90 border border-emerald-600/40 shadow-sm inline-block"></span>
             </div>
             <span class="text-xs font-mono font-bold text-gray-300 flex items-center gap-1.5 bg-slate-900/90 px-2.5 py-1 rounded-full border border-slate-800">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> LIVE PREVIEW <span class="text-gray-500 text-[10px]">(1080x1350 HD)</span>
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> LIVE PREVIEW <span class="text-gray-500 text-[10px] font-mono whitespace-nowrap">1080p HD</span>
             </span>
           </div>
 
@@ -530,7 +530,7 @@
   </main>
 
   <!-- =====================================================================
-       LIVE MOTION REEL PREVIEW MODAL  (v8.0 Canvas Studio)
+       LIVE MOTION REEL PREVIEW MODAL  (Studio Edition)
   ====================================================================== -->
   <div id="reelPreviewModal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4" style="background:rgba(2,1,12,0.88);backdrop-filter:blur(16px);">
     <div class="relative w-full max-w-md mx-auto flex flex-col gap-4" style="max-height:96vh;">
@@ -928,20 +928,20 @@
       en: {
         quotaText: '✦ 10 Free Left / Day',
         upgradeHeader: 'Upgrade Pro ($19.9/mo)',
-        sandboxHeader: '⚡ 3-Second Aha Moment: 1-Click Sandbox Demos (Instant Hollywood Visual Cards)',
+        sandboxHeader: '✦ Instant Inspiration (1-Click Templates)',
         demo1Title: '🚀 1-Click Try: $10k ARR Playbook',
         demo2Title: '🧠 1-Click Try: DeepSeek Disrupted AI',
         demo3Title: '📕 1-Click Try: Viral Content 3 Rules',
-        themeLabel: '🎨 Prompt-Driven Visual Theme (Hover for Instant Real-Time Preview)',
+        themeLabel: 'Visual Aesthetics & Palette',
         modeSingle: '🎴 Single Card',
         modeCarousel: '📚 Carousel Pack',
-        hookTagsLabel: '⚡ One-Click Hook Tags (Click to inject viral focus)',
-        platformMatrixLabel: '🎯 Dynamic Platform Matrix',
+        hookTagsLabel: 'Topic Focus & Narrative Angles',
+        platformMatrixLabel: 'Destination Platform & Layout',
         inputPlaceholder: "Paste your article, blog draft, or type custom instructions (e.g. 'Focus on chapter 3 for Twitter'). Or drop a PDF file...",
         uploadPdf: 'Upload PDF',
         keyLabel: '🔑 Bypass daily limits with your own Groq / Gemini Key',
         generateBtnSingle: 'Generate Single Card & Post',
-        generateBtnCarousel: 'Generate Carousel Pack & Post',
+        generateBtnCarousel: 'Render Visual Deck & Post',
         regenerateBtn: '⚡️ Regenerate',
         copyBtn: 'Copy Post',
         studioTitle: 'Visual Studio Engine',
@@ -3712,7 +3712,7 @@
 
             <div class="pt-3 border-t border-gray-800/60 flex items-center justify-between">
               <span class="card-footer-brand text-[11px] font-bold font-mono">${footerText || (isProUser ? '⚡️ Cardify Pro' : '⚡️ Made with Cardify.ai')}</span>
-              <span class="text-[10px] opacity-60 font-mono">${idx + 1} / ${slides.length} Slide</span>
+              <span class="text-[10px] opacity-60 font-mono">${idx + 1} / ${slides.length}</span>
             </div>
           </div>
         `;
