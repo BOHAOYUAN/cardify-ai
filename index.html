@@ -150,7 +150,7 @@
 <body class="min-h-screen flex flex-col antialiased selection:bg-purple-500 selection:text-white">
 
   <!-- ================= TOP HEADER ================= -->
-  <header class="sticky top-0 z-40 w-full glass-panel border-b border-gray-800/80 px-4 lg:px-8 py-3">
+  <header class="sticky top-0 z-40 w-full bg-[#0b0f17]/95 backdrop-blur-2xl border-b border-gray-800/80 px-4 lg:px-8 py-3 shadow-lg shadow-black/40">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
       
       <!-- Brand Logo -->
@@ -218,7 +218,7 @@
           <span class="text-[10px] text-purple-300 bg-purple-900/40 px-2 py-0.5 rounded-full font-mono border border-purple-700/40">1-Click Load</span>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2" id="sandboxDemosGrid">
           <button onclick="loadSandboxDemo('hacker')" class="sandbox-demo-btn p-2.5 rounded-xl bg-purple-950/60 hover:bg-purple-900/80 border text-left transition-all flex flex-col justify-between min-h-[58px]">
             <span id="txtDemo1Title" class="text-xs font-bold text-purple-200">🚀 1-Click Try: $10k ARR Playbook</span>
             <span class="text-[10px] text-purple-300/70 font-mono">Cyberpunk 2077 • Twitter/X</span>
@@ -232,6 +232,10 @@
           <button onclick="loadSandboxDemo('xhs')" class="sandbox-demo-btn p-2.5 rounded-xl bg-rose-950/60 hover:bg-rose-900/80 border text-left transition-all flex flex-col justify-between min-h-[58px]">
             <span id="txtDemo3Title" class="text-xs font-bold text-rose-200">📕 1-Click Try: Viral Content 3 Rules</span>
             <span class="text-[10px] text-rose-300/70 font-mono">Morandi Soft • Carousel</span>
+          </button>
+          <button onclick="loadSandboxDemo('exec')" class="sandbox-demo-btn p-2.5 rounded-xl bg-amber-950/60 hover:bg-amber-900/80 border text-left transition-all flex flex-col justify-between min-h-[58px]">
+            <span id="txtDemo4Title" class="text-xs font-bold text-amber-200">👑 1-Click: Executive Brand Pass</span>
+            <span class="text-[10px] text-amber-300/70 font-mono">Luxury Gold • Top 1% Pass</span>
           </button>
         </div>
       </div>
@@ -1414,7 +1418,7 @@
 
       // Render default cards FIRST so right panel is never blank
       const defaultSlides = LOCALIZED_DEFAULT_SLIDES.en;
-      renderSlides(defaultSlides, '⚡️ Made with Cardify.ai');
+      renderSlides(defaultSlides, '💎 Minted via Cardify Studio • Verified Thought Leader');
 
       initSwiper();
       fetchQuota();
@@ -1492,6 +1496,17 @@
           theme: 'Morandi Soft',
           platform: 'linkedin',
           text: '4-Step Cold Outreach System with 45% Reply Rate.\n\nStep 1: Ultra-personalized hook referencing their recent post.\nStep 2: Value-first visual PDF cheat sheet attached.\nStep 3: Low-friction CTA: "Reply YES for the free template".\nStep 4: Automated follow-up within 48 hours.'
+        },
+        {
+          id: 'exec',
+          badge: '👑 Executive Brand Pass',
+          sub: 'Luxury Gold • Thought Leader',
+          btnClass: 'bg-amber-950/60 hover:bg-amber-900/80',
+          titleClass: 'text-amber-200',
+          subClass: 'text-amber-300/70',
+          theme: 'Luxury Gold',
+          platform: 'linkedin',
+          text: 'Executive Brand Pass — 2026 Thought Leader Index.\n\nContrarian Insight: 90% of content dies in 24h. Knowledge assets formatted as visual tokens compound for 10 years.\n\n3 First-Principle Business Rules:\n1. Distribution Before Product: Attention is the ultimate leverage.\n2. High-Density Visual Assets: Convert 2-hour podcasts into 30-slide executive blueprints.\n3. Digital Authority Flywheel: Turn thought leadership into inbound enterprise pipeline.\n\nVerified Founder #0842 • Top 0.1% Content Distiller.'
         }
       ],
       zh: [
@@ -1527,6 +1542,17 @@
           theme: 'Morandi Soft',
           platform: 'xiaohongshu',
           text: '4步冷邮件 B2B 高效获客 SOP (45% 回复率)：\n第一步：个性化 Hook 引用对方最新公开发表观点。\n第二步：附赠高价值 SOP / Visual PDF 拆解干货。\n第三步：零摩擦 CTA——“回复‘1’免费领完整 SOP”。\n第四步：48小时内自动化静默二次 Follow-up。'
+        },
+        {
+          id: 'exec',
+          badge: '👑 试用: 高管IP黑金身份卡',
+          sub: 'Luxury Gold • 思想领袖勋章',
+          btnClass: 'bg-amber-950/60 hover:bg-amber-900/80',
+          titleClass: 'text-amber-200',
+          subClass: 'text-amber-300/70',
+          theme: 'Luxury Gold',
+          platform: 'linkedin',
+          text: '高管IP黑金身份名片 — 2026 商业认知指数：\n反直觉洞见：90% 的短平快内容在 24 小时内死亡。只有被封装为高颜值视觉通证的知识资产，能产生长达 10 年的复利。\n\n3 大底层商业第一性原理：\n1. 先建立分发渠道再打磨产品：在注意力稀缺时代，认知就是顶级杠杆。\n2. 高信息密度资产沉淀：将 2 小时硬核播客提炼为 30 页高客单执行蓝图。\n3. 数字威望飞轮：把个人思想领袖影响力，直接转化为企业级高客单商机。\n\n专属认证领袖 #0842 • 全球前 0.1% 思想提炼者。'
         }
       ]
     };
@@ -1798,9 +1824,9 @@
       if (!currentResponseData) {
         const platformDefaults = LOCALIZED_DEFAULT_SLIDES[eff] || LOCALIZED_DEFAULT_SLIDES.en;
         if (currentMode === 'single') {
-          renderSlides([platformDefaults[0]], isProUser ? '⚡️ Cardify Pro' : '⚡️ Made with Cardify.ai');
+          renderSlides([platformDefaults[0]], isProUser ? '⚡️ Cardify Pro' : '💎 Minted via Cardify Studio • Verified Thought Leader');
         } else {
-          renderSlides(platformDefaults, isProUser ? '⚡️ Cardify Pro' : '⚡️ Made with Cardify.ai');
+          renderSlides(platformDefaults, isProUser ? '⚡️ Cardify Pro' : '💎 Minted via Cardify Studio • Verified Thought Leader');
         }
       }
 
@@ -3601,7 +3627,7 @@
       document.getElementById('outputContainer').classList.remove('hidden');
       switchTab(selectedPlatform);
 
-      const watermarkText = isProUser ? (data.footer_text || '⚡️ Cardify Pro') : '⚡️ Made with Cardify.ai';
+      const watermarkText = isProUser ? (data.footer_text || '⚡️ Cardify Pro') : '💎 Minted via Cardify Studio • Verified Thought Leader';
       const slides = data.slides || [];
       renderSlides(slides, watermarkText);
     }
@@ -3628,7 +3654,7 @@
       return str.replace(/(\$\d+[\mathbf{kKmM}]*|\d+x|\d+%\b|\d+个|\d+法则)/gi, '<span class="px-1.5 py-0.5 rounded bg-emerald-400/20 text-emerald-300 border border-emerald-400/40 font-bold inline-block mx-0.5">$1</span>');
     }
 
-    function renderSlides(slides, footerText = '⚡️ Made with Cardify.ai') {
+    function renderSlides(slides, footerText = '💎 Minted via Cardify Studio • Verified Thought Leader') {
       const wrapper = document.getElementById('swiperWrapper');
       wrapper.innerHTML = '';
 
@@ -3711,7 +3737,7 @@
             </div>
 
             <div class="pt-3 border-t border-gray-800/60 flex items-center justify-between">
-              <span class="card-footer-brand text-[11px] font-bold font-mono">${footerText || (isProUser ? '⚡️ Cardify Pro' : '⚡️ Made with Cardify.ai')}</span>
+              <span class="card-footer-brand text-[11px] font-bold font-mono">${footerText || (isProUser ? '⚡️ Cardify Pro' : '💎 Minted via Cardify Studio • Verified Thought Leader')}</span>
               <span class="text-[10px] opacity-60 font-mono">${idx + 1} / ${slides.length}</span>
             </div>
           </div>
