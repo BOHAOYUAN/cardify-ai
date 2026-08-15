@@ -2949,6 +2949,204 @@
       }
     }
 
+        // =========================================================================
+    // 🌐 GAMMA-STYLE FLUID RESPONSIVE WEBPAGE & SLIDES DUAL-MODE ENGINE
+    // =========================================================================
+    let presenterDisplayMode = 'slides'; // 'slides' or 'webpage'
+
+    function setPresenterDisplayMode(mode) {
+      presenterDisplayMode = mode;
+      
+      const btnSlides = document.getElementById('btnModeSlides');
+      const btnWeb = document.getElementById('btnModeWeb');
+      const slidesContainer = document.getElementById('presenterSlidesView');
+      const webContainer = document.getElementById('presenterWebpageView');
+      const bottomControls = document.getElementById('presenterBottomControls');
+
+      if (mode === 'webpage') {
+        if (btnWeb) btnWeb.className = 'px-3 py-1 rounded-full bg-purple-600 text-white font-bold text-xs shadow-md transition-all';
+        if (btnSlides) btnSlides.className = 'px-3 py-1 rounded-full bg-transparent text-slate-400 hover:text-white font-semibold text-xs transition-all';
+        if (slidesContainer) slidesContainer.classList.add('hidden');
+        if (webContainer) webContainer.classList.remove('hidden');
+        if (bottomControls) bottomControls.classList.add('hidden');
+        renderGammaWebpageView();
+        showToast('🌐 Switched to Gamma-Style Fluid Landing Page View');
+      } else {
+        if (btnSlides) btnSlides.className = 'px-3 py-1 rounded-full bg-purple-600 text-white font-bold text-xs shadow-md transition-all';
+        if (btnWeb) btnWeb.className = 'px-3 py-1 rounded-full bg-transparent text-slate-400 hover:text-white font-semibold text-xs transition-all';
+        if (slidesContainer) slidesContainer.classList.remove('hidden');
+        if (webContainer) webContainer.classList.add('hidden');
+        if (bottomControls) bottomControls.classList.remove('hidden');
+        updatePresenterCard();
+        showToast('🎴 Switched to Keynote Slides View');
+      }
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function renderGammaWebpageView() {
+      const webContainer = document.getElementById('presenterWebpageView');
+      if (!webContainer) return;
+
+      const slides = (currentResponseData && currentResponseData.slides && currentResponseData.slides.length > 0)
+        ? currentResponseData.slides
+        : (LOCALIZED_DEFAULT_SLIDES[selectedLang] || LOCALIZED_DEFAULT_SLIDES.en);
+
+      const firstTitle = slides[0]?.title || 'Cardify Masterclass Thought Token';
+      const firstSubtitle = slides[0]?.subtitle || 'Executive Strategy Document';
+      const watermark = customBrandKit.handle ? `Minted by ${customBrandKit.handle} • ${customBrandKit.title}` : 'Cardify Studio Verified Thought Token';
+
+      let html = `
+        <div class="w-full max-w-5xl mx-auto flex flex-col gap-8 py-6 px-2 sm:px-6 animate-fade-in text-white">
+          
+          <!-- HERO LANDING PAGE BANNER -->
+          <div class="p-8 md:p-12 rounded-3xl bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-950 border border-purple-500/40 shadow-2xl relative overflow-hidden flex flex-col gap-4 text-center items-center">
+            <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full blur-[100px] bg-purple-600/30 pointer-events-none"></div>
+            
+            <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-purple-950/80 border border-purple-500/50 text-purple-300 text-xs font-mono font-bold tracking-wider uppercase shadow-sm">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              👑 ${watermark}
+            </div>
+
+            <h1 class="text-2xl sm:text-4xl md:text-5xl font-black font-outfit text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-purple-200 leading-tight max-w-3xl">
+              ${firstTitle}
+            </h1>
+
+            <p class="text-sm md:text-base text-gray-300 max-w-2xl leading-relaxed">
+              ${firstSubtitle} • A comprehensive ${slides.length}-part strategic framework converted into high-density interactive thought tokens.
+            </p>
+
+            <!-- Quick Action Bar -->
+            <div class="flex items-center justify-center gap-3 flex-wrap pt-2">
+              <button onclick="exportLinkedInPdf()" class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-gray-950 font-black text-xs shadow-lg flex items-center gap-2 active:scale-95">
+                <i data-lucide="download" class="w-4 h-4 text-gray-950"></i> Download Full PDF (${slides.length} Slides)
+              </button>
+              <button onclick="copyFullDeckMarkdown()" class="px-4 py-2.5 rounded-2xl bg-slate-950 hover:bg-slate-800 border border-slate-700 text-slate-300 font-bold text-xs shadow-md flex items-center gap-1.5 active:scale-95">
+                <i data-lucide="file-text" class="w-4 h-4 text-sky-400"></i> Copy Markdown
+              </button>
+              <button onclick="shareToTwitter()" class="px-4 py-2.5 rounded-2xl bg-slate-950 hover:bg-sky-950 border border-sky-500/40 text-sky-400 font-bold text-xs shadow-md flex items-center gap-1.5 active:scale-95">
+                <i data-lucide="twitter" class="w-4 h-4 text-sky-400"></i> Share to X
+              </button>
+            </div>
+          </div>
+
+          <!-- DUAL COLUMN LAYOUT: STICKY TOC ON LEFT (DESKTOP) + CONTINUOUS FLOW ON RIGHT -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- Sticky Table of Contents (TOC) -->
+            <div class="hidden lg:flex lg:col-span-4 sticky top-24 flex-col gap-3 p-5 rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-slate-800 shadow-xl max-h-[75vh] overflow-y-auto">
+              <div class="text-xs font-mono font-bold uppercase tracking-wider text-purple-400 flex items-center gap-1.5 border-b border-gray-800 pb-2">
+                <i data-lucide="list" class="w-4 h-4"></i> Table of Contents (${slides.length} Chapters)
+              </div>
+              <nav class="flex flex-col gap-1.5 text-xs">
+                ${slides.map((s, i) => `
+                  <a href="#gamma-section-${i+1}" class="px-3 py-2 rounded-xl text-gray-400 hover:text-white hover:bg-slate-800/80 transition-all truncate font-medium flex items-center gap-2">
+                    <span class="w-4.5 h-4.5 rounded-full bg-purple-950 text-purple-300 border border-purple-500/40 text-[10px] flex items-center justify-center font-mono font-bold shrink-0">${i+1}</span>
+                    <span class="truncate">${s.title || `Chapter ${i+1}`}</span>
+                  </a>
+                `).join('')}
+              </nav>
+            </div>
+
+            <!-- Main Continuous Cards Waterfall -->
+            <div class="col-span-1 lg:col-span-8 flex flex-col gap-6">
+              ${slides.map((slide, i) => {
+                const versusHtml = (slide.diagram_type === 'versus' || slide.versus_comparison) ? `
+                  <div class="my-3 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                    <div class="p-3 rounded-xl bg-red-950/50 border border-red-500/40 text-red-200 backdrop-blur-md shadow-md">
+                      <div class="font-bold text-[10px] uppercase text-red-400 mb-1 flex items-center gap-1">❌ Old Mistake Trap</div>
+                      <div>${slide.versus_comparison?.old_way || 'Generic unformatted text block'}</div>
+                    </div>
+                    <div class="p-3 rounded-xl bg-emerald-950/50 border border-emerald-500/40 text-emerald-200 backdrop-blur-md shadow-md">
+                      <div class="font-bold text-[10px] uppercase text-emerald-400 mb-1 flex items-center gap-1">⚡️ Viral Breakthrough</div>
+                      <div>${slide.versus_comparison?.new_way || 'Visual Infographic Diagram + Data ROI'}</div>
+                    </div>
+                  </div>
+                ` : '';
+
+                const metricHtml = (slide.key_metric && slide.key_metric.value) ? `
+                  <div class="backdrop-blur-md bg-white/5 border border-white/15 rounded-xl p-4 text-center my-3 shadow-lg">
+                    <div class="text-3xl sm:text-4xl font-black font-outfit text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">${slide.key_metric.value}</div>
+                    <div class="text-xs uppercase font-bold tracking-wider opacity-90 mt-1">${slide.key_metric.label || ''}</div>
+                  </div>
+                ` : '';
+
+                const bulletsHtml = (Array.isArray(slide.bullet_points) && slide.bullet_points.length > 0) ? `
+                  <div class="flex flex-col gap-2.5 my-3">
+                    ${slide.bullet_points.map((b, bIdx) => `
+                      <div class="flex items-start gap-2.5 text-xs sm:text-sm opacity-95">
+                        <span class="w-5 h-5 rounded-full text-[10px] flex items-center justify-center font-bold flex-shrink-0 mt-0.5 bg-purple-500/20 text-purple-300 border border-purple-500/40 font-mono">${bIdx+1}</span>
+                        <div>
+                          <strong class="text-white">${b.point_title || ''}:</strong> <span class="text-gray-300">${b.point_desc || ''}</span>
+                        </div>
+                      </div>
+                    `).join('')}
+                  </div>
+                ` : '';
+
+                const quoteHtml = slide.takeaway_quote ? `
+                  <div class="rounded-xl p-4 my-3 bg-purple-950/40 border border-purple-500/30 backdrop-blur-sm shadow-sm">
+                    <p class="text-xs sm:text-sm italic leading-relaxed text-purple-200 font-medium">“${slide.takeaway_quote}”</p>
+                  </div>
+                ` : '';
+
+                return `
+                  <div id="gamma-section-${i+1}" class="theme-${currentPreset} rounded-3xl p-6 sm:p-8 border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-xl flex flex-col justify-between transition-all hover:border-purple-500/40">
+                    <div>
+                      <div class="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
+                        <div class="flex items-center gap-2">
+                          <span class="w-2.5 h-2.5 rounded-full bg-purple-400"></span>
+                          <span class="text-xs font-mono font-bold uppercase tracking-wider text-purple-300">${slide.subtitle || `Chapter ${i+1}`}</span>
+                        </div>
+                        <span class="text-xs font-mono opacity-60">${i+1} / ${slides.length}</span>
+                      </div>
+
+                      <h3 class="text-lg sm:text-2xl font-black font-outfit text-white leading-snug mb-3">
+                        ${highlightKeywords(slide.title || '')}
+                      </h3>
+
+                      ${versusHtml}
+                      ${metricHtml}
+                      ${bulletsHtml}
+                      ${quoteHtml}
+                    </div>
+
+                    <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono opacity-60">
+                      <span>${watermark}</span>
+                      <a href="#presenterModal" class="text-purple-400 hover:text-white">↑ Back to top</a>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+
+              <!-- BOTTOM CONVERSION & LEAD GEN BLOCK -->
+              <div class="p-8 rounded-3xl bg-gradient-to-r from-purple-950/80 via-slate-900 to-indigo-950/80 border border-purple-500/50 shadow-2xl flex flex-col items-center text-center gap-4 my-6">
+                <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-300">
+                  <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-xl sm:text-2xl font-black font-outfit text-white">Enjoyed this ${slides.length}-Chapter Master Deck?</h3>
+                <p class="text-xs sm:text-sm text-gray-300 max-w-md">Connect directly with the author or create your own visual thought tokens in 1 second.</p>
+                <div class="flex items-center justify-center gap-3 flex-wrap pt-2">
+                  <a href="https://calendly.com" target="_blank" class="px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-gray-950 font-black text-xs shadow-lg flex items-center gap-2 active:scale-95">
+                    <i data-lucide="calendar" class="w-4 h-4"></i> Book Strategy Call (Calendly)
+                  </a>
+                  <button onclick="copyShareableLiveLink()" class="px-5 py-3 rounded-2xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-md flex items-center gap-1.5 active:scale-95">
+                    <i data-lucide="share-2" class="w-4 h-4"></i> Share Landing Page
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      `;
+
+      webContainer.innerHTML = html;
+      if (window.lucide) lucide.createIcons();
+    }
+
     function openPresenterMode() {
       const wrapper = document.getElementById('swiperWrapper');
       const cards = wrapper ? wrapper.querySelectorAll('.swiper-slide') : [];
@@ -2983,6 +3181,16 @@
               <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> 
               <span id="presenterSlideCounter">Slide 1 of ${cards.length}</span>
             </span>
+
+                        <!-- 🎴 Slides vs 🌐 Webpage Dual-Mode Segmented Control -->
+            <div class="flex items-center bg-slate-950 p-0.5 rounded-full border border-slate-700 shadow-inner shrink-0">
+              <button id="btnModeSlides" onclick="setPresenterDisplayMode('slides')" class="px-3 py-1 rounded-full bg-purple-600 text-white font-bold text-xs shadow-md transition-all">
+                🎴 Slides
+              </button>
+              <button id="btnModeWeb" onclick="setPresenterDisplayMode('webpage')" class="px-3 py-1 rounded-full bg-transparent text-slate-400 hover:text-white font-semibold text-xs transition-all">
+                🌐 Webpage
+              </button>
+            </div>
 
             <button id="btnToggleLiveEdit" onclick="toggleLiveInlineEdit()" title="Toggle Inline Edit (Hotkey: E)" class="px-3 py-1.5 rounded-full bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm active:scale-95">
               <i data-lucide="edit-3" class="w-3.5 h-3.5 text-purple-400"></i> <span>Edit</span>
@@ -3033,8 +3241,9 @@
           </div>
         </div>
 
-        <!-- MAIN CARD VIEWER AREA -->
-        <div class="w-full max-w-md sm:max-w-lg my-auto z-10 flex flex-col items-center justify-center px-2 py-3">
+        <!-- MAIN DUAL-MODE VIEW AREA -->
+        <!-- MODE 1: KEYNOTE SLIDES VIEW -->
+        <div id="presenterSlidesView" class="w-full max-w-md sm:max-w-lg my-auto z-10 flex flex-col items-center justify-center px-2 py-3">
           <div id="presenterCardContainer" class="w-full transition-all duration-300">
             <!-- Active Card Injected Here -->
           </div>
@@ -3056,8 +3265,13 @@
           <div id="presenterCtaArea" class="w-full mt-3"></div>
         </div>
 
+        <!-- MODE 2: GAMMA-STYLE FLUID LANDING PAGE SCROLL VIEW -->
+        <div id="presenterWebpageView" class="hidden w-full z-10 flex-1 overflow-y-auto">
+          <!-- Fluid Webpage Injected Here via renderGammaWebpageView -->
+        </div>
+
                 <!-- BOTTOM CONTROLS & PAGINATION & PRO HOTKEY BAR -->
-        <div class="w-full max-w-xl z-20 flex flex-col items-center gap-2 pb-2">
+        <div id="presenterBottomControls" class="w-full max-w-xl z-20 flex flex-col items-center gap-2 pb-2">
           <!-- Prev / Next Navigation Arrows -->
           <div class="flex items-center gap-4">
             <button onclick="prevPresenterSlide()" title="Previous slide (Left Arrow / Backspace)" class="px-4 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold transition-all flex items-center gap-1 hover:border-purple-500 active:scale-95">
