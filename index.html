@@ -922,8 +922,22 @@
             </a>
           </div>
         </div>
+
+        <!-- 🔑 License Key / API Activation for Global Users -->
+        <div class="flex flex-col gap-2 border-t border-slate-800 pt-3 mt-1">
+          <label class="text-xs font-semibold text-gray-300 flex items-center justify-between">
+            <span class="flex items-center gap-1.5"><i data-lucide="key" class="w-3.5 h-3.5 text-purple-400"></i> Have a Pro License Key?</span>
+            <span class="text-[10px] text-emerald-400 font-mono">Instant Lifetime / Annual Activation</span>
+          </label>
+          <div class="flex gap-2">
+            <input type="text" id="licenseKeyInputGlobal" placeholder="CARDIFY-PRO-XXXX-XXXX" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white uppercase font-mono focus:border-purple-500 focus:outline-none">
+            <button onclick="activateLicense(true)" class="px-5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs rounded-xl shadow-md active:scale-95 whitespace-nowrap">
+              Activate
+            </button>
+          </div>
+        </div>
+
       </div>
-    </div>
     </div>
   </div>
 
@@ -5816,14 +5830,17 @@ Explore here: ${liveUrl}`)}`;
       }
     }
 
-    async function activateLicense() {
-      const val = document.getElementById('licenseKeyInput').value.trim();
+    async function activateLicense(isGlobal = false) {
+      const inputEl = isGlobal 
+        ? document.getElementById('licenseKeyInputGlobal') 
+        : (document.getElementById('licenseKeyInput') || document.getElementById('licenseKeyInputGlobal'));
+      const val = inputEl ? inputEl.value.trim() : '';
       if (val.length >= 5) {
         licenseKey = val;
         await verifyLicenseKey(val, false);
         closeUpgradeModal();
       } else {
-        showToast('Invalid License Key format.', true);
+        showToast('Invalid License Key format. Please enter your valid key.', true);
       }
     }
 
