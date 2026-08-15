@@ -1877,28 +1877,32 @@
       }
     }
 
-    function selectPlatform(id, preset, ratio) {
+        function selectPlatform(id, preset, ratio) {
       selectedPlatform = id;
 
+      // 1. Immediately re-render the button visual active states
+      renderDynamicMatrix();
+
+      // 2. Update aspect ratio badge
       const aspectBadge = document.getElementById('aspectBadge');
       if (aspectBadge) aspectBadge.innerText = `📐 ${ratio} Ratio`;
 
-      const inputVal = document.getElementById('inputText').value.trim();
-      const cacheKey = `${selectedPlatform}_${currentMode}_${selectedLang}_${inputVal.slice(0, 50)}`;
+      // 3. Switch bottom copy tab
+      switchTab(id);
 
-      if (platformCacheStore[cacheKey]) {
-        currentResponseData = platformCacheStore[cacheKey];
-        renderGeneratedResults(currentResponseData);
-        showToast(`⚡ Loaded cached AI output for ${id}`);
-      } else if (inputVal.length >= 10) {
-        generateContent(false);
-      } else {
-        const eff = getEffectiveLang();
-        const platformDefaults = LOCALIZED_DEFAULT_SLIDES[eff] || LOCALIZED_DEFAULT_SLIDES.en;
-        renderSlides(platformDefaults, '⚡️ Cardify.ai');
-        switchTab(selectedPlatform);
+      // 4. Update Swiper aspect ratio if applicable
+      const wrapper = document.getElementById('swiperWrapper');
+      if (wrapper) {
+        if (ratio === '9:16') {
+          wrapper.style.maxWidth = '360px';
+        } else if (ratio === '3:4') {
+          wrapper.style.maxWidth = '420px';
+        } else {
+          wrapper.style.maxWidth = '480px';
+        }
       }
 
+      showToast(`📱 Switched Destination: ${id.toUpperCase()} (Ratio ${ratio})`);
       trackAnalyticsEvent('platform_selected', { platform: id, ratio });
     }
 
