@@ -706,85 +706,68 @@
         </div>
       </div>
 
-      <!-- GLOBAL DODO PAYMENTS SECTION (For English / Overseas Users) -->
+            <!-- GLOBAL DODO PAYMENTS SECTION (For English / Overseas Users) -->
       <div id="modalGlobalSection" class="hidden flex-col gap-4">
-        <div class="text-center flex flex-col items-center gap-2">
-          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-xs font-extrabold font-mono shadow-md animate-pulse">
-            <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-300"></i> ⚡️ 7-DAY FREE TRIAL ($0 TODAY) · CANCEL ANYTIME
+        <div class="text-center flex flex-col items-center gap-1.5">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-xs font-extrabold font-mono shadow-md">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-300"></i> ⚡️ ZERO-RISK 7-DAY PRO PASS · CANCEL ANYTIME
           </div>
-          <h3 class="text-2xl font-black text-white font-outfit">Start Your 7-Day Cardify Pro Trial</h3>
-          <p class="text-xs text-emerald-200/90 max-w-md font-medium">Try full Pro features for 7 days at $0.00 today. Auto-renews after 7 days unless canceled.</p>
+          <h3 class="text-xl sm:text-2xl font-black text-white font-outfit">Unlock Cardify Studio Pro</h3>
+          <p class="text-xs text-gray-300 max-w-md">Create unlimited 15~30 slide master decks, 4K PDF carousel exports, and viral multi-platform copy.</p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <!-- Tier 1: Monthly Creator ($19.9/mo) -->
-          <div class="p-3.5 rounded-xl bg-slate-900/90 border border-emerald-500/40 flex flex-col justify-between gap-3 shadow-md">
-            <div class="flex flex-col gap-1.5">
-              <div class="text-xs font-bold text-emerald-300 uppercase tracking-wider flex items-center justify-between">
-                <span>🚀 Monthly Pro</span>
-                <span class="text-[10px] text-emerald-300 bg-emerald-950 px-1.5 py-0.5 rounded border border-emerald-500/40">$0 Today</span>
+        <!-- 📅 SaaS Interactive Billing Cycle Toggle Switcher -->
+        <div class="flex items-center justify-center p-1 bg-slate-950 rounded-2xl border border-slate-800 self-center shadow-inner gap-1 my-1">
+          <button id="btnBillingAnnual" onclick="setBillingCycle('annual')" class="px-5 py-2 rounded-xl text-xs font-bold transition-all text-amber-300 bg-amber-500/20 border border-amber-500/50 shadow-sm flex items-center gap-1.5 active:scale-95">
+            <span>👑 Annual Pass</span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-gray-950 font-black uppercase">Save 38%</span>
+          </button>
+          <button id="btnBillingMonthly" onclick="setBillingCycle('monthly')" class="px-5 py-2 rounded-xl text-xs font-bold transition-all text-gray-400 hover:text-white active:scale-95">
+            Monthly
+          </button>
+        </div>
+
+        <!-- 2 Symmetrical Luxury SaaS Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Tier 1: Pro Founder -->
+          <div class="p-4 rounded-2xl bg-gradient-to-b from-amber-950/40 to-slate-950 border-2 border-amber-500/70 flex flex-col justify-between gap-4 relative shadow-xl shadow-amber-950/40">
+            <span id="badgeFounderDiscount" class="absolute -top-2.5 right-3 px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-gray-950 text-[9px] font-black uppercase shadow-sm">🔥 Top Creator Choice</span>
+            <div class="flex flex-col gap-2">
+              <div class="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center justify-between">
+                <span>🚀 Pro Founder</span>
+                <span class="text-[10px] text-amber-200 bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-500/40">Individual</span>
               </div>
               <div class="flex items-baseline gap-1">
-                <span class="text-2xl font-black text-white font-outfit">$19.9</span>
-                <span class="text-[10px] text-gray-400 font-normal">/month</span>
+                <span id="priceFounder" class="text-3xl font-black text-amber-400 font-outfit">$149</span>
+                <span id="periodFounder" class="text-xs text-amber-200 font-medium">/ year ($12.4/mo)</span>
               </div>
-              <p class="text-[10px] text-gray-300 leading-tight">7-Day Free Trial ($0 Today). Cancel anytime.</p>
+              <p class="text-[11px] text-gray-300 leading-snug">Perfect for founders & solo creators looking to turn longform ideas into viral 30-slide visual assets.</p>
             </div>
-            <a href="https://checkout.dodopayments.com/buy/pdt_0NkcXfJNzWNBKy0pBUaeU?quantity=1" target="_blank" onclick="trackAnalyticsEvent('checkout_click_monthly')" class="w-full py-2 text-center rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md active:scale-95">
-              Start Free Trial ($19.9)
+            <a id="linkCheckoutFounder" href="https://checkout.dodopayments.com/buy/pdt_0Nl75urVq1XA2yhi6ZPJ9?quantity=1" target="_blank" onclick="trackAnalyticsEvent('checkout_click_founder')" class="w-full py-3 text-center rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-gray-950 font-black text-xs transition-all shadow-lg active:scale-95 flex items-center justify-center gap-1.5">
+              <span>👑 Get Pro Founder ($149/yr)</span>
             </a>
           </div>
 
-          <!-- Tier 2: Annual VIP Pass ($149/yr - BEST VALUE - 38% OFF) -->
-          <div class="p-3.5 rounded-xl bg-gradient-to-b from-amber-950/80 to-slate-900 border-2 border-amber-500 text-center flex flex-col justify-between gap-3 relative shadow-xl shadow-amber-950/60">
-            <span class="absolute -top-2.5 right-2 px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-gray-950 text-[9px] font-black uppercase">🔥 38% OFF</span>
-            <div class="flex flex-col gap-1.5">
-              <div class="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center justify-between">
-                <span>👑 Annual VIP Pass</span>
-                <span class="text-[9px] text-amber-200 bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-500/40">$12.4/mo</span>
-              </div>
-              <div class="flex items-baseline justify-center gap-1">
-                <span class="text-2xl font-black text-amber-400 font-outfit">$149</span>
-                <span class="text-[10px] text-amber-200 font-normal">/year</span>
-              </div>
-              <p class="text-[10px] text-amber-200/80 leading-tight">Unlimited 30-slide master decks + commercial license.</p>
-            </div>
-            <a href="https://checkout.dodopayments.com/buy/pdt_0Nl75urVq1XA2yhi6ZPJ9?quantity=1" target="_blank" onclick="trackAnalyticsEvent('checkout_click_annual')" class="w-full py-2 text-center rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-gray-950 font-black text-xs shadow-lg active:scale-95">
-              👑 Get Annual VIP ($149/yr)
-            </a>
-          </div>
-
-          <!-- Tier 3: Agency & Team ($49.9/mo or $399/yr) -->
-          <div class="p-3.5 rounded-xl bg-slate-900/90 border border-purple-500/40 flex flex-col justify-between gap-3 shadow-md">
-            <div class="flex flex-col gap-1.5">
+          <!-- Tier 2: Agency & Team -->
+          <div class="p-4 rounded-2xl bg-gradient-to-b from-purple-950/40 to-slate-950 border border-purple-500/50 flex flex-col justify-between gap-4 relative shadow-xl">
+            <div class="flex flex-col gap-2">
               <div class="text-xs font-bold text-purple-300 uppercase tracking-wider flex items-center justify-between">
-                <span>🏢 Agency Team</span>
+                <span>🏢 Agency & Team</span>
                 <span class="text-[10px] text-purple-300 bg-purple-950 px-1.5 py-0.5 rounded border border-purple-500/40">Multi-Seat</span>
               </div>
               <div class="flex items-baseline gap-1">
-                <span class="text-2xl font-black text-purple-300 font-outfit">$49.9</span>
-                <span class="text-[10px] text-gray-400 font-normal">/month</span>
+                <span id="priceAgency" class="text-3xl font-black text-purple-300 font-outfit">$399</span>
+                <span id="periodAgency" class="text-xs text-purple-200 font-medium">/ year ($33.2/mo)</span>
               </div>
-              <p class="text-[10px] text-purple-200/80 leading-tight">Multi-client workspaces & brand kits.</p>
+              <p class="text-[11px] text-purple-200/80 leading-snug">For agencies, media studios, and growth teams managing multiple client brands & custom webhooks.</p>
             </div>
-            <a href="https://checkout.dodopayments.com/buy/pdt_0NkcYFQhPCGPVD546zbjW?quantity=1" target="_blank" onclick="trackAnalyticsEvent('checkout_click_agency')" class="w-full py-2 text-center rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-md active:scale-95">
-              Get Agency Pass ($49.9)
+            <a id="linkCheckoutAgency" href="https://checkout.dodopayments.com/buy/pdt_0Nl76OLdrjeGkk3fMse8Y?quantity=1" target="_blank" onclick="trackAnalyticsEvent('checkout_click_agency')" class="w-full py-3 text-center rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition-all shadow-lg active:scale-95 flex items-center justify-center gap-1.5">
+              <span>🏢 Get Agency Plan ($399/yr)</span>
             </a>
           </div>
         </div>
-
-        <!-- License Key Activation for Global Users -->
-        <div class="flex flex-col gap-2 border-t border-gray-800 pt-3">
-          <label class="text-xs font-medium text-gray-300 flex items-center justify-between">
-            <span>Have a Pro License Key?</span>
-            <span class="text-[10px] text-purple-400">Instant Activation</span>
-          </label>
-          <div class="flex gap-2">
-            <input type="text" id="licenseKeyInputGlobal" placeholder="CARDIFY-PRO-XXXX-XXXX" class="flex-1 bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-xs text-white uppercase font-mono focus:border-purple-500 focus:outline-none">
-            <button onclick="activateLicenseGlobal()" class="px-5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 rounded-lg text-xs font-bold text-white shadow-md active:scale-95 whitespace-nowrap">Activate</button>
-          </div>
-        </div>
       </div>
+    </div>
     </div>
   </div>
 
@@ -823,7 +806,7 @@
     let currentMode = 'carousel';
     let selectedSlideCount = 5;
 
-        let currentBillingCycle = 'annual';
+            let currentBillingCycle = 'annual';
 
     function setBillingCycle(cycle) {
       currentBillingCycle = cycle;
@@ -835,29 +818,46 @@
       const perAgency  = document.getElementById('periodAgency');
       const lFounder   = document.getElementById('linkCheckoutFounder');
       const lAgency    = document.getElementById('linkCheckoutAgency');
+      const badgeDisc  = document.getElementById('badgeFounderDiscount');
 
       if (cycle === 'annual') {
-        if (btnAnnual) btnAnnual.className = 'px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-amber-300 bg-amber-500/20 border border-amber-500/40 shadow-sm';
-        if (btnMonthly) btnMonthly.className = 'px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-400 hover:text-white';
+        if (btnAnnual) btnAnnual.className = 'px-5 py-2 rounded-xl text-xs font-bold transition-all text-amber-300 bg-amber-500/20 border border-amber-500/50 shadow-sm flex items-center gap-1.5 active:scale-95';
+        if (btnMonthly) btnMonthly.className = 'px-5 py-2 rounded-xl text-xs font-bold transition-all text-gray-400 hover:text-white active:scale-95';
         
         if (pFounder) pFounder.innerText = '$149';
         if (perFounder) perFounder.innerText = '/ year ($12.4/mo)';
         if (pAgency) pAgency.innerText = '$399';
         if (perAgency) perAgency.innerText = '/ year ($33.2/mo)';
 
-        if (lFounder) { lFounder.innerText = 'Get Pro Founder ($149/yr)'; lFounder.href = 'https://checkout.dodopayments.com/buy/pdt_0Nl75urVq1XA2yhi6ZPJ9?quantity=1'; }
-        if (lAgency) { lAgency.innerText = 'Get Agency Plan ($399/yr)'; lAgency.href = 'https://checkout.dodopayments.com/buy/pdt_0Nl76OLdrjeGkk3fMse8Y?quantity=1'; }
+        if (badgeDisc) badgeDisc.innerText = '🔥 Top Creator Choice (Save 38%)';
+
+        if (lFounder) { 
+          lFounder.innerHTML = '<span>👑 Get Pro Founder ($149/yr)</span>'; 
+          lFounder.href = 'https://checkout.dodopayments.com/buy/pdt_0Nl75urVq1XA2yhi6ZPJ9?quantity=1'; 
+        }
+        if (lAgency) { 
+          lAgency.innerHTML = '<span>🏢 Get Agency Plan ($399/yr)</span>'; 
+          lAgency.href = 'https://checkout.dodopayments.com/buy/pdt_0Nl76OLdrjeGkk3fMse8Y?quantity=1'; 
+        }
       } else {
-        if (btnMonthly) btnMonthly.className = 'px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-purple-300 bg-purple-600/30 border border-purple-500/40 shadow-sm';
-        if (btnAnnual) btnAnnual.className = 'px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-400 hover:text-white';
+        if (btnMonthly) btnMonthly.className = 'px-5 py-2 rounded-xl text-xs font-bold transition-all text-emerald-300 bg-emerald-500/20 border border-emerald-500/50 shadow-sm flex items-center gap-1.5 active:scale-95';
+        if (btnAnnual) btnAnnual.className = 'px-5 py-2 rounded-xl text-xs font-bold transition-all text-gray-400 hover:text-white active:scale-95';
 
         if (pFounder) pFounder.innerText = '$19.9';
-        if (perFounder) perFounder.innerText = '/ mo';
+        if (perFounder) perFounder.innerText = '/ month';
         if (pAgency) pAgency.innerText = '$49.9';
-        if (perAgency) perAgency.innerText = '/ mo';
+        if (perAgency) perAgency.innerText = '/ month';
 
-        if (lFounder) { lFounder.innerText = 'Get Pro Founder ($19.9/mo)'; lFounder.href = 'https://checkout.dodopayments.com/buy/pdt_0NkcXfJNzWNBKy0pBUaeU?quantity=1'; }
-        if (lAgency) { lAgency.innerText = 'Get Agency Plan ($49.9/mo)'; lAgency.href = 'https://checkout.dodopayments.com/buy/pdt_0NkcYFQhPCGPVD546zbjW?quantity=1'; }
+        if (badgeDisc) badgeDisc.innerText = '🚀 7-Day Free Trial ($0 Today)';
+
+        if (lFounder) { 
+          lFounder.innerHTML = '<span>🚀 Start 7-Day Free Trial ($19.9/mo)</span>'; 
+          lFounder.href = 'https://checkout.dodopayments.com/buy/pdt_0NkcXfJNzWNBKy0pBUaeU?quantity=1'; 
+        }
+        if (lAgency) { 
+          lAgency.innerHTML = '<span>🏢 Start Agency Free Trial ($49.9/mo)</span>'; 
+          lAgency.href = 'https://checkout.dodopayments.com/buy/pdt_0NkcYFQhPCGPVD546zbjW?quantity=1'; 
+        }
       }
     }
 
