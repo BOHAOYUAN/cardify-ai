@@ -2374,47 +2374,114 @@
       }
     }
 
+    let isLiveEditActive = false;
+
+    function toggleLiveInlineEdit() {
+      isLiveEditActive = !isLiveEditActive;
+      const btn = document.getElementById('btnToggleLiveEdit');
+      if (btn) {
+        if (isLiveEditActive) {
+          btn.className = 'px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 text-xs font-bold transition-all flex items-center gap-1.5 shadow-md shadow-emerald-500/20 animate-pulse';
+          btn.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Editing Mode: ON (Click text to edit)';
+          showToast('✏️ Inline Edit ON: Click any title or text on the card to edit directly!');
+        } else {
+          btn.className = 'px-3 py-1.5 rounded-full bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs font-bold transition-all flex items-center gap-1.5';
+          btn.innerHTML = '<i data-lucide="edit-3" class="w-3.5 h-3.5 text-purple-400"></i> Edit Deck Live';
+          showToast('✅ Inline Edit saved');
+        }
+      }
+      updatePresenterCard();
+      lucide.createIcons();
+    }
+
     function openPresenterMode() {
       const wrapper = document.getElementById('swiperWrapper');
       const cards = wrapper ? wrapper.querySelectorAll('.swiper-slide') : [];
       if (!cards || cards.length === 0) {
-        showToast('No cards generated yet. Click generate first!', true);
+        showToast('No cards generated yet. Click render first!', true);
         return;
       }
 
       currentPresenterIndex = 0;
+      isLiveEditActive = false;
 
       let modal = document.getElementById('presenterModal');
       if (!modal) {
         modal = document.createElement('div');
         modal.id = 'presenterModal';
-        modal.className = 'fixed inset-0 z-50 bg-slate-950 flex flex-col items-center justify-center p-0 md:p-6 overflow-hidden select-none animate-fade-in';
+        modal.className = 'fixed inset-0 z-50 bg-slate-950 flex flex-col items-center justify-between p-3 md:p-6 overflow-y-auto select-none animate-fade-in';
         document.body.appendChild(modal);
       }
 
       modal.innerHTML = `
-        <!-- Glassmorphism Ambient Glow -->
+        <!-- Glassmorphism Ambient Glow Background -->
         <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
-          <div id="presenterAmbientGlow" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] rounded-full blur-[110px] opacity-40 transition-all duration-700 bg-gradient-to-tr from-purple-600 via-indigo-600 to-amber-500"></div>
+          <div id="presenterAmbientGlow" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full blur-[120px] opacity-35 transition-all duration-700 bg-gradient-to-tr from-purple-600 via-indigo-600 to-amber-500"></div>
         </div>
 
-        <!-- Standalone H5 Active Card Container -->
-        <div id="presenterCardContainer" class="w-full max-w-lg md:max-w-xl my-auto z-10 flex flex-col items-center justify-center px-4 transition-all duration-300 transform scale-100 sm:scale-105">
-          <!-- Active Card Cloned Here -->
+        <!-- TOP CREATOR & EXPORT BAR (High Conversion & Sharing Hub) -->
+        <div class="w-full max-w-4xl z-20 flex items-center justify-between gap-2 flex-wrap bg-slate-900/85 backdrop-blur-2xl border border-slate-800/80 px-4 py-2.5 rounded-2xl shadow-xl">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-mono font-extrabold text-white flex items-center gap-1.5 bg-purple-950/80 px-3 py-1 rounded-full border border-purple-500/40">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> 
+              <span id="presenterSlideCounter">Slide 1 of ${cards.length}</span>
+            </span>
+            <button id="btnToggleLiveEdit" onclick="toggleLiveInlineEdit()" title="Enable live click-to-edit on text" class="px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs font-bold transition-all flex items-center gap-1.5">
+              <i data-lucide="edit-3" class="w-3.5 h-3.5 text-purple-400"></i> Edit Deck Live
+            </button>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <!-- 1-Click Export Deck to PDF (Triggers Pro Funnel) -->
+            <button onclick="exportLinkedInPdf()" title="Download full deck as PDF Carousel" class="px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-gray-950 text-xs font-black transition-all shadow-md flex items-center gap-1.5 active:scale-95">
+              <i data-lucide="download" class="w-3.5 h-3.5 text-gray-950"></i> Export PDF Deck
+            </button>
+
+            <!-- Unlock 4K Pro / Upgrade CTA -->
+            <button onclick="openUpgradeModal()" title="Upgrade to Pro for Unlimited 4K Exports" class="px-4 py-1.5 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-extrabold transition-all shadow-md shadow-purple-900/40 flex items-center gap-1.5 border border-purple-400/40 active:scale-95">
+              <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-300"></i> Get Pro ($19.9/mo)
+            </button>
+
+            <!-- Close Presenter -->
+            <button onclick="closePresenterMode()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-gray-300 hover:text-white flex items-center justify-center transition-all font-bold text-base ml-1">
+              &times;
+            </button>
+          </div>
         </div>
 
-        <!-- Micro-Motion Pagination Dots -->
-        <div id="presenterDotsContainer" class="z-10 mb-6 md:mb-4 flex items-center gap-2"></div>
+        <!-- MAIN CARD VIEWER AREA (Zero clipping & Smooth Scaling) -->
+        <div class="w-full max-w-md sm:max-w-lg my-auto z-10 flex flex-col items-center justify-center px-2 py-4">
+          <div id="presenterCardContainer" class="w-full transition-all duration-300">
+            <!-- Active Card Injected Here -->
+          </div>
 
-        <!-- Floating PLG Co-Branding Badge -->
-        <a href="/" target="_blank" title="Create your own B2B Carousel with Cardify.ai" class="z-20 fixed bottom-4 right-4 px-3.5 py-1.5 rounded-full bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-slate-700/80 text-[11px] font-mono shadow-2xl transition-all hover:scale-105 flex items-center gap-1.5 backdrop-blur-md">
-          <span class="text-amber-400">⚡</span> Interactive Carousel <span class="text-purple-400 font-bold">powered by Cardify.ai</span>
-        </a>
+          <!-- CLEAN DEDICATED LEAD GEN / CTA BOX (Placed Below Card with Perfect Margins) -->
+          <div id="presenterCtaArea" class="w-full mt-4"></div>
+        </div>
+
+        <!-- BOTTOM CONTROLS & PAGINATION -->
+        <div class="w-full max-w-xl z-20 flex flex-col items-center gap-3 pb-2">
+          <!-- Prev / Next Navigation Arrows -->
+          <div class="flex items-center gap-4">
+            <button onclick="prevPresenterSlide()" title="Previous slide (Left Arrow)" class="px-4 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold transition-all flex items-center gap-1 hover:border-purple-500 active:scale-95">
+              <i data-lucide="chevron-left" class="w-4 h-4"></i> Previous
+            </button>
+            <div id="presenterDotsContainer" class="flex items-center gap-1.5 px-3 py-2 rounded-full bg-slate-900/80 border border-slate-800"></div>
+            <button onclick="nextPresenterSlide()" title="Next slide (Right Arrow / Space)" class="px-4 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold transition-all flex items-center gap-1 hover:border-purple-500 active:scale-95">
+              Next <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <!-- Floating Viral Badge -->
+          <a href="/" target="_blank" class="px-3.5 py-1 rounded-full bg-slate-900/90 hover:bg-slate-800 text-slate-400 hover:text-purple-300 border border-slate-800 text-[11px] font-mono transition-all flex items-center gap-1.5 backdrop-blur-md">
+            <span class="text-amber-400">💎</span> Minted via <span class="text-purple-400 font-bold">Cardify Studio</span> • Create Yours
+          </a>
+        </div>
       `;
 
       modal.classList.remove('hidden');
 
-      // Bind Touch Swipe Gestures for Mobile
+      // Bind Touch Swipe Gestures
       let touchStartX = 0;
       let touchStartY = 0;
       modal.ontouchstart = (e) => {
@@ -2431,7 +2498,6 @@
       };
 
       updatePresenterCard();
-
       window.addEventListener('keydown', handlePresenterKeydown);
       if (window.lucide) lucide.createIcons();
     }
@@ -2451,70 +2517,102 @@
       if (!cards || cards.length === 0) return;
 
       const container = document.getElementById('presenterCardContainer');
+      const ctaArea = document.getElementById('presenterCtaArea');
+      const counter = document.getElementById('presenterSlideCounter');
+
+      if (counter) {
+        counter.innerText = `Slide ${currentPresenterIndex + 1} of ${cards.length}`;
+      }
 
       if (container && cards[currentPresenterIndex]) {
         const targetCard = cards[currentPresenterIndex].querySelector('div[id^="card-"]');
         if (targetCard) {
-          // Inject Lead Gen CTA if on last slide
-          let ctaHtml = '';
-          let scriptToRun = null;
-          const activeCtaType = (currentResponseData && currentResponseData.ctaType && currentResponseData.ctaType !== 'none')
-            ? currentResponseData.ctaType
-            : (document.getElementById('ctaType') ? document.getElementById('ctaType').value : 'none');
-          const activeCtaValue = (currentResponseData && currentResponseData.ctaValue)
-            ? currentResponseData.ctaValue
-            : (document.getElementById('ctaValue') ? document.getElementById('ctaValue').value : '');
+          const clonedCard = targetCard.cloneNode(true);
 
-          if (currentPresenterIndex === cards.length - 1 && activeCtaType && activeCtaType !== 'none') {
-            if (activeCtaType === 'email') {
-              ctaHtml = `
-                <div class="absolute -bottom-16 left-0 right-0 w-full animate-slide-up-fade">
-                  <div class="p-4 bg-gray-900/95 border border-amber-500/50 rounded-2xl flex flex-col gap-3 shadow-[0_0_30px_rgba(245,158,11,0.15)] backdrop-blur-xl">
+          // If Live Edit Mode is Active, make all text elements contenteditable
+          if (isLiveEditActive) {
+            clonedCard.querySelectorAll('.card-title, .card-subtitle, .card-bullet-title, .card-bullet-desc, .card-quote-text, .card-metric-value, .card-metric-label').forEach(el => {
+              el.setAttribute('contenteditable', 'true');
+              el.classList.add('outline-dashed', 'outline-1', 'outline-purple-400', 'bg-purple-950/20', 'rounded', 'px-1', 'cursor-text');
+              el.oninput = () => {
+                // Sync back to live DOM and data store
+                const origEl = targetCard.querySelector('.' + el.className.split(' ')[0]);
+                if (origEl) origEl.innerText = el.innerText;
+              };
+            });
+          }
+
+          container.innerHTML = clonedCard.outerHTML;
+
+          // Handle CTA box cleanly below card on the final slide
+          if (ctaArea) {
+            ctaArea.innerHTML = '';
+            const activeCtaType = (currentResponseData && currentResponseData.ctaType && currentResponseData.ctaType !== 'none')
+              ? currentResponseData.ctaType
+              : (document.getElementById('ctaType') ? document.getElementById('ctaType').value : 'none');
+            const activeCtaValue = (currentResponseData && currentResponseData.ctaValue)
+              ? currentResponseData.ctaValue
+              : (document.getElementById('ctaValue') ? document.getElementById('ctaValue').value : '');
+
+            if (currentPresenterIndex === cards.length - 1 && activeCtaType && activeCtaType !== 'none') {
+              if (activeCtaType === 'email') {
+                ctaArea.innerHTML = `
+                  <div class="p-4 bg-slate-900/95 border border-amber-500/50 rounded-2xl flex flex-col gap-3 shadow-2xl backdrop-blur-2xl animate-fade-in">
                     <div class="text-xs font-bold text-amber-400 flex items-center justify-center gap-1.5">
-                      <i data-lucide="gift" class="w-4 h-4"></i> Get the Full SOP / Cheat Sheet
+                      <i data-lucide="gift" class="w-4 h-4"></i> Get the Full Unredacted SOP & PDF Guide
                     </div>
                     <div class="flex items-center gap-2" id="leadForm">
-                      <input type="email" id="leadEmailInput" placeholder="Enter your best email..." class="flex-1 bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
-                      <button id="leadSubmitBtn" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-gray-950 font-bold text-xs transition-all glow-amber shadow-lg shadow-amber-500/20 whitespace-nowrap">
+                      <input type="email" id="leadEmailInput" placeholder="Enter your email to receive full PDF..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                      <button id="leadSubmitBtn" onclick="handlePresenterLeadSubmit('${activeCtaValue}')" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-gray-950 font-bold text-xs transition-all shadow-md whitespace-nowrap">
                         Send Me Access
                       </button>
                     </div>
-                    <div id="leadSuccess" class="hidden text-xs text-emerald-400 font-bold text-center py-2 animate-fade-in">
-                      ✅ Sent! Check your inbox shortly.
+                    <div id="leadSuccess" class="hidden text-xs text-emerald-400 font-bold text-center py-1 animate-fade-in">
+                      ✅ Access granted! Check your inbox shortly.
                     </div>
                   </div>
-                </div>
-              `;
-              scriptToRun = () => {
-                const btn = document.getElementById('leadSubmitBtn');
-                if(btn) btn.onclick = async () => {
-                  const email = document.getElementById('leadEmailInput').value;
-                  const wh = activeCtaValue;
-                  btn.innerText = 'Sending...';
-                  btn.disabled = true;
-                  await submitLeadEmail(wh, email);
-                  document.getElementById('leadForm').classList.add('hidden');
-                  document.getElementById('leadSuccess').classList.remove('hidden');
-                  showToast('✨ Success!');
-                };
-              };
-            } else if (activeCtaType === 'calendly') {
-              const calUrl = activeCtaValue || 'https://calendly.com/';
-              ctaHtml = `
-                <div class="absolute -bottom-16 left-0 right-0 w-full animate-slide-up-fade flex justify-center">
-                  <button onclick="openCalendlyModal('${calUrl}')" class="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm transition-all shadow-[0_0_30px_rgba(79,70,229,0.3)] hover:scale-105 flex items-center gap-2 border border-blue-400/30">
-                    <i data-lucide="calendar" class="w-5 h-5 text-blue-200"></i> Book a Demo Call ⚡️
-                  </button>
-                </div>
-              `;
+                `;
+              } else if (activeCtaType === 'calendly') {
+                const calUrl = activeCtaValue || 'https://calendly.com/';
+                ctaArea.innerHTML = `
+                  <div class="flex justify-center animate-fade-in">
+                    <button onclick="openCalendlyModal('${calUrl}')" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm transition-all shadow-xl flex items-center justify-center gap-2 border border-blue-400/30">
+                      <i data-lucide="calendar" class="w-4 h-4 text-blue-200"></i> Book a Demo Call with Author
+                    </button>
+                  </div>
+                `;
+              }
             }
           }
-
-          container.innerHTML = `<div class="relative w-full flex items-center justify-center">${targetCard.outerHTML}${ctaHtml}</div>`;
-          
-          if (scriptToRun) setTimeout(scriptToRun, 50);
         }
       }
+
+      // Update Pagination Dots
+      const dotsContainer = document.getElementById('presenterDotsContainer');
+      if (dotsContainer && cards.length > 0) {
+        let dotsHtml = '';
+        for (let i = 0; i < cards.length; i++) {
+          const isActive = i === currentPresenterIndex;
+          dotsHtml += `<div class="h-2 rounded-full transition-all duration-300 ${isActive ? 'w-5 bg-purple-400 shadow-[0_0_10px_rgba(168,85,247,0.8)] scale-110' : 'w-2 bg-slate-700/80 hover:bg-slate-600'} cursor-pointer" onclick="goToPresenterSlide(${i})"></div>`;
+        }
+        dotsContainer.innerHTML = dotsHtml;
+      }
+
+      lucide.createIcons();
+    }
+
+    async function handlePresenterLeadSubmit(webhookUrl) {
+      const email = document.getElementById('leadEmailInput')?.value;
+      const btn = document.getElementById('leadSubmitBtn');
+      if (!email || !email.includes('@')) {
+        showToast('Please enter a valid email address.', true);
+        return;
+      }
+      if (btn) { btn.innerText = 'Sending...'; btn.disabled = true; }
+      await submitLeadEmail(webhookUrl, email);
+      document.getElementById('leadForm')?.classList.add('hidden');
+      document.getElementById('leadSuccess')?.classList.remove('hidden');
+    }
 
       // Update Pagination Dots
       const dotsContainer = document.getElementById('presenterDotsContainer');
