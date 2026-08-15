@@ -2614,18 +2614,6 @@
       document.getElementById('leadSuccess')?.classList.remove('hidden');
     }
 
-      // Update Pagination Dots
-      const dotsContainer = document.getElementById('presenterDotsContainer');
-      if (dotsContainer && cards.length > 0) {
-        let dotsHtml = '';
-        for (let i = 0; i < cards.length; i++) {
-          const isActive = i === currentPresenterIndex;
-          dotsHtml += `<div class="h-2 rounded-full transition-all duration-300 ${isActive ? 'w-6 bg-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.8)] scale-110' : 'w-2 bg-slate-700/80 hover:bg-slate-600'} cursor-pointer" onclick="goToPresenterSlide(${i})"></div>`;
-        }
-        dotsContainer.innerHTML = dotsHtml;
-      }
-    }
-
     function nextPresenterSlide() {
       const wrapper = document.getElementById('swiperWrapper');
       const cards = wrapper ? wrapper.querySelectorAll('.swiper-slide') : [];
