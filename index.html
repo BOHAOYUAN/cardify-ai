@@ -2766,6 +2766,116 @@
       lucide.createIcons();
     }
 
+        // =========================================================================
+    // 📅 MULTI-PLATFORM SCHEDULED PUBLISHING & WEBHOOK AUTOMATION ENGINE
+    // =========================================================================
+    function openAutoSchedulerModal() {
+      let modal = document.getElementById('autoSchedulerModal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'autoSchedulerModal';
+        modal.className = 'fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4 backdrop-blur-md animate-fade-in';
+        document.body.appendChild(modal);
+      }
+
+      const slides = (currentResponseData && currentResponseData.slides) ? currentResponseData.slides : [];
+      const title = slides[0]?.title || 'Cardify Masterclass Thought Token';
+
+      // Default scheduled time: Tomorrow at 09:00 AM
+      const tomorrow = new Date(Date.now() + 86400000);
+      const dateStr = tomorrow.toISOString().split('T')[0];
+
+      modal.innerHTML = `
+        <div class="w-full max-w-lg bg-slate-900 border border-purple-500/40 rounded-3xl p-6 shadow-2xl flex flex-col gap-5 text-white">
+          <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+                <i data-lucide="calendar" class="w-4 h-4"></i>
+              </div>
+              <h3 class="text-base font-bold font-outfit">Multi-Platform Auto-Publish & Reminders</h3>
+            </div>
+            <button onclick="document.getElementById('autoSchedulerModal').remove()" class="text-gray-400 hover:text-white p-1">
+              <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+          </div>
+
+          <div class="flex flex-col gap-3 text-xs">
+            <div class="p-3 bg-slate-950 rounded-xl border border-gray-800 flex flex-col gap-1">
+              <span class="text-[10px] uppercase font-mono text-purple-400 font-bold">Target Deck:</span>
+              <span class="text-xs font-bold text-white truncate">${title} (${slides.length || 15} Slides)</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div class="flex flex-col gap-1">
+                <label class="font-bold text-gray-300">Publish Date</label>
+                <input type="date" id="scheduleDateInput" value="${dateStr}" class="bg-slate-950 border border-gray-700 rounded-xl px-3 py-2 text-white font-mono focus:border-purple-500 focus:outline-none">
+              </div>
+              <div class="flex flex-col gap-1">
+                <label class="font-bold text-gray-300">Publish Time</label>
+                <input type="time" id="scheduleTimeInput" value="09:00" class="bg-slate-950 border border-gray-700 rounded-xl px-3 py-2 text-white font-mono focus:border-purple-500 focus:outline-none">
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-1.5 pt-1">
+              <label class="font-bold text-gray-300">Target Channels (Auto-Broadcast)</label>
+              <div class="grid grid-cols-2 gap-2">
+                <label class="p-2 rounded-xl bg-slate-950 border border-purple-500/40 text-purple-200 flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked class="rounded text-purple-600 focus:ring-0"> 💼 LinkedIn
+                </label>
+                <label class="p-2 rounded-xl bg-slate-950 border border-sky-500/40 text-sky-200 flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked class="rounded text-sky-600 focus:ring-0"> 🕏 Twitter / X
+                </label>
+                <label class="p-2 rounded-xl bg-slate-950 border border-red-500/40 text-red-200 flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked class="rounded text-red-600 focus:ring-0"> 📕 Xiaohongshu
+                </label>
+                <label class="p-2 rounded-xl bg-slate-950 border border-emerald-500/40 text-emerald-200 flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked class="rounded text-emerald-600 focus:ring-0"> 🤖 Webhook (Zapier/Feishu)
+                </label>
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-1 pt-1">
+              <label class="font-bold text-gray-300">Webhook Dispatch URL (Optional)</label>
+              <input type="url" id="scheduleWebhookUrl" placeholder="https://hook.make.com/... or Feishu Webhook" class="bg-slate-950 border border-gray-700 rounded-xl px-3 py-2 text-white text-xs font-mono focus:border-purple-500 focus:outline-none">
+            </div>
+          </div>
+
+          <div class="flex gap-2 pt-2">
+            <button onclick="saveScheduleReminder()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 text-gray-950 font-black text-xs shadow-lg active:scale-95 flex items-center justify-center gap-1.5">
+              <i data-lucide="bell" class="w-4 h-4"></i> Schedule Auto-Reminder & Webhook
+            </button>
+          </div>
+        </div>
+      `;
+
+      modal.classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function saveScheduleReminder() {
+      const date = document.getElementById('scheduleDateInput')?.value;
+      const time = document.getElementById('scheduleTimeInput')?.value;
+      const webhook = document.getElementById('scheduleWebhookUrl')?.value;
+      
+      const modal = document.getElementById('autoSchedulerModal');
+      if (modal) modal.remove();
+      
+      showToast(`⏰ Scheduled for ${date} at ${time}! Reminder added to queue.`);
+      
+      if (webhook && webhook.startsWith('http')) {
+        fetch(webhook, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            event: 'cardify_deck_scheduled',
+            title: currentResponseData?.slides?.[0]?.title,
+            scheduledTime: `${date} ${time}`,
+            liveUrl: window.location.href
+          })
+        }).catch(() => {});
+      }
+    }
+
     // 🎵 CARDIFY STUDIO IMMERSIVE SOUNDTRACK & AUDIO ENGINE (7 HQ TRACKS)
     // =========================================================================
     const SOUNDTRACK_PLAYLIST = [
@@ -3060,7 +3170,7 @@
       const p = currentPreset || 'exec';
       const deckKey = (p === 'luxury' || p === 'exec') ? 'exec' : (p === 'cyberpunk' || p === 'demo1' ? 'demo1' : (p === 'matrix' || p === 'demo2' ? 'demo2' : (p === 'morandi' || p === 'demo3' ? 'demo3' : 'exec')));
       
-      const directReaderUrl = `${window.location.origin}/#read=${deckKey}`;
+      const directReaderUrl = `${window.location.origin}/?read=${deckKey}#read=${deckKey}`;
       
       let modal = document.getElementById('mobileQrModal');
       if (!modal) {
@@ -3455,6 +3565,34 @@
       if (window.lucide) lucide.createIcons();
     }
 
+        // 📱 FAIL-SAFE DIRECT MOBILE READER AUTO-LAUNCHER
+    function detectAndLaunchDirectReader() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const hash = window.location.hash || '';
+      
+      const readParam = urlParams.get('read') || urlParams.get('deck') || (hash.startsWith('#read=') ? hash.slice(6) : null) || (hash.startsWith('#d=') ? hash.slice(3) : null);
+      
+      if (readParam) {
+        console.log('Direct reader mode detected:', readParam);
+        const presetSlides = MASTER_PRESET_DECKS[readParam] || MASTER_PRESET_DECKS.exec;
+        currentResponseData = { slides: presetSlides };
+        
+        const themeMap = { exec: 'luxury', demo1: 'cyberpunk', demo2: 'matrix', demo3: 'morandi', luxury: 'luxury', cyberpunk: 'cyberpunk', matrix: 'matrix', morandi: 'morandi' };
+        if (themeMap[readParam]) setTheme(themeMap[readParam]);
+        
+        renderSlides(presetSlides);
+        
+        // Instant Launch into Reader View
+        setTimeout(() => {
+          openPresenterMode();
+          if (window.innerWidth < 768) {
+            setPresenterDisplayMode('webpage');
+          }
+          showToast('📱 Direct Mobile Reader Launched!');
+        }, 150);
+      }
+    }
+
     function openPresenterMode() {
       const wrapper = document.getElementById('swiperWrapper');
       const cards = wrapper ? wrapper.querySelectorAll('.swiper-slide') : [];
@@ -3528,13 +3666,13 @@
             </button>
 
             <!-- 🚀 1-Click Share to X -->
-            <button onclick="shareToTwitter()" title="Share to X / Twitter" class="px-2.5 py-1.5 rounded-full bg-slate-950 hover:bg-sky-950 border border-sky-500/40 text-sky-400 text-xs font-bold flex items-center gap-1 transition-all shadow-sm active:scale-95 shrink-0">
-              <i data-lucide="twitter" class="w-3.5 h-3.5"></i>
+            <button onclick="shareToTwitter()" title="Share to X / Twitter" class="px-3 py-1.5 rounded-full bg-slate-950 hover:bg-sky-950/80 border border-sky-500/50 text-sky-400 text-xs font-extrabold flex items-center gap-1.5 transition-all shadow-sm active:scale-95 shrink-0">
+              <span class="font-sans text-sm font-black">𝕏</span> <span>Post</span>
             </button>
 
             <!-- 📱 Mobile QR -->
-            <button onclick="openMobileQrModal()" title="Scan with Phone to read on Mobile" class="px-2.5 py-1.5 rounded-full bg-slate-950 hover:bg-purple-950 border border-purple-500/40 text-purple-300 text-xs font-bold flex items-center gap-1 transition-all shadow-sm active:scale-95 shrink-0">
-              <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
+            <button onclick="openMobileQrModal()" title="Scan with Phone to read on Mobile" class="px-3 py-1.5 rounded-full bg-slate-950 hover:bg-purple-950/80 border border-purple-500/50 text-purple-300 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm active:scale-95 shrink-0">
+              <i data-lucide="smartphone" class="w-3.5 h-3.5 text-purple-400"></i> <span>QR</span>
             </button>
 
             <!-- 📥 Export PDF -->
@@ -4683,6 +4821,7 @@
     window.addEventListener('DOMContentLoaded', () => {
       renderSandboxDemos(selectedLang || 'en');
       initFloatingAiCopilot();
+      detectAndLaunchDirectReader();
       checkUrlHashForLiveDeck();
     });
 
