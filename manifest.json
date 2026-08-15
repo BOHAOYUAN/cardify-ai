@@ -1,0 +1,18 @@
+{
+  "name": "Cardify Studio \u2014 15~30 Slide Thought Token & Deck Engine",
+  "short_name": "Cardify",
+  "description": "Convert long-form podcasts, articles, and PDFs into 15~30 slide visual masterclass decks in 1 second.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#030712",
+  "theme_color": "#090d16",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#090d16">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/icon.svg">
   <title>Cardify Studio — Turn Long Content into High-Impact Visual Decks</title>
   <meta name="description" content="Transform podcasts, PDFs, and longform articles into sleek LinkedIn carousels and visual decks in seconds.">
   
@@ -2414,6 +2419,160 @@
     }
 
             // =========================================================================
+        // =========================================================================
+    // 🏆 COMMUNITY HALL OF FAME & 1-CLICK REMIX ENGINE
+    // =========================================================================
+    const COMMUNITY_DECKS = [
+      {
+        id: 'c1',
+        title: 'Sam Altman: The $1B Solo Founder Playbook',
+        category: 'AI Unicorns',
+        slides: 20,
+        author: '@sama_insights',
+        likes: 1280,
+        theme: 'luxury',
+        summary: 'How 1-person companies with AI agents will generate $1B ARR by 2028.',
+        deckData: MASTER_PRESET_DECKS.exec
+      },
+      {
+        id: 'c2',
+        title: '$100M Offers: The Grand Slam Value Equation',
+        category: 'Sales & Pricing',
+        slides: 25,
+        author: '@hormozi_scale',
+        likes: 942,
+        theme: 'cyberpunk',
+        summary: 'Alex Hormozi breakdown: Dream Outcome x Perceived Likelihood / Time Delay.',
+        deckData: MASTER_PRESET_DECKS.demo1
+      },
+      {
+        id: 'c3',
+        title: 'DeepSeek R1 / FP8 Architecture Secrets',
+        category: 'Tech Deep-Dive',
+        slides: 25,
+        author: '@ai_architect',
+        likes: 1850,
+        theme: 'matrix',
+        summary: 'Complete technical breakdown of pure RL reasoning and $6M training cost.',
+        deckData: MASTER_PRESET_DECKS.demo2
+      },
+      {
+        id: 'c4',
+        title: 'B2B Enterprise Inbound Lead Funnel (30 Slides)',
+        category: 'B2B Growth',
+        slides: 30,
+        author: '@growth_director',
+        likes: 720,
+        theme: 'morandi',
+        summary: 'Step-by-step SOP to turn organic visual carousels into $50k enterprise contracts.',
+        deckData: MASTER_PRESET_DECKS.demo3
+      }
+    ];
+
+    function openCommunityModal() {
+      let modal = document.getElementById('communityModal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'communityModal';
+        modal.className = 'fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4 backdrop-blur-md animate-fade-in';
+        document.body.appendChild(modal);
+      }
+
+      modal.innerHTML = `
+        <div class="w-full max-w-4xl bg-slate-900 border border-purple-500/40 rounded-3xl p-6 shadow-2xl flex flex-col gap-6 text-white max-h-[90vh] overflow-y-auto">
+          <div class="flex items-center justify-between border-b border-gray-800 pb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-2xl bg-indigo-600/30 border border-indigo-500/50 flex items-center justify-center text-indigo-400">
+                <i data-lucide="sparkles" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-black font-outfit">Community Hall of Fame</h3>
+                <p class="text-xs text-gray-400">Explore trending 15~30 slide master decks & 1-click Remix into your workspace</p>
+              </div>
+            </div>
+            <button onclick="document.getElementById('communityModal').remove()" class="text-gray-400 hover:text-white p-1">
+              <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            ${COMMUNITY_DECKS.map(d => `
+              <div class="p-4 rounded-2xl bg-slate-950 border border-gray-800 hover:border-purple-500/50 transition-all flex flex-col justify-between gap-3 shadow-lg group">
+                <div class="flex flex-col gap-2">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-purple-950/80 text-purple-300 border border-purple-500/40">${d.category} • ${d.slides} Slides</span>
+                    <span class="text-[11px] text-amber-400 font-mono flex items-center gap-1">🔥 ${d.likes}</span>
+                  </div>
+                  <h4 class="text-sm font-bold text-white group-hover:text-purple-300 transition-colors leading-snug">${d.title}</h4>
+                  <p class="text-xs text-gray-400 leading-relaxed">${d.summary}</p>
+                </div>
+
+                <div class="flex items-center justify-between pt-2 border-t border-gray-900">
+                  <span class="text-[11px] text-gray-500 font-mono">${d.author}</span>
+                  <button onclick="remixCommunityDeck('${d.id}')" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md flex items-center gap-1 active:scale-95">
+                    <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-300"></i> Remix Deck
+                  </button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+
+      modal.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function remixCommunityDeck(deckId) {
+      const item = COMMUNITY_DECKS.find(d => d.id === deckId);
+      if (!item) return;
+
+      currentResponseData = { slides: item.deckData };
+      setTheme(item.theme);
+      renderSlides(item.deckData);
+      
+      const modal = document.getElementById('communityModal');
+      if (modal) modal.remove();
+
+      showToast(`⚡ Remixed "${item.title}"! Click any text to edit directly.`);
+    }
+
+    // =========================================================================
+    // 📥 PWA SERVICE WORKER & DESKTOP APP INSTALLATION
+    // =========================================================================
+    let deferredPwaPrompt = null;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPwaPrompt = e;
+      const btn = document.getElementById('btnInstallPwa');
+      if (btn) btn.classList.remove('hidden');
+    });
+
+    function triggerPwaInstall() {
+      if (deferredPwaPrompt) {
+        deferredPwaPrompt.prompt();
+        deferredPwaPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            showToast('🎉 Cardify Studio installed as native desktop app!');
+          }
+          deferredPwaPrompt = null;
+        });
+      } else {
+        showToast('💡 Bookmark or click your browser toolbar to install as Desktop App!');
+      }
+    }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js').then(() => {
+          console.log('Cardify PWA Service Worker Active');
+        }).catch(err => {
+          console.warn('PWA registration error:', err);
+        });
+      });
+    }
+
     // 🎵 CARDIFY STUDIO IMMERSIVE SOUNDTRACK & AUDIO ENGINE (7 HQ TRACKS)
     // =========================================================================
     const SOUNDTRACK_PLAYLIST = [
