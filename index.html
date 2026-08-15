@@ -2658,30 +2658,30 @@
       playCurrentTrack();
     }
 
-    function updateAudioUi(isPlaying, trackTitle) {
+        function updateAudioUi(isPlaying, trackTitle) {
       const title = trackTitle || SOUNDTRACK_PLAYLIST[currentAudioTrackIndex].title;
       
       // Header Audio Button
       const headerBtn = document.getElementById('btnHeaderAudio');
       if (headerBtn) {
         if (isPlaying) {
-          headerBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-xs font-bold transition-all shadow-md animate-pulse';
-          headerBtn.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400"></span> <span class="max-w-[140px] truncate">${title}</span> <i data-lucide="pause" class="w-3.5 h-3.5"></i>`;
+          headerBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-xs font-bold transition-all shadow-md';
+          headerBtn.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> <span class="max-w-[120px] truncate">${title}</span> <i data-lucide="pause" class="w-3.5 h-3.5"></i>`;
         } else {
           headerBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/80 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold transition-all';
-          headerBtn.innerHTML = `<i data-lucide="music" class="w-3.5 h-3.5 text-purple-400"></i> <span>Play Soundtrack</span>`;
+          headerBtn.innerHTML = `<i data-lucide="music" class="w-3.5 h-3.5 text-purple-400"></i> <span>Soundtrack</span>`;
         }
       }
 
-      // Presenter Modal Audio Button
+      // Luxury Compact Presenter Audio Pill (Fixed Width & Never Wraps)
       const presenterBtn = document.getElementById('btnPresenterBgm');
       if (presenterBtn) {
         if (isPlaying) {
-          presenterBtn.className = 'hidden md:flex px-3 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-xs font-mono items-center gap-1.5 transition-all shadow-md';
-          presenterBtn.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> <span class="max-w-[150px] truncate">${title}</span> <i data-lucide="shuffle" class="w-3.5 h-3.5 text-emerald-400" onclick="event.stopPropagation(); shuffleAudioTrack();"></i>`;
+          presenterBtn.className = 'px-3 py-1.5 rounded-full bg-emerald-950/90 border border-emerald-500/60 text-emerald-300 text-xs font-mono flex items-center gap-1.5 transition-all shadow-md hover:bg-emerald-900 cursor-pointer shrink-0';
+          presenterBtn.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> <span>🎵 BGM: ON</span> <i data-lucide="shuffle" class="w-3 h-3 text-emerald-400 hover:scale-125 transition-transform" title="Shuffle Next Track" onclick="event.stopPropagation(); shuffleAudioTrack();"></i>`;
         } else {
-          presenterBtn.className = 'hidden md:flex px-3 py-1.5 rounded-full bg-slate-950 border border-slate-800 text-slate-400 hover:text-white text-xs font-mono items-center gap-1 transition-all';
-          presenterBtn.innerHTML = `<i data-lucide="volume-x" class="w-3.5 h-3.5 text-gray-400"></i> Ambient: OFF`;
+          presenterBtn.className = 'px-3 py-1.5 rounded-full bg-slate-950/90 hover:bg-slate-800 border border-slate-700 text-slate-400 hover:text-white text-xs font-mono flex items-center gap-1.5 transition-all cursor-pointer shrink-0';
+          presenterBtn.innerHTML = `<i data-lucide="volume-x" class="w-3.5 h-3.5 text-gray-400"></i> <span>🎵 BGM: OFF</span>`;
         }
       }
 
@@ -2916,10 +2916,14 @@
       showToast('💼 Launching LinkedIn share intent!');
     }
 
-    function handlePresenterKeydown(e) {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) {
-        return; // Don't intercept when user is editing text
+        function handlePresenterKeydown(e) {
+      // Don't intercept when user is typing in an input, textarea, or contentEditable element
+      const activeTag = document.activeElement ? document.activeElement.tagName : '';
+      if (activeTag === 'INPUT' || activeTag === 'TEXTAREA' || (document.activeElement && document.activeElement.isContentEditable)) {
+        return;
       }
+
+      const key = e.key ? e.key.toLowerCase() : '';
 
       if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
@@ -2927,17 +2931,19 @@
       } else if (e.key === 'ArrowLeft' || e.key === 'Backspace') {
         e.preventDefault();
         prevPresenterSlide();
-      } else if (e.key === 'f' || e.key === 'F') {
+      } else if (key === 'f') {
         e.preventDefault();
         togglePresenterFullscreen();
-      } else if (e.key === 'm' || e.key === 'M') {
+      } else if (key === 'm') {
         e.preventDefault();
         toggleCardifyAudio();
-      } else if (e.key === 'e' || e.key === 'E') {
+      } else if (key === 'e') {
         e.preventDefault();
         toggleLiveInlineEdit();
       } else if (e.key === 'Escape') {
-        if (!document.fullscreenElement) {
+        if (document.fullscreenElement) {
+          document.exitFullscreen().catch(() => {});
+        } else {
           closePresenterMode();
         }
       }
@@ -2968,60 +2974,60 @@
           <div id="presenterAmbientGlow" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full blur-[120px] opacity-35 transition-all duration-700 bg-gradient-to-tr from-purple-600 via-indigo-600 to-amber-500"></div>
         </div>
 
-                <!-- TOP CREATOR & INTERACTION TOOLBAR -->
-        <div class="w-full max-w-5xl z-20 flex items-center justify-between gap-2 flex-wrap bg-slate-900/90 backdrop-blur-2xl border border-slate-800 px-3.5 py-2.5 rounded-2xl shadow-xl">
-          <div class="flex items-center gap-2">
-            <span class="text-xs font-mono font-extrabold text-white flex items-center gap-1.5 bg-purple-950/80 px-3 py-1 rounded-full border border-purple-500/40">
+                        <!-- TOP CREATOR & INTERACTION TOOLBAR (Ultra-Sleek Non-Wrapping Studio Bar) -->
+        <div class="w-full max-w-5xl z-20 flex items-center justify-between gap-2 bg-slate-900/95 backdrop-blur-2xl border border-slate-800/90 px-4 py-2 rounded-2xl shadow-2xl overflow-x-auto whitespace-nowrap scrollbar-none">
+          
+          <!-- Left Controls: Slide Counter + Edit Toggle + Skin Picker -->
+          <div class="flex items-center gap-2 shrink-0">
+            <span class="text-xs font-mono font-extrabold text-white flex items-center gap-1.5 bg-purple-950/80 px-3 py-1.5 rounded-full border border-purple-500/40">
               <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> 
               <span id="presenterSlideCounter">Slide 1 of ${cards.length}</span>
             </span>
-            <button id="btnToggleLiveEdit" onclick="toggleLiveInlineEdit()" title="Enable live click-to-edit on text (Hotkey: E)" class="px-2.5 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs font-bold transition-all flex items-center gap-1">
-              <i data-lucide="edit-3" class="w-3.5 h-3.5 text-purple-400"></i> Edit
+
+            <button id="btnToggleLiveEdit" onclick="toggleLiveInlineEdit()" title="Toggle Inline Edit (Hotkey: E)" class="px-3 py-1.5 rounded-full bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm active:scale-95">
+              <i data-lucide="edit-3" class="w-3.5 h-3.5 text-purple-400"></i> <span>Edit</span>
             </button>
 
-            <!-- 🎨 Live Theme Switcher Dropdown in Presenter -->
-            <select onchange="switchPresenterSkin(this.value)" class="bg-slate-950 border border-slate-700 text-purple-300 text-xs font-bold rounded-full px-2.5 py-1.5 focus:outline-none cursor-pointer">
+            <!-- 🎨 Live Theme Selector Dropdown -->
+            <select onchange="switchPresenterSkin(this.value)" class="bg-slate-950 border border-slate-700 text-purple-300 hover:text-white text-xs font-bold rounded-full px-3 py-1.5 focus:outline-none cursor-pointer shadow-sm transition-all">
               <option value="luxury" ${currentPreset === 'luxury' ? 'selected' : ''}>👑 Luxury Gold</option>
-              <option value="cyberpunk" ${currentPreset === 'cyberpunk' ? 'selected' : ''}>⚡ Cyberpunk 2077</option>
+              <option value="cyberpunk" ${currentPreset === 'cyberpunk' ? 'selected' : ''}>⚡ Cyberpunk</option>
               <option value="apple" ${currentPreset === 'apple' ? 'selected' : ''}>🌿 Apple Minimal</option>
               <option value="morandi" ${currentPreset === 'morandi' ? 'selected' : ''}>☕ Morandi Soft</option>
               <option value="matrix" ${currentPreset === 'matrix' ? 'selected' : ''}>🧠 Matrix Green</option>
-              <option value="vaporwave" ${currentPreset === 'vaporwave' ? 'selected' : ''}>🌆 Vaporwave 80s</option>
+              <option value="vaporwave" ${currentPreset === 'vaporwave' ? 'selected' : ''}>🌆 Vaporwave</option>
             </select>
           </div>
 
-          <!-- Central Interactive Tools: BGM & Fullscreen & Social Share & CTA -->
-          <div class="flex items-center gap-1.5 sm:gap-2">
-            <!-- 🎵 Ambient Soundtrack Player -->
-            <button id="btnPresenterBgm" onclick="toggleCardifyAudio()" title="Toggle Background Soundtrack (Hotkey: M)" class="hidden md:flex px-2.5 py-1.5 rounded-full bg-slate-950 border border-slate-800 text-slate-400 hover:text-white text-xs font-mono items-center gap-1 transition-all">
-              <i data-lucide="volume-x" class="w-3.5 h-3.5 text-gray-400"></i> Ambient: OFF
+          <!-- Right Controls: Audio + Fullscreen + Share + PDF + Close -->
+          <div class="flex items-center gap-2 shrink-0">
+            <!-- 🎵 Compact Apple-Style BGM Pill -->
+            <button id="btnPresenterBgm" onclick="toggleCardifyAudio()" title="Toggle Background Soundtrack (Hotkey: M)" class="px-3 py-1.5 rounded-full bg-slate-950/90 hover:bg-slate-800 border border-slate-700 text-slate-400 hover:text-white text-xs font-mono flex items-center gap-1.5 transition-all shadow-sm shrink-0">
+              <i data-lucide="volume-x" class="w-3.5 h-3.5 text-gray-400"></i> <span>🎵 BGM: OFF</span>
             </button>
 
-            <!-- ⛶ Keynote True Fullscreen Mode -->
-            <button id="btnPresenterFs" onclick="togglePresenterFullscreen()" title="Keynote True Borderless Fullscreen (Hotkey: F)" class="px-2.5 py-1.5 rounded-full bg-slate-950 border border-slate-700 text-purple-300 hover:text-white text-xs font-bold flex items-center gap-1 transition-all shadow-sm">
-              <i data-lucide="maximize" class="w-3.5 h-3.5 text-purple-400"></i> Fullscreen
+            <!-- ⛶ Keynote True Fullscreen -->
+            <button id="btnPresenterFs" onclick="togglePresenterFullscreen()" title="Keynote True Fullscreen (Hotkey: F)" class="px-3 py-1.5 rounded-full bg-slate-950 hover:bg-slate-800 border border-slate-700 text-purple-300 hover:text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm active:scale-95 shrink-0">
+              <i data-lucide="maximize" class="w-3.5 h-3.5 text-purple-400"></i> <span>Fullscreen</span>
             </button>
 
-            <!-- 🚀 1-Click Share to X / LinkedIn -->
-            <button onclick="shareToTwitter()" title="Share directly to X / Twitter" class="px-2.5 py-1.5 rounded-full bg-slate-950 border border-sky-500/40 text-sky-400 hover:bg-sky-950 text-xs font-bold flex items-center gap-1 transition-all">
-              <i data-lucide="twitter" class="w-3.5 h-3.5 text-sky-400"></i> X
+            <!-- 🚀 1-Click Share to X -->
+            <button onclick="shareToTwitter()" title="Share to X / Twitter" class="px-2.5 py-1.5 rounded-full bg-slate-950 hover:bg-sky-950 border border-sky-500/40 text-sky-400 text-xs font-bold flex items-center gap-1 transition-all shadow-sm active:scale-95 shrink-0">
+              <i data-lucide="twitter" class="w-3.5 h-3.5"></i>
             </button>
 
-            <button onclick="shareToLinkedIn()" title="Share directly to LinkedIn" class="hidden sm:flex px-2.5 py-1.5 rounded-full bg-slate-950 border border-blue-500/40 text-blue-400 hover:bg-blue-950 text-xs font-bold items-center gap-1 transition-all">
-              <i data-lucide="linkedin" class="w-3.5 h-3.5 text-blue-400"></i> Post
+            <!-- 📱 Mobile QR -->
+            <button onclick="openMobileQrModal()" title="Scan with Phone to read on Mobile" class="px-2.5 py-1.5 rounded-full bg-slate-950 hover:bg-purple-950 border border-purple-500/40 text-purple-300 text-xs font-bold flex items-center gap-1 transition-all shadow-sm active:scale-95 shrink-0">
+              <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
             </button>
 
-            <button onclick="openMobileQrModal()" title="Scan with Phone to read on Mobile" class="hidden lg:flex px-2.5 py-1.5 rounded-full bg-slate-950 border border-purple-500/40 text-purple-300 hover:text-white text-xs font-bold items-center gap-1 transition-all shadow-sm">
-              <i data-lucide="smartphone" class="w-3.5 h-3.5 text-purple-400"></i> QR
+            <!-- 📥 Export PDF -->
+            <button onclick="exportLinkedInPdf()" title="Download full deck as PDF Carousel" class="px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-gray-950 text-xs font-black transition-all shadow-md flex items-center gap-1.5 active:scale-95 shrink-0">
+              <i data-lucide="download" class="w-3.5 h-3.5 text-gray-950"></i> <span>PDF</span>
             </button>
 
-            <!-- 1-Click Export Deck to PDF -->
-            <button onclick="exportLinkedInPdf()" title="Download full deck as PDF Carousel" class="px-3.5 py-1.5 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-gray-950 text-xs font-black transition-all shadow-md flex items-center gap-1 active:scale-95">
-              <i data-lucide="download" class="w-3.5 h-3.5 text-gray-950"></i> PDF
-            </button>
-
-            <!-- Close Presenter -->
-            <button onclick="closePresenterMode()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-gray-300 hover:text-white flex items-center justify-center transition-all font-bold text-base ml-1">
+            <!-- ✕ Close -->
+            <button onclick="closePresenterMode()" class="w-8 h-8 rounded-full bg-slate-950 hover:bg-slate-800 text-gray-400 hover:text-white border border-slate-800 flex items-center justify-center transition-all font-bold text-base ml-0.5 active:scale-95 shrink-0">
               &times;
             </button>
           </div>
@@ -3232,15 +3238,7 @@
       }
     }
 
-    function handlePresenterKeydown(e) {
-      if (e.key === 'ArrowRight' || e.key === ' ') {
-        nextPresenterSlide();
-      } else if (e.key === 'ArrowLeft') {
-        prevPresenterSlide();
-      } else if (e.key === 'Escape') {
-        closePresenterMode();
-      }
-    }
+// Old duplicate handlePresenterKeydown removed
 
     function closePresenterMode() {
       const modal = document.getElementById('presenterModal');
