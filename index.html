@@ -49,6 +49,8 @@
 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- JSZip Compression Engine -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
   <!-- Google Fonts: Outfit & Inter & Fira Code -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -5751,7 +5753,7 @@ Explore here: ${liveUrl}`)}`;
       }
     }
 
-    async function exportAllCards() {
+        async function exportAllCards() {
       if (!isProUser) {
         openUpgradeModal();
         showToast('Unwatermarked Batch Carousel Package is a Pro feature!', true);
@@ -5759,28 +5761,51 @@ Explore here: ${liveUrl}`)}`;
         return;
       }
 
-      const slidesCount = (currentResponseData?.slides?.length) || (LOCALIZED_DEFAULT_SLIDES[selectedLang] || LOCALIZED_DEFAULT_SLIDES.en).length;
+      const slides = (currentResponseData?.slides) || (LOCALIZED_DEFAULT_SLIDES[selectedLang] || LOCALIZED_DEFAULT_SLIDES.en);
+      const slidesCount = slides.length;
       const btn = document.getElementById('btnExportAll');
       const txt = document.getElementById('exportAllBtnText');
 
       btn.disabled = true;
-      txt.innerText = '⏳ Packaging...';
-      showToast(`Exporting ${slidesCount} card slides...`);
+      if (txt) txt.innerText = '⏳ Zipping...';
+      showToast(`📦 Packaging all ${slidesCount} 4K slides into a single ZIP file...`);
 
-      for (let i = 1; i <= slidesCount; i++) {
-        const card = document.getElementById(`card-${i}`);
-        if (card) {
-          const canvas = await html2canvas(card, { scale: 3, useCORS: true, backgroundColor: null });
-          const link = document.createElement('a');
-          link.download = `cardify-pack-slide-${i}.png`;
-          link.href = canvas.toDataURL('image/png');
-          link.click();
+      try {
+        if (typeof JSZip === 'undefined') {
+          throw new Error('JSZip library not loaded');
         }
+
+        const zip = new JSZip();
+        const deckFolder = zip.folder("Cardify_Master_Deck");
+
+        for (let i = 1; i <= slidesCount; i++) {
+          const card = document.getElementById(`card-${i}`);
+          if (card) {
+            const canvas = await html2canvas(card, { scale: 3, useCORS: true, backgroundColor: null });
+            const dataUrl = canvas.toDataURL('image/png');
+            const base64Data = dataUrl.replace(/^data:image\/png;base64,/, "");
+            const slideName = `Cardify_Slide_${String(i).padStart(2, '0')}.png`;
+            deckFolder.file(slideName, base64Data, { base64: true });
+          }
+        }
+
+        const content = await zip.generateAsync({ type: "blob" });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(content);
+        link.download = `Cardify_Master_Deck_${slidesCount}_Slides.zip`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        showToast(`🎉 Successfully downloaded Cardify_Master_Deck_${slidesCount}_Slides.zip!`);
+        trackAnalyticsEvent('export_all_cards_zip', { count: slidesCount });
+      } catch (err) {
+        console.error('ZIP generation error:', err);
+        showToast('ZIP packaging error, please retry', true);
+      } finally {
+        btn.disabled = false;
+        applyTranslations();
       }
-      showToast(`All ${slidesCount} Card Slides exported!`);
-      trackAnalyticsEvent('export_all_cards', { count: slidesCount });
-      btn.disabled = false;
-      applyTranslations();
     }
 
     function openUpgradeModal() {
