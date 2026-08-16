@@ -575,7 +575,7 @@
       </div>
 
       <!-- Generated Posts Display Area (Tabs) -->
-      <div id="outputContainer" class="hidden glass-panel rounded-2xl p-5 border border-gray-800 flex flex-col gap-4">
+      <div id="outputContainer" class="glass-panel rounded-2xl p-5 border border-gray-800 flex flex-col gap-4">
         
         <!-- Platform Tabs Header -->
         <div class="flex items-center justify-between border-b border-gray-800 pb-3 overflow-x-auto">
@@ -1650,9 +1650,10 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
       }
 
-      // Render default cards FIRST so right panel is never blank
-      const defaultSlides = LOCALIZED_DEFAULT_SLIDES.en;
-      renderSlides(defaultSlides, '💎 Minted via Cardify Studio • Verified Thought Leader');
+      // Render Executive Master Deck by default so cards are ALWAYS instantly visible and loaded
+      loadSandboxDemo('exec');
+      const outCont = document.getElementById('outputContainer');
+      if (outCont) outCont.classList.remove('hidden');
 
       initSwiper();
       fetchQuota();
