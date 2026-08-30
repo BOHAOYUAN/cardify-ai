@@ -483,67 +483,6 @@
           </button>
         </div>
 
-      <!-- Input Box + Mode Toggle + Prompt Visual Injector + One-Click Presets -->
-      <div class="glass-panel rounded-2xl p-4 sm:p-5 border border-purple-500/40 flex flex-col gap-4 shadow-2xl">
-        
-        <!-- Mode Toggle Switch: Single vs Carousel -->
-        <div class="flex items-center justify-between border-b border-gray-800 pb-3">
-          <div class="flex items-center gap-2 bg-gray-950 p-1 rounded-xl border border-gray-800">
-            <button onclick="setMode('single')" id="mode-single" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-400 hover:text-white flex items-center gap-1.5">
-              <span id="txtModeSingle">🎴 Single Card</span>
-            </button>
-            <button onclick="setMode('carousel')" id="mode-carousel" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-purple-300 bg-purple-600/30 border border-purple-500/40 flex items-center gap-1.5 shadow-sm">
-              <span id="txtModeCarousel">📚 Carousel Pack</span>
-            </button>
-          </div>
-          <span class="text-xs font-mono text-gray-400" id="charCount">0 / 15,000</span>
-        </div>
-
-        <!-- MAIN HERO INPUT TEXTAREA (3-Second Laser Focus) -->
-        <div class="relative">
-          <textarea id="inputText" rows="5" oninput="updateCharCount()" 
-            placeholder="Paste YouTube link, article, or drop PDF here... (e.g. https://www.youtube.com/watch?v=...)"
-            class="w-full bg-gray-950/90 border border-purple-500/30 rounded-xl p-4 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-500/40 transition-all resize-none shadow-inner font-sans"></textarea>
-          
-          <!-- PDF Upload Overlay Button -->
-          <div class="absolute bottom-3 right-3 flex items-center gap-2">
-            <input type="file" id="pdfFileInput" accept="application/pdf" class="hidden" onchange="handlePdfUpload(event)">
-            <button onclick="document.getElementById('pdfFileInput').click()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-950/80 hover:bg-purple-900 text-xs text-purple-300 border border-purple-700/50 transition-all shadow-md active:scale-95">
-              <i data-lucide="upload" class="w-3.5 h-3.5 text-purple-300"></i>
-              <span id="txtUploadPdf">Upload PDF</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Attached PDF Document Chip Badge (Clean Attachment UX) -->
-        <div id="pdfChipContainer" class="hidden p-3 rounded-xl bg-purple-950/60 border border-purple-500/50 flex items-center justify-between transition-all">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-purple-600/30 border border-purple-500/50 flex items-center justify-center">
-              <i data-lucide="file-text" class="w-4 h-4 text-purple-300"></i>
-            </div>
-            <div>
-              <div id="pdfFileName" class="text-xs font-bold text-white font-mono">document.pdf</div>
-              <div id="pdfMetaText" class="text-[10px] text-purple-300 opacity-80">12 Pages Extracted • Ready to Render</div>
-            </div>
-          </div>
-          <button onclick="removeUploadedPdf()" title="Remove attached PDF" class="p-1.5 rounded-lg hover:bg-purple-900/80 text-purple-300 hover:text-white transition-all">
-            <i data-lucide="x" class="w-4 h-4"></i>
-          </button>
-        </div>
-
-        <!-- GENERATE & REGENERATE BUTTONS (Immediate 3-Second Action) -->
-        <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
-          <button id="generateBtn" onclick="generateContent(false)" class="sm:col-span-9 py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 via-purple-600 to-indigo-600 hover:from-emerald-400 hover:to-indigo-500 text-white font-black text-sm flex items-center justify-center gap-2 glow-purple transition-all active:scale-[0.99] shadow-xl">
-            <i data-lucide="wand-2" class="w-4 h-4 text-amber-300"></i>
-            <span id="generateBtnText">⚡️ Render Visual Deck & Post (0.8s)</span>
-          </button>
-          
-          <button onclick="generateContent(true)" title="Force regenerate AI content bypassing cache" class="sm:col-span-3 py-3.5 rounded-xl bg-gray-900 hover:bg-gray-800 border border-gray-800 text-purple-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]">
-            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-            <span id="txtRegenerateBtn">↻ Re-Render</span>
-          </button>
-        </div>
-
         <!-- ⚙️ ADVANCED DECK CUSTOMIZATION ACCORDION (Streamlined Clean UI) -->
         <div class="pt-2 border-t border-gray-900">
           <button onclick="toggleAdvancedDeckOptions()" class="w-full flex items-center justify-between bg-gray-950 hover:bg-gray-900 border border-purple-900/40 rounded-xl px-4 py-2.5 text-xs font-bold text-purple-300 transition-all shadow-sm">
