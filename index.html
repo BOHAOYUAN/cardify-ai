@@ -380,6 +380,56 @@
     <!-- ================= LEFT PANEL: CONTROL & GENERATION (7 cols) ================= -->
     <section class="lg:col-span-7 flex flex-col gap-5">
       
+      <!-- 🤖 CARDIFY CONVERSATIONAL AI COPILOT / AGENT BANNER -->
+      <div class="glass-panel rounded-2xl p-4 border border-emerald-500/40 bg-gradient-to-r from-emerald-950/60 via-gray-950 to-purple-950/60 flex flex-col gap-3 relative shadow-xl glow-purple overflow-hidden">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <div class="relative">
+              <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 p-0.5 shadow-md flex items-center justify-center">
+                <div class="w-full h-full bg-gray-950 rounded-[10px] flex items-center justify-center">
+                  <i data-lucide="bot" class="w-5 h-5 text-emerald-400"></i>
+                </div>
+              </div>
+              <span class="absolute -top-1 -right-1 flex h-3 w-3">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+              </span>
+            </div>
+            <div>
+              <h4 class="text-xs font-black text-white font-outfit flex items-center gap-1.5">
+                <span>Cardify Copilot Agent</span>
+                <span class="text-[9px] text-emerald-300 bg-emerald-950 px-1.5 py-0.5 rounded border border-emerald-500/40 font-mono">DeepSeek V3 Active</span>
+              </h4>
+              <p class="text-[10px] text-emerald-300/80 font-medium">Your 24/7 Visual Content Architect</p>
+            </div>
+          </div>
+
+          <div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-purple-900/40 border border-purple-500/40 text-purple-300 text-[10px] font-mono">
+            <span>⚡️ 0.8s Engine</span>
+          </div>
+        </div>
+
+        <!-- Agent Speech Bubble -->
+        <div class="p-3 rounded-xl bg-gray-950/90 border border-emerald-500/30 text-xs text-gray-200 leading-relaxed font-sans relative shadow-inner">
+          <p class="font-medium text-emerald-100 flex items-center gap-1.5 mb-1.5">
+            <span>👋 "Hey! What content are we converting today? Pick a quick option below or drop your text:"</span>
+          </p>
+
+          <!-- Quick Action Chips -->
+          <div class="flex flex-wrap gap-1.5 pt-1">
+            <button onclick="setAgentPrompt('youtube')" class="px-2.5 py-1 rounded-lg bg-emerald-950/80 hover:bg-emerald-900 text-[11px] font-mono text-emerald-300 border border-emerald-500/40 transition-all flex items-center gap-1 active:scale-95">
+              <span>🎙️ Paste YouTube Podcast</span>
+            </button>
+            <button onclick="setAgentPrompt('pdf')" class="px-2.5 py-1 rounded-lg bg-purple-950/80 hover:bg-purple-900 text-[11px] font-mono text-purple-300 border border-purple-500/40 transition-all flex items-center gap-1 active:scale-95">
+              <span>📄 Upload PDF Document</span>
+            </button>
+            <button onclick="setAgentPrompt('brand')" class="px-2.5 py-1 rounded-lg bg-amber-950/80 hover:bg-amber-900 text-[11px] font-mono text-amber-300 border border-amber-500/40 transition-all flex items-center gap-1 active:scale-95">
+              <span>👑 Founder Executive Pass</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- ⚡ 3-SECOND AHA MOMENT: 1-CLICK SANDBOX DEMOS -->
       <div class="glass-panel rounded-2xl p-4 border border-purple-500/30 bg-gradient-to-r from-purple-950/40 via-gray-950 to-indigo-950/40 flex flex-col gap-2.5">
         <div class="flex items-center justify-between">
@@ -3464,7 +3514,26 @@ Explore here: ${liveUrl}`)}`;
       });
     }
 
-        function openMobileQrModal() {
+        function setAgentPrompt(type) {
+      const txt = document.getElementById('inputText');
+      if (!txt) return;
+      if (type === 'youtube') {
+        txt.value = 'https://www.youtube.com/watch?v=L_Guz73e6fw';
+        showToast('🎙️ YouTube Podcast link inserted! Click Render to extract full transcript!');
+      } else if (type === 'pdf') {
+        document.getElementById('pdfFileInput')?.click();
+        showToast('📄 Select your PDF document to extract text...');
+        return;
+      } else if (type === 'brand') {
+        loadSandboxDemo('exec');
+        showToast('👑 Executive Brand Pass loaded! High-converting founder token card!');
+        return;
+      }
+      txt.focus();
+      updateCharCount();
+    }
+
+    function openMobileQrModal() {
       const p = currentPreset || 'exec';
       const deckKey = (p === 'luxury' || p === 'exec') ? 'exec' : (p === 'cyberpunk' || p === 'demo1' ? 'demo1' : (p === 'matrix' || p === 'demo2' ? 'demo2' : (p === 'morandi' || p === 'demo3' ? 'demo3' : 'exec')));
       
